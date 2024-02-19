@@ -6,6 +6,15 @@
     "action": {
       "default_popup": "index.html",
       "default_icon": "hello_extensions.png"
-    }
+    },
+    "content_scripts": [
+      {
+        "js": [
+          "src/scripts/highlighter/component.js",
+          "src/scripts/highlighter/controller.js"
+        ],
+        "matches": ["<all_urls>"]
+      }
+    ]
   }
   
