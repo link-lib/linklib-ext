@@ -10,7 +10,7 @@
     "content_scripts": [
       {
         "js": [
-          "src/scripts/highlighter/component.js",
+          "src/scripts/highlighter/component2.ts",
           "src/scripts/highlighter/controller.js"
         ],
         "matches": ["<all_urls>"]
