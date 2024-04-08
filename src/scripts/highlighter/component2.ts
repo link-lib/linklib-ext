@@ -69,7 +69,7 @@ class MediumHighlighter extends HTMLElement {
 		);
 	}
 
-	attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+	attributeChangedCallback(name: string) {
 		if (name === 'markerPosition') {
 			this.styleElement!.textContent = styled(this.markerPosition);
 		}
@@ -85,6 +85,7 @@ class MediumHighlighter extends HTMLElement {
 
 	highlightRange(range: any) {
 		const clone =
+			// @ts-ignore
 			this.highlightTemplate!.cloneNode(true).content.firstElementChild;
 		clone.appendChild(range.extractContents());
 		range.insertNode(clone);

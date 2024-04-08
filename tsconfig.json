@@ -26,8 +26,13 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+
+    // Custom
+    "incremental": true,
+    "forceConsistentCasingInFileNames": true,
   },
-  "include": ["src"],
+  "include": ["src", "vite-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
