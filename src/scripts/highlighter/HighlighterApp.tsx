@@ -73,8 +73,8 @@ const HighlighterApp = () => {
 				<div className='marker'></div>
 			</div>
 			<div className='App'>
-				<header className='App-header'>
-					<p>shmm</p>
+				<header className='App-header bg-red-500'>
+					<p className='text-blue-500'>shmm</p>
 					<Popover>
 						<PopoverTrigger>Open</PopoverTrigger>
 						<PopoverContent>

@@ -8,7 +8,9 @@ module.exports = {
 		'./components/**/*.{ts,tsx}',
 		'./app/**/*.{ts,tsx}',
 		'./src/**/*.{ts,tsx}',
-		'./@/**/*.{ts,tsx}',
+		'./@/**/*.{ts,tsx,js,jsx}',
+		'./src/scripts/**/*.{ts,tsx,js,jsx}',
+		'./src/scripts/highlighter/index.html',
 	],
 	prefix: '',
 	theme: {
