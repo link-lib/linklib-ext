@@ -20,7 +20,7 @@ function App() {
 					/>
 				</a>
 			</div>
-			<h1>Vite + React</h1>
+			<h1>Linklib</h1>
 			<div className='card'>
 				<button
 					className='pb-2 mb-3'
@@ -28,13 +28,8 @@ function App() {
 				>
 					count is {count}
 				</button>
-				<p className='text-center'>
-					Edit <code>src/App.tsx</code> and save to test HMR
-				</p>
+				<p className='text-center'>I don' think this is working</p>
 			</div>
-			<p className='read-the-docs'>
-				Click on the Vite and React logos to learn more
-			</p>
 		</>
 	);
 }
