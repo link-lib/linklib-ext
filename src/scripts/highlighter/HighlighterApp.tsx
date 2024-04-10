@@ -50,22 +50,22 @@ const HighlighterApp = () => {
 	return (
 		<>
 			<div
-				className='gap-2 w-fit absolute justify-center items-center flex flex-row bg-slate-800 rounded-md border border-slate-400 p-2 z-50 text-white'
+				className='text-slate-400 gap-2 w-fit absolute justify-center items-center flex flex-row bg-slate-800 rounded-md border p-2 z-50 text-sm'
 				style={markerPosition}
 			>
-				<button className='hover:text-yellow-400 cursor-pointer w-3 h-3'>
-					<Paintbrush className='w-3 h-3' />
+				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+					<Paintbrush className='w-full h-full' />
 				</button>
-				<button className='hover:text-yellow-400 cursor-pointer w-3 h-3'>
-					<NotebookPen className='w-3 h-3' />
+				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+					<NotebookPen className='w-full h-full' />
 				</button>
-				<button className='hover:text-yellow-400 cursor-pointer w-3 h-3'>
-					<Heart className='w-3 h-3' />
+				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+					<Heart className='w-full h-full' />
 				</button>
-				<button className='hover:text-yellow-400 cursor-pointer w-3 h-3'>
+				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 					😂
 				</button>
-				<button className='hover:text-yellow-400 cursor-pointer w-3 h-3'>
+				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 					🥲
 				</button>
 			</div>

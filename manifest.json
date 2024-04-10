@@ -10,7 +10,7 @@
     "content_scripts": [
       {
         "js": [
-          "src/scripts/highlighter/content.tsx"
+          "src/scripts/highlighter/main.tsx"
         ],
         "matches": ["<all_urls>"]
       }

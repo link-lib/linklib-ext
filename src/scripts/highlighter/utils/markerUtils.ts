@@ -6,8 +6,9 @@ export const getMarkerPosition = () => {
 
 	const rangeBounds = selection.getRangeAt(0).getBoundingClientRect();
 	return {
-		left: rangeBounds.left + rangeBounds.width / 2 - 20,
+		left: rangeBounds.left + rangeBounds.width / 2 - 80,
 		top: rangeBounds.top - 30,
+		// top: rangeBounds.bottom + 10,
 		display: 'flex',
 	};
 };
