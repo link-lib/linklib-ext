@@ -12,14 +12,24 @@ import {
 } from '@/components/ui/popover';
 import { Heart, NotebookPen, Paintbrush } from 'lucide-react';
 import ReactDOM from 'react-dom';
-
+// import ReactDOM from 'react-dom';
 
 // Highlight.js
-const Highlight = ({ children }:  { children: React.ReactNode }) => (
-	<span className='bg-yellow-400' >
-		{children}
-	</span>
-);
+const Highlight = ({ children }: { children: React.ReactNode }) => {
+	
+	return (
+		<span
+			className='linklib-ext bg-yellow-400'
+			style={{}}
+			onClick={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			}}
+		>
+			{children}
+		</span>
+	);
+};
 
 const HighlighterApp = () => {
 	const [markerPosition, setMarkerPosition] = useState<
@@ -65,19 +75,31 @@ const HighlighterApp = () => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
 			for (let i = 0; i < userSelection.rangeCount; i++) {
+				// const range = userSelection.getRangeAt(i);
+				// const template = document.getElementById(
+				// 	'highlightTemplate'
+				// ) as HTMLTemplateElement;
+				// const clone =
+				// 	template.content.firstElementChild!.cloneNode(true);
+				// clone.appendChild(range.extractContents());
+				// range.insertNode(clone);
+				//
 				const range = userSelection.getRangeAt(i);
 				const highlightContainer = document.createElement('span');
 				range.surroundContents(highlightContainer);
-				ReactDOM.render(<Highlight>{highlightContainer.innerHTML}</Highlight>, highlightContainer);
+				ReactDOM.render(
+					<Highlight>{highlightContainer.innerHTML}</Highlight>,
+					highlightContainer
+				);
 			}
 			window.getSelection()?.empty();
 		}
 	};
-	
+
 	return (
 		<>
 			<div
-				className='absolute bg-slate-800 text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
+				className='bg-slate-800 text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
 				style={markerPosition}
 				onClick={handleHighlight}
 			>
