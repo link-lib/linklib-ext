@@ -12,8 +12,9 @@ import {
 } from '@/components/ui/popover';
 import { Heart, NotebookPen, Paintbrush } from 'lucide-react';
 
+
 // Highlight.js
-// const Highlight = ({ children }: any) => (
+// const Highlight = ({ children }:  { children: React.ReactNode }) => (
 // 	<span style={{ backgroundColor: 'yellow', color: 'black' }}>
 // 		{children}
 // 	</span>
@@ -25,7 +26,12 @@ const HighlighterApp = () => {
 	>({ display: 'none' });
 
 	useEffect(() => {
-		console.log('useEffect');
+		const template = document.createElement('template');
+		template.id = 'highlightTemplate';
+		template.innerHTML = `
+			<span class="highlight" style="background-color: yellow; display: inline"></span>
+		`;
+		document.body.appendChild(template);
 
 		document.addEventListener('click', () => {
 			if (getSelectedText().length > 0) {
@@ -62,14 +68,14 @@ const HighlighterApp = () => {
 				onClick={() => {
 					const userSelection = window.getSelection();
 					if (userSelection) {
-						// for (let i = 0; i < userSelection.rangeCount; i++) {
-						// 	const clone =
-						// 		this.highlightTemplate.cloneNode(true).content
-						// 			.firstElementChild;
-						// 	clone.appendChild(range.extractContents());
-						// 	range.insertNode(clone);
-						// }
-						// window.getSelection().empty();
+						for (let i = 0; i < userSelection.rangeCount; i++) {
+							const range = userSelection.getRangeAt(i);
+							const template = document.getElementById('highlightTemplate') as HTMLTemplateElement;
+							const clone = template.content.firstElementChild!.cloneNode(true);
+							clone.appendChild(range.extractContents());
+							range.insertNode(clone);
+						}
+						window?.getSelection()?.empty();
 					}
 				}}
 			>
