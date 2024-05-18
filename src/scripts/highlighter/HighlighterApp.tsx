@@ -11,14 +11,15 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover';
 import { Heart, NotebookPen, Paintbrush } from 'lucide-react';
+import ReactDOM from 'react-dom';
 
 
 // Highlight.js
-// const Highlight = ({ children }:  { children: React.ReactNode }) => (
-// 	<span style={{ backgroundColor: 'yellow', color: 'black' }}>
-// 		{children}
-// 	</span>
-// );
+const Highlight = ({ children }:  { children: React.ReactNode }) => (
+	<span className='bg-yellow-400' >
+		{children}
+	</span>
+);
 
 const HighlighterApp = () => {
 	const [markerPosition, setMarkerPosition] = useState<
@@ -26,12 +27,12 @@ const HighlighterApp = () => {
 	>({ display: 'none' });
 
 	useEffect(() => {
-		const template = document.createElement('template');
-		template.id = 'highlightTemplate';
-		template.innerHTML = `
-			<span class="highlight" style="background-color: yellow; display: inline"></span>
-		`;
-		document.body.appendChild(template);
+		// const template = document.createElement('template');
+		// template.id = 'highlightTemplate';
+		// template.innerHTML = `
+		// 	<span class="highlight" style="background-color: yellow; display: inline"></span>
+		// `;
+		// document.body.appendChild(template);
 
 		document.addEventListener('click', () => {
 			if (getSelectedText().length > 0) {
@@ -60,24 +61,25 @@ const HighlighterApp = () => {
 		};
 	}, []);
 
+	const handleHighlight = () => {
+		const userSelection = window.getSelection();
+		if (userSelection) {
+			for (let i = 0; i < userSelection.rangeCount; i++) {
+				const range = userSelection.getRangeAt(i);
+				const highlightContainer = document.createElement('span');
+				range.surroundContents(highlightContainer);
+				ReactDOM.render(<Highlight>{highlightContainer.innerHTML}</Highlight>, highlightContainer);
+			}
+			window.getSelection()?.empty();
+		}
+	};
+	
 	return (
 		<>
 			<div
-				className='bg-slate-800 text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
+				className='absolute bg-slate-800 text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
 				style={markerPosition}
-				onClick={() => {
-					const userSelection = window.getSelection();
-					if (userSelection) {
-						for (let i = 0; i < userSelection.rangeCount; i++) {
-							const range = userSelection.getRangeAt(i);
-							const template = document.getElementById('highlightTemplate') as HTMLTemplateElement;
-							const clone = template.content.firstElementChild!.cloneNode(true);
-							clone.appendChild(range.extractContents());
-							range.insertNode(clone);
-						}
-						window?.getSelection()?.empty();
-					}
-				}}
+				onClick={handleHighlight}
 			>
 				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 					<Paintbrush className='w-full h-full' />
