@@ -1,76 +1,296 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind screens;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+	.linklib-ext {
+		--background: 0 0% 100%;
+		--foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+		--card: 0 0% 100%;
+		--card-foreground: 222.2 84% 4.9%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+		--primary: 222.2 47.4% 11.2%;
+		--primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+		--secondary: 210 40% 96.1%;
+		--secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+		--muted: 210 40% 96.1%;
+		--muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+		--accent: 210 40% 96.1%;
+		--accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+		--border: 214.3 31.8% 91.4%;
+		--input: 214.3 31.8% 91.4%;
+		--ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
-  }
+		--radius: 0.5rem;
+	}
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+	.linklib-ext .dark {
+		--background: 222.2 84% 4.9%;
+		--foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+		--card: 222.2 84% 4.9%;
+		--card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+		--popover: 222.2 84% 4.9%;
+		--popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+		--primary: 210 40% 98%;
+		--primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+		--secondary: 217.2 32.6% 17.5%;
+		--secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+		--muted: 217.2 32.6% 17.5%;
+		--muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+		--accent: 217.2 32.6% 17.5%;
+		--accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+		--destructive: 0 62.8% 30.6%;
+		--destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
-}
+		--border: 217.2 32.6% 17.5%;
+		--input: 217.2 32.6% 17.5%;
+		--ring: 212.7 26.8% 83.9%;
+	}
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+  .linklib-ext,
+	.linklib-ext * {
+		box-sizing: border-box; /* 1 */
+		border-width: 0; /* 2 */
+		border-style: solid; /* 2 */
+		border-color: currentColor; /* 2 */
+	}
+
+	.linklib-ext ::before,
+	.linklib-ext ::after {
+		--tw-content: '';
+	}
+
+	.linklib-ext html,
+	.linklib-ext :host {
+		line-height: 1.5; /* 1 */
+		-webkit-text-size-adjust: 100%; /* 2 */
+		-moz-tab-size: 4; /* 3 */
+		tab-size: 4; /* 3 */
+		font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+			'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; /* 4 */
+		font-feature-settings: normal; /* 5 */
+		font-variation-settings: normal; /* 6 */
+		-webkit-tap-highlight-color: transparent; /* 7 */
+	}
+
+	.linklib-ext body {
+		margin: 0; /* 1 */
+		line-height: inherit; /* 2 */
+	}
+
+	.linklib-ext hr {
+		height: 0; /* 1 */
+		color: inherit; /* 2 */
+		border-top-width: 1px; /* 3 */
+	}
+
+	.linklib-ext abbr[title] {
+		text-decoration: underline dotted;
+	}
+
+	.linklib-ext h1,
+	.linklib-ext h2,
+	.linklib-ext h3,
+	.linklib-ext h4,
+	.linklib-ext h5,
+	.linklib-ext h6 {
+		font-size: inherit;
+		font-weight: inherit;
+	}
+
+	.linklib-ext a {
+		color: inherit;
+		text-decoration: inherit;
+	}
+
+	.linklib-ext b,
+	.linklib-ext strong {
+		font-weight: bolder;
+	}
+
+	.linklib-ext code,
+	.linklib-ext kbd,
+	.linklib-ext samp,
+	.linklib-ext pre {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+			'Liberation Mono', 'Courier New', monospace; /* 1 */
+		font-feature-settings: normal; /* 2 */
+		font-variation-settings: normal; /* 3 */
+		font-size: 1em; /* 4 */
+	}
+
+	.linklib-ext small {
+		font-size: 80%;
+	}
+
+	.linklib-ext sub,
+	.linklib-ext sup {
+		font-size: 75%;
+		line-height: 0;
+		position: relative;
+		vertical-align: baseline;
+	}
+
+	.linklib-ext sub {
+		bottom: -0.25em;
+	}
+
+	.linklib-ext sup {
+		top: -0.5em;
+	}
+
+	.linklib-ext table {
+		text-indent: 0; /* 1 */
+		border-color: inherit; /* 2 */
+		border-collapse: collapse; /* 3 */
+	}
+
+	.linklib-ext button,
+	.linklib-ext input,
+	.linklib-ext optgroup,
+	.linklib-ext select,
+	.linklib-ext textarea {
+		font-family: inherit; /* 1 */
+		font-feature-settings: inherit; /* 1 */
+		font-variation-settings: inherit; /* 1 */
+		font-size: 100%; /* 1 */
+		font-weight: inherit; /* 1 */
+		line-height: inherit; /* 1 */
+		letter-spacing: inherit; /* 1 */
+		color: inherit; /* 1 */
+		margin: 0; /* 2 */
+		padding: 0; /* 3 */
+	}
+
+	.linklib-ext button,
+	.linklib-ext select {
+		text-transform: none;
+	}
+
+	.linklib-ext button,
+	.linklib-ext [type='button'],
+	.linklib-ext [type='reset'],
+	.linklib-ext [type='submit'] {
+		-webkit-appearance: button; /* 1 */
+		background-color: transparent; /* 2 */
+		background-image: none; /* 3 */
+	}
+
+	.linklib-ext :-moz-focusring {
+		outline: auto;
+	}
+
+	.linklib-ext :-moz-ui-invalid {
+		box-shadow: none;
+	}
+
+	.linklib-ext progress {
+		vertical-align: baseline;
+	}
+
+	.linklib-ext ::-webkit-inner-spin-button,
+	.linklib-ext ::-webkit-outer-spin-button {
+		height: auto;
+	}
+
+	.linklib-ext [type='search'] {
+		-webkit-appearance: textfield; /* 1 */
+		outline-offset: -2px; /* 2 */
+	}
+
+	.linklib-ext ::-webkit-search-decoration {
+		-webkit-appearance: none;
+	}
+
+	.linklib-ext ::-webkit-file-upload-button {
+		-webkit-appearance: button; /* 1 */
+		font: inherit; /* 2 */
+	}
+
+	.linklib-ext summary {
+		display: list-item;
+	}
+
+	.linklib-ext p,
+	.linklib-ext pre {
+		margin: 0;
+	}
+
+	.linklib-ext fieldset {
+		margin: 0;
+		padding: 0;
+	}
+
+	.linklib-ext legend {
+		padding: 0;
+	}
+
+	.linklib-ext ol,
+	.linklib-ext ul,
+	.linklib-ext menu {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.linklib-ext textarea {
+		resize: vertical;
+	}
+
+	.linklib-ext input::placeholder,
+	.linklib-ext textarea::placeholder {
+		opacity: 1; /* 1 */
+		color: #9ca3af; /* 2 */
+	}
+
+	.linklib-ext button,
+	.linklib-ext [role='button'] {
+		cursor: pointer;
+	}
+
+	.linklib-ext :disabled,
+	.linklib-ext [aria-disabled='true'] {
+		cursor: default;
+	}
+
+	.linklib-ext img,
+	.linklib-ext svg,
+	.linklib-ext video,
+	.linklib-ext canvas,
+	.linklib-ext audio,
+	.linklib-ext iframe,
+	.linklib-ext embed,
+	.linklib-ext object {
+		display: block;
+		vertical-align: middle;
+	}
+
+	.linklib-ext img,
+	.linklib-ext video {
+		max-width: 100%;
+		height: auto;
+	}
+
+	.linklib-ext [hidden] {
+		display: none;
+	}
 }

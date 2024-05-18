@@ -2,6 +2,11 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
+	corePlugins: {
+		preflight: false,
+	},
+	important: true,
+	// prefix: 'tw-',
 	darkMode: ['class'],
 	content: [
 		'./pages/**/*.{ts,tsx}',
@@ -10,8 +15,15 @@ module.exports = {
 		'./src/**/*.{ts,tsx}',
 		'./@/**/*.{ts,tsx,js,jsx}',
 	],
-	prefix: '',
 	theme: {
+		// screens: {
+		// 	xs: '480px',
+		// 	sm: '640px',
+		// 	md: '768px',
+		// 	lg: '1024px',
+		// 	xl: '1280px',
+		// 	'2xl': '1536px',
+		// },
 		container: {
 			center: true,
 			padding: '2rem',
