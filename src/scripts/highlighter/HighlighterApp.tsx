@@ -13,11 +13,11 @@ import {
 import { Heart, NotebookPen, Paintbrush } from 'lucide-react';
 
 // Highlight.js
-const Highlight = ({ children }: any) => (
-	<span style={{ backgroundColor: 'yellow', color: 'black' }}>
-		{children}
-	</span>
-);
+// const Highlight = ({ children }: any) => (
+// 	<span style={{ backgroundColor: 'yellow', color: 'black' }}>
+// 		{children}
+// 	</span>
+// );
 
 const HighlighterApp = () => {
 	const [markerPosition, setMarkerPosition] = useState<
@@ -57,19 +57,19 @@ const HighlighterApp = () => {
 	return (
 		<>
 			<div
-				className='text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row bg-slate-800 rounded-md border p-2 z-50 text-sm'
+				className='bg-slate-800 text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
 				style={markerPosition}
 				onClick={() => {
 					const userSelection = window.getSelection();
 					if (userSelection) {
-						for (let i = 0; i < userSelection.rangeCount; i++) {
-							const clone =
-								this.highlightTemplate.cloneNode(true).content
-									.firstElementChild;
-							clone.appendChild(range.extractContents());
-							range.insertNode(clone);
-						}
-						window.getSelection().empty();
+						// for (let i = 0; i < userSelection.rangeCount; i++) {
+						// 	const clone =
+						// 		this.highlightTemplate.cloneNode(true).content
+						// 			.firstElementChild;
+						// 	clone.appendChild(range.extractContents());
+						// 	range.insertNode(clone);
+						// }
+						// window.getSelection().empty();
 					}
 				}}
 			>
@@ -89,9 +89,9 @@ const HighlighterApp = () => {
 					🥲
 				</button>
 			</div>
-			<div className='App'>
-				<header className='App-header bg-popover-red md:sticky top-0'>
-					<p className='text-blue-500'>shmm</p>
+			<div className='md:sticky top-0'>
+				<header className='bg-red-800 md:bg-blue-500'>
+					<p className='text-slate-800'>shmm</p>
 					<Popover>
 						<PopoverTrigger>Open</PopoverTrigger>
 						<PopoverContent>
