@@ -12,11 +12,11 @@ import {
 } from '@/components/ui/popover';
 import { Heart, NotebookPen, Paintbrush } from 'lucide-react';
 import ReactDOM from 'react-dom';
+import NotesModal from '@/components/custom/NotesModal';
 // import ReactDOM from 'react-dom';
 
 // Highlight.js
 const Highlight = ({ children }: { children: React.ReactNode }) => {
-	
 	return (
 		<span
 			className='linklib-ext bg-yellow-400'
@@ -106,9 +106,7 @@ const HighlighterApp = () => {
 				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 					<Paintbrush className='w-full h-full' />
 				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					<NotebookPen className='w-full h-full' />
-				</button>
+				<NotesModal/>
 				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 					<Heart className='w-full h-full' />
 				</button>
@@ -121,13 +119,8 @@ const HighlighterApp = () => {
 			</div>
 			<div className='md:sticky top-0'>
 				<header className='bg-red-800 md:bg-blue-500'>
-					<p className='text-slate-800'>shmm</p>
-					<Popover>
-						<PopoverTrigger>Open</PopoverTrigger>
-						<PopoverContent>
-							Place content for the popover here.
-						</PopoverContent>
-					</Popover>
+					<p className='text-popover'>shmm</p>
+							<NotesModal/>
 				</header>
 			</div>
 		</>
