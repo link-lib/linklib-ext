@@ -1,33 +1,54 @@
 import { useEffect, useState } from 'react';
 
-import {
-	MarkerPosition,
-	getMarkerPosition,
-	getSelectedText,
-} from '@/scripts/highlighter/utils/markerUtils';
+import ActionBar from '@/components/custom/ActionBar/ActionBar';
+import NotesModal from '@/components/custom/NotesModal';
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
-import { Heart, NotebookPen, Paintbrush } from 'lucide-react';
-import ReactDOM from 'react-dom';
-import NotesModal from '@/components/custom/NotesModal';
+import {
+	MarkerPosition,
+	getMarkerPosition,
+	getSelectedText,
+} from '@/scripts/highlighter/utils/markerUtils';
+import { createRoot } from 'react-dom/client';
 // import ReactDOM from 'react-dom';
 
 // Highlight.js
-const Highlight = ({ children }: { children: React.ReactNode }) => {
+const Highlight = ({
+	children,
+	notesOpen = false,
+}: {
+	children: React.ReactNode;
+	notesOpen?: boolean;
+}) => {
+	const [note, setNote] = useState<string>('');
+	const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(notesOpen);
+
 	return (
-		<span
-			className='linklib-ext bg-yellow-400'
-			style={{}}
-			onClick={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-			}}
-		>
-			{children}
-		</span>
+		<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+			<PopoverTrigger asChild>
+				<span
+					className='linklib-ext bg-yellow-400'
+					style={{}}
+					onClick={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						setIsPopoverOpen(true);
+					}}
+				>
+					{children}
+				</span>
+			</PopoverTrigger>
+			<PopoverContent>
+				<NotesModal
+					note={note}
+					setNote={setNote}
+					onClose={() => setIsPopoverOpen(false)}
+				/>
+			</PopoverContent>
+		</Popover>
 	);
 };
 
@@ -75,21 +96,30 @@ const HighlighterApp = () => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
 			for (let i = 0; i < userSelection.rangeCount; i++) {
-				// const range = userSelection.getRangeAt(i);
-				// const template = document.getElementById(
-				// 	'highlightTemplate'
-				// ) as HTMLTemplateElement;
-				// const clone =
-				// 	template.content.firstElementChild!.cloneNode(true);
-				// clone.appendChild(range.extractContents());
-				// range.insertNode(clone);
-				//
 				const range = userSelection.getRangeAt(i);
 				const highlightContainer = document.createElement('span');
 				range.surroundContents(highlightContainer);
-				ReactDOM.render(
-					<Highlight>{highlightContainer.innerHTML}</Highlight>,
-					highlightContainer
+				const root = createRoot(highlightContainer);
+				root.render(
+					<Highlight>{highlightContainer.innerHTML}</Highlight>
+				);
+			}
+			window.getSelection()?.empty();
+		}
+	};
+
+	const handleAddNote = () => {
+		const userSelection = window.getSelection();
+		if (userSelection) {
+			for (let i = 0; i < userSelection.rangeCount; i++) {
+				const range = userSelection.getRangeAt(i);
+				const highlightContainer = document.createElement('span');
+				range.surroundContents(highlightContainer);
+				const root = createRoot(highlightContainer);
+				root.render(
+					<Highlight notesOpen={true}>
+						{highlightContainer.innerHTML}
+					</Highlight>
 				);
 			}
 			window.getSelection()?.empty();
@@ -98,30 +128,26 @@ const HighlighterApp = () => {
 
 	return (
 		<>
-			<div
-				className='bg-slate-800 text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
-				style={markerPosition}
-				onClick={handleHighlight}
-			>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					<Paintbrush className='w-full h-full' />
-				</button>
-				<NotesModal/>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					<Heart className='w-full h-full' />
-				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					😂
-				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					🥲
-				</button>
-			</div>
-			<div className='md:sticky top-0'>
-				<header className='bg-red-800 md:bg-blue-500'>
-					<p className='text-popover'>shmm</p>
-							<NotesModal/>
-				</header>
+			<ActionBar
+				markerPosition={markerPosition}
+				handleHighlight={handleHighlight}
+				handleAddNote={handleAddNote}
+			/>
+			<div className='absolute bottom-0 right-0 bg-green-500 p-2 rounded-full md:bg-green-600 lg:bg-green-700 md:block'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					className='h-6 w-6 text-white md:sticky'
+					fill='none'
+					viewBox='0 0 24 24'
+					stroke='currentColor'
+					strokeWidth={2}
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						d='M5 13l4 4L19 7'
+					/>
+				</svg>
 			</div>
 		</>
 	);
