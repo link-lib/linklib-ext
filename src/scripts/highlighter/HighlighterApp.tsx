@@ -41,7 +41,7 @@ const Highlight = ({
 					{children}
 				</span>
 			</PopoverTrigger>
-			<PopoverContent>
+			<PopoverContent className='w-[550px]'>
 				<NotesModal
 					note={note}
 					setNote={setNote}

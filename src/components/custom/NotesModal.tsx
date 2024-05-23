@@ -1,6 +1,7 @@
+import { StarRating } from '@/components/custom/Stars';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Paintbrush, NotebookPen, Heart, X } from 'lucide-react';
+import { CirclePlus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 const NotesModal = ({
@@ -21,25 +22,27 @@ const NotesModal = ({
 
 	return (
 		<div>
-			<div className='gap-2 w-fit justify-center items-center flex-row rounded-md p-2 text-sm'>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					<Paintbrush className='w-full h-full' />
-				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					<NotebookPen className='w-full h-full' />
-				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					<Heart className='w-full h-full' />
-				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					😂
-				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					🥲
-				</button>
-				<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-					<X className='w-full h-full' />
-				</button>
+			<div className='flex gap-2 justify-between items-center flex-row rounded-md p-2 text-sm'>
+				<div>
+					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+						<Trash2 className='w-full h-full' />
+					</button>
+					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+						<CirclePlus className='w-full h-full' />
+					</button>
+					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+						😂
+					</button>
+					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+						🥲
+					</button>
+				</div>
+				<div className='flex flex-row items-center'>
+					<StarRating />
+					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+						<X className='w-full h-full' />
+					</button>
+				</div>
 			</div>
 			<Textarea
 				placeholder='Write your note'
