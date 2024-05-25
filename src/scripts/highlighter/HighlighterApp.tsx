@@ -13,6 +13,7 @@ import {
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
 import { createRoot } from 'react-dom/client';
+import ImageDrop from '@/scripts/ImageDrop/ImageDrop';
 // import ReactDOM from 'react-dom';
 
 // Highlight.js
@@ -133,22 +134,8 @@ const HighlighterApp = () => {
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 			/>
-			<div className='fixed bottom-1 right-1 bg-green-500 p-2 rounded-full md:bg-green-600 lg:bg-green-700 md:block'>
-				<svg
-					xmlns='http://www.w3.org/2000/svg'
-					className='h-6 w-6 text-white md:sticky'
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-					strokeWidth={2}
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						d='M5 13l4 4L19 7'
-					/>
-				</svg>
-			</div>
+			<ImageDrop />
+			<div className='md:sticky lg:block'></div>
 		</>
 	);
 };

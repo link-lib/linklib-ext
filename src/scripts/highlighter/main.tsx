@@ -18,6 +18,9 @@ ReactDOM.createRoot(root).render(
 	<React.StrictMode>
 		{/* <style type='text/css'>{styles}</style> */}
 		{/* <style type='text/css'>{styles2}</style> */}
-		<HighlighterApp />
+		<script src='https://cdn.tailwindcss.com'></script>
+		<div className='linklib-ext'>
+			<HighlighterApp />
+		</div>
 	</React.StrictMode>
 );
