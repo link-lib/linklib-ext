@@ -30,7 +30,7 @@ const Highlight = ({
 		<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
 			<PopoverTrigger asChild>
 				<span
-					className='linklib-ext bg-yellow-400'
+					className='linklib-ext bg-yellow-400 cursor-pointer'
 					style={{}}
 					onClick={(e) => {
 						e.preventDefault();
@@ -133,7 +133,7 @@ const HighlighterApp = () => {
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 			/>
-			<div className='absolute bottom-0 right-0 bg-green-500 p-2 rounded-full md:bg-green-600 lg:bg-green-700 md:block'>
+			<div className='fixed bottom-1 right-1 bg-green-500 p-2 rounded-full md:bg-green-600 lg:bg-green-700 md:block'>
 				<svg
 					xmlns='http://www.w3.org/2000/svg'
 					className='h-6 w-6 text-white md:sticky'

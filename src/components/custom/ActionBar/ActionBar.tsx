@@ -1,6 +1,6 @@
 import { RatingsBar } from '@/components/custom/ActionBar/RatingsBar';
 import { TagsAction } from '@/components/custom/ActionBar/TagsAction';
-import { NotebookPen, Paintbrush, X } from 'lucide-react';
+import { Brain, NotebookPen, Paintbrush, X } from 'lucide-react';
 
 const ActionBar = ({
 	markerPosition,
@@ -30,6 +30,12 @@ const ActionBar = ({
 			</button>
 			<RatingsBar />
 			<TagsAction />
+			<button
+				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+				onClick={handleAddNote}
+			>
+				<Brain className='w-full h-full' />
+			</button>
 			<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 				<X className='w-full h-full' />
 			</button>
