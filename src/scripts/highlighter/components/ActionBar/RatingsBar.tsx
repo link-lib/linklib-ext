@@ -1,6 +1,6 @@
 'use client';
 
-import { StarRating } from '@/components/custom/Stars';
+import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { Star } from 'lucide-react';
 
 export function RatingsBar() {

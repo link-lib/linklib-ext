@@ -1,5 +1,5 @@
-import { RatingsBar } from '@/components/custom/ActionBar/RatingsBar';
-import { TagsAction } from '@/components/custom/ActionBar/TagsAction';
+import { RatingsBar } from '@/scripts/highlighter/components/ActionBar/RatingsBar';
+import { TagsAction } from '@/scripts/highlighter/components/ActionBar/TagsAction';
 import { Brain, NotebookPen, Paintbrush, X } from 'lucide-react';
 
 const ActionBar = ({

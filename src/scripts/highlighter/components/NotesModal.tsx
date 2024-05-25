@@ -1,4 +1,4 @@
-import { StarRating } from '@/components/custom/Stars';
+import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { CirclePlus, Trash2, X } from 'lucide-react';

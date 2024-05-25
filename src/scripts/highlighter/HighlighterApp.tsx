@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import ActionBar from '@/components/custom/ActionBar/ActionBar';
-import NotesModal from '@/components/custom/NotesModal';
+import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
+import NotesModal from '@/scripts/highlighter/components/NotesModal';
 import {
 	Popover,
 	PopoverContent,
