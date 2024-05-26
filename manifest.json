@@ -1,19 +1,25 @@
 {
-    "manifest_version": 3,
-    "name": "Linklib",
-    "description": "Extension for Linklib",
-    "version": "1.0",
-    "action": {
-      "default_popup": "index.html",
-      "default_icon": "hello_extensions.png"
-    },
-    "content_scripts": [
-      {
-        "js": [
-          "src/scripts/highlighter/main.tsx"
-        ],
-        "matches": ["<all_urls>"]
-      }
-    ]
-  }
-  
+	"manifest_version": 3,
+	"name": "Linklib",
+	"description": "Extension for Linklib",
+	"version": "1.0",
+	"action": {
+		"default_popup": "index.html",
+		"default_icon": "hello_extensions.png"
+	},
+	"content_scripts": [
+		{
+			"js": ["src/scripts/highlighter/main.tsx"],
+			"matches": ["<all_urls>"]
+		}
+	],
+	"background": {
+		"service_worker": "src/scripts/ImageDrop/backgroundScript.ts"
+	},
+	"permissions": ["contextMenus"],
+	"icons": {
+		"16": "hello_extensions.png",
+		"48": "hello_extensions.png",
+		"128": "hello_extensions.png"
+	}
+}

@@ -9,7 +9,7 @@ export const getMarkerPosition = () => {
 
 	const rangeBounds = selection.getRangeAt(0).getBoundingClientRect();
 	return {
-		left: scrollLeft + rangeBounds.left + rangeBounds.width / 2 - 80,
+		left: scrollLeft + rangeBounds.left + rangeBounds.width / 2 - 100,
 		top: scrollTop + rangeBounds.top - 50,
 		// top: rangeBounds.bottom + 10,
 		display: 'flex',

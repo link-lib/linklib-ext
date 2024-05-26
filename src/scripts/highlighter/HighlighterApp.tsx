@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
 
-import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
-import NotesModal from '@/scripts/highlighter/components/NotesModal';
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
+import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
+import NotesModal from '@/scripts/highlighter/components/NotesModal';
 import {
 	MarkerPosition,
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
 import { createRoot } from 'react-dom/client';
-import ImageDrop from '@/scripts/ImageDrop/ImageDrop';
 // import ReactDOM from 'react-dom';
 
 // Highlight.js
@@ -134,7 +133,6 @@ const HighlighterApp = () => {
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 			/>
-			<ImageDrop />
 			<div className='md:sticky lg:block'></div>
 		</>
 	);

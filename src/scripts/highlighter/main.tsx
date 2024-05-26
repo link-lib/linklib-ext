@@ -1,8 +1,11 @@
+import HighlighterApp from '@/scripts/highlighter/HighlighterApp';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import HighlighterApp from '@/scripts/highlighter/HighlighterApp';
 // import styles from '../../index.css?inline';
+import { Toaster } from '@/components/ui/toaster';
+import MenuToasts from '@/scripts/ImageDrop/MenuToasts';
 import '../../index.css';
+import ImageDrop from '@/scripts/ImageDrop/ImageDrop';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -21,6 +24,9 @@ ReactDOM.createRoot(root).render(
 		<script src='https://cdn.tailwindcss.com'></script>
 		<div className='linklib-ext'>
 			<HighlighterApp />
+			<ImageDrop />
+			<Toaster />
+			<MenuToasts />
 		</div>
 	</React.StrictMode>
 );

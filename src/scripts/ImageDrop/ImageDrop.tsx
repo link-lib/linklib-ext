@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardHeader } from '@/components/ui/card';
+import { Card, CardHeader } from '@/components/ui/card';
 import { PlusCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -10,14 +10,12 @@ const ImageDrop = () => {
 	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		console.log('enter');
 		setIsDragging(true);
 	};
 
 	const handleDragLeave = (e: DragEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		console.log('leave');
 		if (
 			!e.relatedTarget ||
 			!(e.relatedTarget as HTMLElement).closest('.image-drop')
@@ -31,11 +29,26 @@ const ImageDrop = () => {
 		e.stopPropagation();
 		setIsDragging(false);
 
+		console.log(e);
+		// Image drop only works if it's like a google image where you're dragging an actual file from your computer
 		const files = e.dataTransfer?.files;
+		// The links don't actually work? Never shows up in that data structure at least
+		const items = e.dataTransfer?.items;
+
+		// Backend
 		if (files && files.length > 0) {
 			const file = files[0];
 			// Handle the file (e.g., upload or display the image)
-			console.log(file);
+			console.log('File dropped:', file);
+		} else if (items) {
+			for (let i = 0; i < items.length; i++) {
+				const item = items[i].getAsString((url) => {
+					if (url) {
+						// Handle the URL (e.g., save the link)
+						console.log('Link dropped:', item);
+					}
+				});
+			}
 		}
 	};
 
@@ -73,12 +86,13 @@ const ImageDrop = () => {
 			) : isHovered ? (
 				<Card>
 					<CardHeader>
-						<CardDescription>
-							<div className='flex flex-col items-center gap-2'>
-								<div>Drag & Drop Images here</div>
-								<Button>Upload Image</Button>
-							</div>
-						</CardDescription>
+						<div className='flex flex-col items-center gap-2'>
+							<p>
+								Drag & Drop Images onto the plus to save it in
+								Linklib
+							</p>
+							<Button>Upload Image</Button>
+						</div>
 					</CardHeader>
 				</Card>
 			) : (
