@@ -27,6 +27,7 @@ ReactDOM.createRoot(root).render(
 			<ImageDrop />
 			<Toaster />
 			<MenuToasts />
+			<div className='md:sticky md:block'></div>
 		</div>
 	</React.StrictMode>
 );

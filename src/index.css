@@ -84,6 +84,7 @@
 		border-width: 0; /* 2 */
 		border-style: solid; /* 2 */
 		border-color: currentColor; /* 2 */
+		font-family: 'Inter', sans-serif;
 	}
 
 	.linklib-ext ::before,
@@ -102,6 +103,7 @@
 		font-feature-settings: normal; /* 5 */
 		font-variation-settings: normal; /* 6 */
 		-webkit-tap-highlight-color: transparent; /* 7 */
+		font-size: 14px;
 	}
 
 	.linklib-ext body {

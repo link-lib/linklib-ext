@@ -43,7 +43,9 @@ const ImageDrop = () => {
 			if (dataTransferUrl) {
 				console.log('is a url');
 				console.log(dataTransferUrl);
+
 				// debugger;
+
 				// Backend: Save link to linklib
 				// This may be more complicated, because the URL domain might have to
 				// If we need to fetch the image.

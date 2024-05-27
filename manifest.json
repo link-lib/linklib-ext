@@ -11,10 +11,15 @@
 		{
 			"js": ["src/scripts/highlighter/main.tsx"],
 			"matches": ["<all_urls>"]
+		},
+		{
+			"matches": ["*://twitter.com/*"],
+			"js": ["src/scripts/siteSaves/twitterSave.tsx"]
 		}
 	],
 	"background": {
-		"service_worker": "src/scripts/ImageDrop/backgroundScript.ts"
+		"service_worker": "src/scripts/ImageDrop/backgroundScript.ts",
+		"scripts": ["src/scripts/siteSaves/backgroundScript.ts"]
 	},
 	"permissions": ["contextMenus"],
 	"icons": {
