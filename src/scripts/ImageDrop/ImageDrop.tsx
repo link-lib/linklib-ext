@@ -29,38 +29,55 @@ const ImageDrop = () => {
 		e.stopPropagation();
 		setIsDragging(false);
 
-		console.log(e);
-		// Image drop only works if it's like a google image where you're dragging an actual file from your computer
-		const files = e.dataTransfer?.files;
-		// The links don't actually work? Never shows up in that data structure at least
-		const items = e.dataTransfer?.items;
-
-		// Backend
-		if (files && files.length > 0) {
-			const file = files[0];
-			// Handle the file (e.g., upload or display the image)
-			console.log('File dropped:', file);
-		} else if (items) {
-			for (let i = 0; i < items.length; i++) {
-				const item = items[i].getAsString((url) => {
-					if (url) {
-						// Handle the URL (e.g., save the link)
-						console.log('Link dropped:', item);
-					}
-				});
+		if (e.dataTransfer?.files[0]) {
+			console.log('is a file');
+			const dT = new DataTransfer();
+			dT.items.add(e.dataTransfer.files[0]);
+			// Backend: Upload file to linklib
+			// This is to put it into an input
+			// fileInput.files = dT.files;
+			// debugger;
+		} else {
+			// Try dataTransfer url second
+			const dataTransferUrl = e.dataTransfer?.getData('url');
+			if (dataTransferUrl) {
+				console.log('is a url');
+				console.log(dataTransferUrl);
+				// debugger;
+				// Backend: Save link to linklib
+				// This may be more complicated, because the URL domain might have to
+				// If we need to fetch the image.
+				// const urlArray = Array.from(url);
+				// urlArray.splice(4, 0, 's');
+				// const urlFinal = urlArray.join('');
+				// fetch(dataTransferUrl)
+				// 	.then(async (res) => {
+				// 		const contentType = await res.headers.get(
+				// 			'Content-Type'
+				// 		);
+				// 		const blob = await response.blob();
+				// 		debugger;
+				// 		const file = new File([blob], 'image.jpeg', {
+				// 			contentType,
+				// 		});
+				// 	})
+				// 	.catch((e) => {
+				// 		console.log(e);
+				// 		debugger;
+				// 	});
 			}
 		}
 	};
 
 	useEffect(() => {
-		document.addEventListener('dragenter', handleDragEnter);
-		document.addEventListener('dragleave', handleDragLeave);
-		document.addEventListener('drop', handleDrop);
+		window.addEventListener('dragenter', handleDragEnter, false);
+		window.addEventListener('dragleave', handleDragLeave, false);
+		window.addEventListener('drop', handleDrop, false);
 
 		return () => {
-			document.removeEventListener('dragenter', handleDragEnter);
-			document.removeEventListener('dragleave', handleDragLeave);
-			document.removeEventListener('drop', handleDrop);
+			window.removeEventListener('dragenter', handleDragEnter);
+			window.removeEventListener('dragleave', handleDragLeave);
+			window.removeEventListener('drop', handleDrop);
 		};
 	}, []);
 
@@ -74,6 +91,7 @@ const ImageDrop = () => {
 
 	return (
 		<div
+			id='dropContainer'
 			className='fixed bottom-1 right-1 z-50 image-drop'
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
