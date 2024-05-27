@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message) => {
 	if (message.action === 'saveTweet') {
 		fetch('https://your-backend.com/api/save', {
 			method: 'POST',

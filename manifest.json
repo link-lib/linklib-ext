@@ -9,12 +9,16 @@
 	},
 	"content_scripts": [
 		{
-			"js": ["src/scripts/highlighter/main.tsx"],
-			"matches": ["<all_urls>"]
+			"matches": ["<all_urls>"],
+			"js": ["src/scripts/highlighter/main.tsx"]
 		},
 		{
 			"matches": ["*://twitter.com/*"],
 			"js": ["src/scripts/siteSaves/twitterSave.tsx"]
+		},
+		{
+			"matches": ["*://instagram.com/*", "*://www.instagram.com/*"],
+			"js": ["src/scripts/siteSaves/instagramSave.tsx"]
 		}
 	],
 	"background": {

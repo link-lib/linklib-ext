@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-// import styles from '../../index.css?inline';
 import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
@@ -20,7 +19,6 @@ const TwitterSave = () => {
 
 	useEffect(() => {
 		const saveTweet = (event: MouseEvent) => {
-			console.log('ok');
 			// Check if the clicked element is a "Save" button
 			const target = event.target as Element;
 			if (target.closest('button[data-testid="bookmark"]')) {
@@ -38,7 +36,7 @@ const TwitterSave = () => {
 					});
 					toast({
 						title: 'Tweet saved',
-						description: 'Tweet saved to your library',
+						description: tweetLink,
 					});
 				}
 			} else if (target.closest('button[data-testid="removeBookmark"]')) {
@@ -56,7 +54,7 @@ const TwitterSave = () => {
 					});
 					toast({
 						title: 'Tweet removed',
-						description: 'Tweet removed from your library',
+						description: tweetLink,
 					});
 				}
 			}
