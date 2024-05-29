@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { PlusCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
@@ -91,6 +92,18 @@ const ImageDrop = () => {
 		setIsHovered(false);
 	};
 
+	const handleButtonClick = () => {
+		fileInputRef.current?.click();
+	};
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			console.log('Selected file:', file);
+			// Handle the file upload to the backend here
+		}
+	};
+
 	return (
 		<div
 			id='dropContainer'
@@ -111,7 +124,16 @@ const ImageDrop = () => {
 								Drag & Drop Images onto the plus to save it in
 								Linklib
 							</p>
-							<Button>Upload Image</Button>
+							<Button onClick={handleButtonClick}>
+								Upload Image
+							</Button>
+							<input
+								type='file'
+								accept='image/*'
+								ref={fileInputRef}
+								style={{ display: 'none' }}
+								onChange={handleFileChange}
+							/>
 						</div>
 					</CardHeader>
 				</Card>
