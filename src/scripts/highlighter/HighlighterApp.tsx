@@ -15,13 +15,14 @@ import {
 import { createRoot } from 'react-dom/client';
 // import ReactDOM from 'react-dom';
 
-// Highlight.js
 const Highlight = ({
 	children,
 	notesOpen = false,
+	highlightElement,
 }: {
 	children: React.ReactNode;
 	notesOpen?: boolean;
+	highlightElement: HTMLElement | null;
 }) => {
 	const [note, setNote] = useState<string>('');
 	const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(notesOpen);
@@ -46,6 +47,7 @@ const Highlight = ({
 					note={note}
 					setNote={setNote}
 					onClose={() => setIsPopoverOpen(false)}
+					highlightElement={highlightElement}
 				/>
 			</PopoverContent>
 		</Popover>
@@ -58,13 +60,6 @@ const HighlighterApp = () => {
 	>({ display: 'none' });
 
 	useEffect(() => {
-		// const template = document.createElement('template');
-		// template.id = 'highlightTemplate';
-		// template.innerHTML = `
-		// 	<span class="highlight" style="background-color: yellow; display: inline"></span>
-		// `;
-		// document.body.appendChild(template);
-
 		document.addEventListener('click', () => {
 			if (getSelectedText().length > 0) {
 				setMarkerPosition(getMarkerPosition());
@@ -101,7 +96,9 @@ const HighlighterApp = () => {
 				range.surroundContents(highlightContainer);
 				const root = createRoot(highlightContainer);
 				root.render(
-					<Highlight>{highlightContainer.innerHTML}</Highlight>
+					<Highlight highlightElement={highlightContainer}>
+						{highlightContainer.innerHTML}
+					</Highlight>
 				);
 			}
 			window.getSelection()?.empty();
@@ -117,7 +114,10 @@ const HighlighterApp = () => {
 				range.surroundContents(highlightContainer);
 				const root = createRoot(highlightContainer);
 				root.render(
-					<Highlight notesOpen={true}>
+					<Highlight
+						highlightElement={highlightContainer}
+						notesOpen={true}
+					>
 						{highlightContainer.innerHTML}
 					</Highlight>
 				);
