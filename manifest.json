@@ -26,6 +26,10 @@
 				"*://www.ycombinator.com/*"
 			],
 			"js": ["src/scripts/siteSaves/hnSave.tsx"]
+		},
+		{
+			"matches": ["*://reddit.com/*", "*://www.reddit.com/*"],
+			"js": ["src/scripts/siteSaves/redditSave.tsx"]
 		}
 	],
 	"background": {

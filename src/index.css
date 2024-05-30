@@ -39,6 +39,8 @@
 
 		--success: 120 39% 49%;
 		--success-foreground: 0 0% 100%;
+
+		--rem: 16px;
 	}
 
 	.linklib-ext .dark {
@@ -85,11 +87,16 @@
 		border-style: solid; /* 2 */
 		border-color: currentColor; /* 2 */
 		font-family: 'Inter', sans-serif;
+		font-size: var(--rem) !important;
 	}
 
 	.linklib-ext ::before,
 	.linklib-ext ::after {
 		--tw-content: '';
+	}
+
+	.linklib-ext :root {
+		font-size: var(--rem) !important;
 	}
 
 	.linklib-ext html,
@@ -103,7 +110,7 @@
 		font-feature-settings: normal; /* 5 */
 		font-variation-settings: normal; /* 6 */
 		-webkit-tap-highlight-color: transparent; /* 7 */
-		font-size: 14px;
+		font-size: 16px !important;
 	}
 
 	.linklib-ext body {

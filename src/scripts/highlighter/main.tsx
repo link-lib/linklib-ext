@@ -10,6 +10,7 @@ import ImageDrop from '@/scripts/ImageDrop/ImageDrop';
 const root = document.createElement('div');
 root.id = 'crx-root';
 root.className = 'linklib-ext';
+root.style.fontSize = '16px';
 // const shadow = root.attachShadow({ mode: 'open' });
 
 document.body.appendChild(root);
@@ -23,11 +24,13 @@ ReactDOM.createRoot(root).render(
 		{/* <style type='text/css'>{styles2}</style> */}
 		<script src='https://cdn.tailwindcss.com'></script>
 		<div className='linklib-ext'>
-			<HighlighterApp />
-			<ImageDrop />
-			<Toaster />
-			<MenuToasts />
-			<div className='md:sticky md:block'></div>
+			<html>
+				<HighlighterApp />
+				<ImageDrop />
+				<Toaster />
+				<MenuToasts />
+				<div className='md:sticky md:block'></div>
+			</html>
 		</div>
 	</React.StrictMode>
 );
