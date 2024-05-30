@@ -19,6 +19,13 @@
 		{
 			"matches": ["*://instagram.com/*", "*://www.instagram.com/*"],
 			"js": ["src/scripts/siteSaves/instagramSave.tsx"]
+		},
+		{
+			"matches": [
+				"*://news.ycombinator.com/*",
+				"*://www.ycombinator.com/*"
+			],
+			"js": ["src/scripts/siteSaves/hnSave.tsx"]
 		}
 	],
 	"background": {
