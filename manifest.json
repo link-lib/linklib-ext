@@ -10,7 +10,7 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["src/scripts/highlighter/main.tsx"]
+			"js": ["src/scripts/main.tsx"]
 		},
 		{
 			"matches": ["*://twitter.com/*"],
