@@ -21,6 +21,10 @@
 			"js": ["src/scripts/siteSaves/instagramSave.tsx"]
 		},
 		{
+			"matches": ["*://youtube.com/*", "*://www.youtube.com/*"],
+			"js": ["src/scripts/siteSaves/youtubeSave.tsx"]
+		},
+		{
 			"matches": [
 				"*://news.ycombinator.com/*",
 				"*://www.ycombinator.com/*"

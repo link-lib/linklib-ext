@@ -21,6 +21,10 @@ function injectSaveLink(toast: any): void {
 		document.querySelectorAll<HTMLSpanElement>('.subline');
 
 	sublineElements.forEach((subline) => {
+		if (subline.querySelector('.linklib-save')) {
+			return;
+		}
+
 		// Find the last <a> element within the subline
 		const lastLink = subline.querySelectorAll<HTMLAnchorElement>('a');
 		if (lastLink.length === 0) return;
@@ -40,6 +44,7 @@ function injectSaveLink(toast: any): void {
 		const saveLink = document.createElement('a');
 		saveLink.href = '#';
 		saveLink.textContent = 'save';
+		saveLink.className = 'linklib-save';
 
 		// Add click event to call saveItem function with the item ID
 		saveLink.addEventListener('click', (e) => {

@@ -31,7 +31,7 @@ const Highlight = ({
 		<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
 			<PopoverTrigger asChild>
 				<span
-					className='bg-yellow-400 cursor-pointer hover:bg-yellow-300'
+					className='bg-green-400 cursor-pointer hover:bg-yellow-300'
 					style={{}}
 					onClick={(e) => {
 						e.preventDefault();
