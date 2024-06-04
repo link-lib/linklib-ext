@@ -40,12 +40,6 @@ const NotesModal = ({
 		<div>
 			<div className='flex gap-2 justify-between items-center flex-row rounded-md p-2 text-sm'>
 				<div>
-					<button
-						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-						onClick={handleDelete}
-					>
-						<Trash2 className='w-full h-full' />
-					</button>
 					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 						<CirclePlus className='w-full h-full' />
 					</button>
@@ -58,6 +52,12 @@ const NotesModal = ({
 				</div>
 				<div className='flex flex-row items-center'>
 					<StarRating onRating={setRating} initialRating={rating} />
+					<button
+						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+						onClick={handleDelete}
+					>
+						<Trash2 className='w-full h-full' />
+					</button>
 					<button
 						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
 						onClick={onClose}

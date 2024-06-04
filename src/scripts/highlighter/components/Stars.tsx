@@ -26,8 +26,8 @@ export const StarRating = ({
 
 	const handleClick = (index: number, isHalf: boolean) => {
 		console.log('click', index, isHalf);
-		setRating(isHalf ? index + 0.5 : index + 1);
-		onRating(isHalf ? index + 0.5 : index + 1);
+		setRating(isHalf ? index + 0.5 : index);
+		onRating(isHalf ? index + 0.5 : index);
 	};
 
 	const renderStars = () => {
