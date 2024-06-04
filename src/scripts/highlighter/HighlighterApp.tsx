@@ -19,13 +19,16 @@ const Highlight = ({
 	children,
 	notesOpen = false,
 	highlightElement,
+	initialRating = 0,
 }: {
 	children: React.ReactNode;
 	notesOpen?: boolean;
 	highlightElement: HTMLElement | null;
+	initialRating?: number;
 }) => {
 	const [note, setNote] = useState<string>('');
 	const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(notesOpen);
+	const [rating, setRating] = useState<number>(initialRating);
 
 	return (
 		<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -48,6 +51,8 @@ const Highlight = ({
 					setNote={setNote}
 					onClose={() => setIsPopoverOpen(false)}
 					highlightElement={highlightElement}
+					rating={rating}
+					setRating={setRating}
 				/>
 			</PopoverContent>
 		</Popover>
@@ -131,6 +136,27 @@ const HighlighterApp = () => {
 		window.getSelection()?.empty();
 	};
 
+	const handleRate = (rating: number) => {
+		const userSelection = window.getSelection();
+		if (userSelection) {
+			for (let i = 0; i < userSelection.rangeCount; i++) {
+				const range = userSelection.getRangeAt(i);
+				const highlightContainer = document.createElement('span');
+				range.surroundContents(highlightContainer);
+				const root = createRoot(highlightContainer);
+				root.render(
+					<Highlight
+						highlightElement={highlightContainer}
+						initialRating={rating}
+					>
+						{highlightContainer.innerHTML}
+					</Highlight>
+				);
+			}
+			window.getSelection()?.empty();
+		}
+	};
+
 	return (
 		<>
 			<ActionBar
@@ -138,6 +164,7 @@ const HighlighterApp = () => {
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 				handleClose={handleClose}
+				handleRate={handleRate}
 			/>
 			<div className='md:sticky lg:block'></div>
 		</>

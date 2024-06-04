@@ -7,11 +7,13 @@ const ActionBar = ({
 	handleHighlight,
 	handleAddNote,
 	handleClose,
+	handleRate,
 }: {
 	markerPosition: React.CSSProperties;
 	handleHighlight: () => void;
 	handleAddNote: () => void;
 	handleClose: () => void;
+	handleRate: (rating: number) => void;
 }) => {
 	return (
 		<div
@@ -30,7 +32,7 @@ const ActionBar = ({
 			>
 				<PenBoxIcon className='w-full h-full' />
 			</button>
-			<RatingsBar />
+			<RatingsBar onRate={handleRate} />
 			<TagsAction />
 			<button
 				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'

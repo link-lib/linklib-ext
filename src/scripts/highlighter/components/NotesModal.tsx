@@ -7,11 +7,15 @@ const NotesModal = ({
 	setNote,
 	onClose,
 	highlightElement,
+	rating,
+	setRating,
 }: {
 	note: string;
 	setNote: (note: string) => void;
 	onClose: () => void;
 	highlightElement: HTMLElement | null;
+	rating: number;
+	setRating: (rating: number) => void;
 }) => {
 	const handleDelete = () => {
 		setNote('');
@@ -53,7 +57,7 @@ const NotesModal = ({
 					</button>
 				</div>
 				<div className='flex flex-row items-center'>
-					<StarRating />
+					<StarRating onRating={setRating} initialRating={rating} />
 					<button
 						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
 						onClick={onClose}
