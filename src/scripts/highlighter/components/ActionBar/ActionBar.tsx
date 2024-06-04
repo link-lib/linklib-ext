@@ -6,10 +6,12 @@ const ActionBar = ({
 	markerPosition,
 	handleHighlight,
 	handleAddNote,
+	handleClose,
 }: {
 	markerPosition: React.CSSProperties;
 	handleHighlight: () => void;
 	handleAddNote: () => void;
+	handleClose: () => void;
 }) => {
 	return (
 		<div
@@ -36,7 +38,10 @@ const ActionBar = ({
 			>
 				<Brain className='w-full h-full' />
 			</button>
-			<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+			<button
+				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+				onClick={handleClose}
+			>
 				<X className='w-full h-full' />
 			</button>
 		</div>

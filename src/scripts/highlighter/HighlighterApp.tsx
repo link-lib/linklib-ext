@@ -126,12 +126,18 @@ const HighlighterApp = () => {
 		}
 	};
 
+	const handleClose = () => {
+		// setMarkerPosition({ display: 'none' });
+		window.getSelection()?.empty();
+	};
+
 	return (
 		<>
 			<ActionBar
 				markerPosition={markerPosition}
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
+				handleClose={handleClose}
 			/>
 			<div className='md:sticky lg:block'></div>
 		</>
