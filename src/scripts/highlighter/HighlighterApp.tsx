@@ -8,9 +8,14 @@ import {
 } from '@/scripts/highlighter/utils/markerUtils';
 import { createRoot } from 'react-dom/client';
 import { Highlight } from '@/scripts/highlighter/components/Highlight';
+import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
+import { extractHighlightData } from '@/scripts/highlighter/utils/highlightUtils';
 // import ReactDOM from 'react-dom';
 
+const Highlights: HighlightData[] = [];
+
 const HighlighterApp = () => {
+	const [highlights, setHighlights] = useState<HighlightData[]>([]);
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
 	>({ display: 'none' });
@@ -46,6 +51,11 @@ const HighlighterApp = () => {
 	const handleHighlight = () => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
+			const highlightData = extractHighlightData();
+			debugger;
+			if (highlightData) {
+				setHighlights([...highlights, highlightData]);
+			}
 			for (let i = 0; i < userSelection.rangeCount; i++) {
 				const range = userSelection.getRangeAt(i);
 				const highlightContainer = document.createElement('span');
