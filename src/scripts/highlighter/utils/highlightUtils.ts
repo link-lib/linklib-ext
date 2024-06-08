@@ -3,44 +3,49 @@ import {
 	highlightColours,
 } from '@/scripts/highlighter/types/HighlightData';
 
-export const extractHighlightData = (): HighlightData | null => {
-	const selection = window.getSelection();
-	if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+export const extractHighlightData = (
+	selection: Selection
+): HighlightData | null => {
+	if (!selection.rangeCount || selection.isCollapsed) {
 		return null;
 	}
 
-	const range = selection.getRangeAt(0);
-	const start = calculateAbsolutePosition(
-		range.startContainer,
-		range.startOffset
-	);
-	const end = calculateAbsolutePosition(range.endContainer, range.endOffset);
+	const firstRange = selection.getRangeAt(0);
+	const lastRange = selection.getRangeAt(selection.rangeCount - 1);
 
 	const highlightData: HighlightData = {
 		url: window.location.href,
 		pageTitle: document.title,
 		matching: {
-			body: range.toString(),
+			body: selection.toString(),
 			textPosition: {
-				start: start,
-				end: end,
+				start: calculateAbsolutePosition(
+					firstRange.startContainer,
+					firstRange.startOffset
+				),
+				end: calculateAbsolutePosition(
+					lastRange.endContainer,
+					lastRange.endOffset
+				),
 			},
 			rangeSelector: {
-				startOffset: range.startOffset,
-				endOffset: range.endOffset,
-				startContainer: generateXPathForElement(range.startContainer),
-				endContainer: generateXPathForElement(range.endContainer),
+				startOffset: firstRange.startOffset,
+				endOffset: lastRange.endOffset,
+				startContainer: generateXPathForElement(
+					firstRange.startContainer
+				),
+				endContainer: generateXPathForElement(lastRange.endContainer),
 			},
 			surroundingText: {
-				text: range.toString(),
+				text: selection.toString(),
 				prefix: extractSurroundingText(
-					range.startContainer,
-					range.startOffset,
+					firstRange.startContainer,
+					firstRange.startOffset,
 					'backward'
 				),
 				suffix: extractSurroundingText(
-					range.endContainer,
-					range.endOffset,
+					lastRange.endContainer,
+					lastRange.endOffset,
 					'forward'
 				),
 			},
