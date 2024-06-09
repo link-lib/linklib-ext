@@ -102,21 +102,21 @@ const HighlighterApp = () => {
 			walker.currentNode = startNode; // Start the walker at the startNode
 			let currentNode: Node | null = walker.currentNode;
 			let inHighlight = true;
-
-			debugger;
+			let characterLength =
+				highlightData.matching.textPosition.end -
+				highlightData.matching.textPosition.start;
 
 			if (currentNode.nodeType !== Node.TEXT_NODE) {
 				currentNode = walker.nextNode();
 			}
+
+			let startOffset = highlightData.matching.rangeSelector.startOffset;
 
 			while (currentNode && inHighlight) {
 				// If we're at the end node, stop highlighting after this loop.
 				if (currentNode.parentElement === endNode) {
 					inHighlight = false;
 				}
-				const isStartNode = currentNode.parentElement === startNode;
-
-				debugger;
 
 				// Go to next node if we're not going to highlight it.
 				if (
@@ -130,24 +130,32 @@ const HighlighterApp = () => {
 
 				const range = new Range();
 
-				range.setStart(
-					currentNode,
-					isStartNode
-						? highlightData.matching.rangeSelector.startOffset
-						: 0
-				);
+				range.setStart(currentNode, startOffset);
+				startOffset = 0;
 
 				const highlightContainer = document.createElement('span');
+
 				highlightContainer.className = 'highlight';
 				highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
-				range.setEnd(
-					currentNode,
-					inHighlight
-						? currentNode.length
-						: highlightData.matching.rangeSelector.endOffset
-				);
 
+				let endOffset = currentNode.length;
 				debugger;
+				if (!inHighlight) {
+					if (currentNode.length < characterLength) {
+						inHighlight = true;
+						endOffset = currentNode.length;
+						characterLength -=
+							endOffset -
+							highlightData.matching.rangeSelector.startOffset;
+					} else {
+						endOffset = characterLength;
+					}
+				} else {
+					characterLength -= endOffset;
+				}
+
+				range.setEnd(currentNode, endOffset);
+
 				currentNode = walker.nextNode();
 
 				range.surroundContents(highlightContainer);
