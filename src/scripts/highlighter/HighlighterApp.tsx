@@ -85,20 +85,19 @@ const HighlighterApp = () => {
 				NodeFilter.SHOW_TEXT,
 				{
 					acceptNode: function (node) {
-						// Only consider nodes that are logically between startNode and endNode
 						if (node.nodeType === Node.TEXT_NODE) {
 							if (
-								node.nodeValue === '\n' ||
-								node.nodeValue === ''
-							)
-								return NodeFilter.FILTER_REJECT;
-							return NodeFilter.FILTER_ACCEPT;
+								node.nodeValue &&
+								node.nodeValue.trim() !== ''
+							) {
+								return NodeFilter.FILTER_ACCEPT;
+							}
 						}
 						return NodeFilter.FILTER_REJECT;
 					},
 				}
 			);
-
+			
 			walker.currentNode = startNode; // Start the walker at the startNode
 			let currentNode: Node | null = walker.currentNode;
 			let inHighlight = true;
@@ -112,52 +111,46 @@ const HighlighterApp = () => {
 
 			let startOffset = highlightData.matching.rangeSelector.startOffset;
 
+			debugger;
 			while (currentNode && inHighlight) {
 				// If we're at the end node, stop highlighting after this loop.
 				if (currentNode.parentElement === endNode) {
 					inHighlight = false;
 				}
 
-				// Go to next node if we're not going to highlight it.
-				if (
-					currentNode.nodeType !== Node.TEXT_NODE ||
-					currentNode.nodeValue === '\n'
-				) {
-					debugger;
-					currentNode = walker.nextNode();
-					continue;
-				}
-
 				const range = new Range();
 
 				range.setStart(currentNode, startOffset);
-				startOffset = 0;
-
-				const highlightContainer = document.createElement('span');
-
-				highlightContainer.className = 'highlight';
-				highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
 
 				let endOffset = currentNode.length;
+
 				debugger;
+				// If in final container
 				if (!inHighlight) {
-					if (currentNode.length < characterLength) {
+					// If final container is smaller than character length, it may be because there's multiple text elements
+					if (currentNode.length < characterLength + startOffset) {
 						inHighlight = true;
 						endOffset = currentNode.length;
 						characterLength -=
 							endOffset -
 							highlightData.matching.rangeSelector.startOffset;
+						// if final container is smaller than character length,
 					} else {
-						endOffset = characterLength;
+						endOffset = startOffset + characterLength;
 					}
 				} else {
-					characterLength -= endOffset;
+					characterLength -= endOffset - startOffset;
 				}
+
+				startOffset = 0;
 
 				range.setEnd(currentNode, endOffset);
 
 				currentNode = walker.nextNode();
 
+				const highlightContainer = document.createElement('span');
+				highlightContainer.className = 'highlight';
+				highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
 				range.surroundContents(highlightContainer);
 
 				const root = createRoot(highlightContainer);
