@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 import {
 	HighlightData,
 	highlightColours,
@@ -14,6 +16,7 @@ export const extractHighlightData = (
 	const lastRange = selection.getRangeAt(selection.rangeCount - 1);
 
 	const highlightData: HighlightData = {
+		uuid: uuid(),
 		url: window.location.href,
 		pageTitle: document.title,
 		matching: {
@@ -37,7 +40,6 @@ export const extractHighlightData = (
 				endContainer: generateXPathForElement(lastRange.endContainer),
 			},
 			surroundingText: {
-				text: selection.toString(),
 				prefix: extractSurroundingText(
 					firstRange.startContainer,
 					firstRange.startOffset,
@@ -62,7 +64,7 @@ export const extractHighlightData = (
 	return highlightData;
 };
 
-const generateXPathForElement = (element: Node): string => {
+export const generateXPathForElement = (element: Node): string => {
 	if (element.nodeType !== Node.ELEMENT_NODE) {
 		element = element.parentNode!;
 	}
@@ -123,11 +125,11 @@ const extractSurroundingText = (
 		const additionalText = currentNode.textContent || '';
 		textContent =
 			direction === 'backward'
-				? additionalText + ' ' + textContent
-				: textContent + ' ' + additionalText;
+				? additionalText + textContent
+				: textContent + additionalText;
 	}
 
-	let words = textContent.split(/\s+/).filter(Boolean);
+	let words = textContent.split(/\s+/);
 	if (direction === 'backward') {
 		words = words.slice(-5);
 	} else {

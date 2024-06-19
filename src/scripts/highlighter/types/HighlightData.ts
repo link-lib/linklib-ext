@@ -1,13 +1,10 @@
 export type HighlightData = {
 	// Population Info
+	uuid: string;
 	url: string;
 	pageTitle: string;
 	matching: {
 		body: string;
-		textPosition: {
-			start: number;
-			end: number;
-		};
 		rangeSelector: {
 			startOffset: number;
 			endOffset: number;
@@ -18,9 +15,12 @@ export type HighlightData = {
 			endContainer: string;
 		};
 		surroundingText: {
-			text: string;
 			prefix: string;
 			suffix: string;
+		};
+		textPosition: {
+			start: number;
+			end: number;
 		};
 	};
 
