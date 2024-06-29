@@ -28,29 +28,54 @@ const findTextPosition = (highlightData: HighlightData) => {
 	// Iterate through nodes to find the complete searchText
 	while (currentNode) {
 		accumulatedText += currentNode.textContent;
-		if (
-			!startNode &&
-			accumulatedText.includes(
-				highlightData.matching.surroundingText.prefix
-			)
-		) {
-			debugger;
-			// Set the start node and calculate the offset
-			startNode = currentNode;
-			startOffset =
-				currentNode.textContent.indexOf(
-					highlightData.matching.surroundingText.prefix
-				) + highlightData.matching.surroundingText.prefix.length;
-		}
 
 		if (accumulatedText.includes(searchText)) {
 			// Set the end node and calculate the offset
 			endNode = currentNode;
-			const searchTextIndex = accumulatedText.indexOf(searchText);
-			endOffset =
-				searchTextIndex +
-				searchText.length -
-				(accumulatedText.length - currentNode.textContent.length);
+
+			// const searchTextIndex = accumulatedText.indexOf(searchText);
+			// endOffset =
+			// 	searchTextIndex +
+			// 	searchText.length -
+			// 	(accumulatedText.length - currentNode.textContent.length);
+			// const endLength =
+			// 	currentNode.textContent.indexOf(highlightData.matching.body) +
+			// 	highlightData.matching.body.length;
+
+			// How many extra characters are in the currentTextNode after our desired body text
+
+			// So problem 1: the entire body might not be in the current node
+			// But we are guaranteed to be in the endNode
+			const index = accumulatedText.indexOf(searchText);
+			const startIndex =
+				accumulatedText.length - accumulatedText.indexOf(searchText);
+			const extraCharacters =
+				//  Find the index where everything starts
+				accumulatedText.length -
+				accumulatedText.indexOf(searchText) -
+				highlightData.matching.surroundingText.prefix.length -
+				highlightData.matching.body.length;
+			//Honestly
+
+			// extra characters - suffix length = characters from the end
+			endOffset = currentNode.textContent.length - extraCharacters;
+
+			debugger;
+
+			// Backtrack to find the start node
+			let backtrackText = currentNode.textContent;
+			let backtrackNode = currentNode;
+			while (backtrackNode) {
+				if (backtrackText.includes(searchText)) {
+					startNode = backtrackNode;
+					startOffset =
+						backtrackText.indexOf(searchText) +
+						highlightData.matching.surroundingText.prefix.length;
+					break;
+				}
+				backtrackText += backtrackNode.textContent;
+				backtrackNode = walker.previousNode();
+			}
 			break;
 		}
 
@@ -78,85 +103,6 @@ const createHighlightElementTextBased = (highlightData: HighlightData) => {
 		createHighlightElementRangeBased(highlightData);
 	}
 };
-
-// const createHighlightElementTextBased = (highlightData: HighlightData) => {
-// 	debugger;
-// 	const doc = document;
-// 	const searchText =
-// 		highlightData.matching.surroundingText.prefix +
-// 		highlightData.matching.body +
-// 		highlightData.matching.surroundingText.suffix;
-
-// 	// Use a TreeWalker to iterate through text nodes
-// 	const walker = document.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, {
-// 		acceptNode: function (node) {
-// 			if (node.nodeType === Node.TEXT_NODE) {
-// 				if (node.nodeValue && node.nodeValue.trim() !== '') {
-// 					return NodeFilter.FILTER_ACCEPT;
-// 				}
-// 			}
-// 			return NodeFilter.FILTER_REJECT;
-// 		},
-// 	});
-
-// 	let currentNode = walker.nextNode();
-// 	let accumulatedText = '';
-// 	let startNode = null;
-// 	let startOffset = 0;
-// 	let endNode = null;
-// 	let endOffset = 0;
-
-// 	// Iterate through nodes to find the complete searchText
-// 	while (currentNode) {
-// 		accumulatedText += currentNode.textContent;
-// 		if (
-// 			!startNode &&
-// 			accumulatedText.includes(
-// 				highlightData.matching.surroundingText.prefix
-// 			)
-// 		) {
-// 			// Set the start node and calculate the offset
-// 			startNode = currentNode;
-// 			startOffset = currentNode.textContent.indexOf(
-// 				highlightData.matching.surroundingText.prefix
-// 			);
-// 		}
-
-// 		if (accumulatedText.includes(searchText)) {
-// 			// Set the end node and calculate the offset
-// 			endNode = currentNode;
-// 			const searchTextIndex = accumulatedText.indexOf(searchText);
-// 			endOffset =
-// 				searchTextIndex +
-// 				searchText.length -
-// 				(accumulatedText.length - currentNode.textContent.length);
-// 			break;
-// 		}
-
-// 		currentNode = walker.nextNode();
-// 	}
-
-// 	if (startNode && endNode) {
-// 		const range = new Range();
-// 		range.setStart(startNode, startOffset);
-// 		range.setEnd(endNode, endOffset);
-
-// 		const highlightContainer = document.createElement('span');
-// 		highlightContainer.className = 'highlight';
-// 		highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
-// 		highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
-// 		range.deleteContents(); // Remove the original contents of the range
-// 		range.insertNode(highlightContainer); // Insert the new element with the correct HTML
-
-// 		const root = createRoot(highlightContainer);
-// 		root.render(
-// 			<Highlight highlightElement={highlightContainer}>
-// 				{highlightContainer.innerHTML}
-// 			</Highlight>
-// 		);
-// 	}
-// };
-
 const createHighlightElementRangeBased = (highlightData: HighlightData) => {
 	const doc = document; // Adjust if working within iframes or other contexts
 	const startNode = document.evaluate(
@@ -243,8 +189,8 @@ const createHighlightElementRangeBased = (highlightData: HighlightData) => {
 			highlightContainer.className = 'highlight';
 			highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
 			highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
-			// range.deleteContents(); // Remove the original contents of the range
-			// range.insertNode(highlightContainer); // Insert the new element with the correct HTML
+			range.deleteContents(); // Remove the original contents of the range
+			range.insertNode(highlightContainer); // Insert the new element with the correct HTML
 
 			const root = createRoot(highlightContainer);
 			root.render(
