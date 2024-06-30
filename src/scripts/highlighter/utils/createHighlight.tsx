@@ -24,43 +24,37 @@ const findTextPosition = (highlightData: HighlightData) => {
 	let accumulatedText = '';
 	let startNode = null;
 	let endNode = null;
+	debugger;
 
 	// Iterate through nodes to find the complete searchText
+	// Our general strategy is to find the entire text, and then go iterate back to fidn the startNode. This guarantees that we only start looking for the node once the entire searchstring is in the accumulated text. (ex. if prefix = "t" it will match really early)
 	while (currentNode) {
 		accumulatedText += currentNode.textContent;
 
+		// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
 		if (accumulatedText.includes(searchText)) {
-			// Set the end node and calculate the offset
+			// Set the end node
 			endNode = currentNode;
 
-			// const searchTextIndex = accumulatedText.indexOf(searchText);
-			// endOffset =
-			// 	searchTextIndex +
-			// 	searchText.length -
-			// 	(accumulatedText.length - currentNode.textContent.length);
-			// const endLength =
-			// 	currentNode.textContent.indexOf(highlightData.matching.body) +
-			// 	highlightData.matching.body.length;
-
-			// How many extra characters are in the currentTextNode after our desired body text
-
 			// So problem 1: the entire body might not be in the current node
-			// But we are guaranteed to be in the endNode
+			// But we are guaranteed to be in the endNode, so we know the suffix will be in this node.
+
+			// For debugger variables
 			const index = accumulatedText.indexOf(searchText);
 			const startIndex =
 				accumulatedText.length - accumulatedText.indexOf(searchText);
+
+			//  Find the index where everything starts. Total text - the start of the search text + prefix + body = start of the suffix.
+			// Total text - start of the search text removes all the accumulated text up until our desired searchstring
 			const extraCharacters =
-				//  Find the index where everything starts
 				accumulatedText.length -
 				accumulatedText.indexOf(searchText) -
 				highlightData.matching.surroundingText.prefix.length -
 				highlightData.matching.body.length;
-			//Honestly
-
-			// extra characters - suffix length = characters from the end
+			// extra characters - suffix length = characters from the end of the body
 			endOffset = currentNode.textContent.length - extraCharacters;
 
-			debugger;
+			// WARNING: There could be chance the entire suffix isn't in this node?
 
 			// Backtrack to find the start node
 			let backtrackText = currentNode.textContent;
@@ -71,10 +65,18 @@ const findTextPosition = (highlightData: HighlightData) => {
 					startOffset =
 						backtrackText.indexOf(searchText) +
 						highlightData.matching.surroundingText.prefix.length;
+
+					// In case the suffix is in a previous textnode
+					while (startOffset >= backtrackNode.textContent.length) {
+						startOffset =
+							startOffset - backtrackNode.textContent.length;
+						backtrackNode = walker.nextNode();
+					}
+					startNode = backtrackNode;
 					break;
 				}
-				backtrackText += backtrackNode.textContent;
 				backtrackNode = walker.previousNode();
+				backtrackText = backtrackNode.textContent + backtrackText;
 			}
 			break;
 		}
@@ -82,6 +84,7 @@ const findTextPosition = (highlightData: HighlightData) => {
 		currentNode = walker.nextNode();
 	}
 
+	debugger;
 	return { startNode, startOffset, endNode, endOffset };
 };
 
@@ -100,10 +103,11 @@ const createHighlightElementTextBased = (highlightData: HighlightData) => {
 		highlightData.matching.rangeSelector.endOffset = endOffset;
 
 		// Use the range-based method to create the highlight
-		createHighlightElementRangeBased(highlightData);
+		createHighlightFromRange(highlightData);
 	}
 };
-const createHighlightElementRangeBased = (highlightData: HighlightData) => {
+
+const createHighlightFromRange = (highlightData: HighlightData) => {
 	const doc = document; // Adjust if working within iframes or other contexts
 	const startNode = document.evaluate(
 		highlightData.matching.rangeSelector.startContainer,
@@ -120,6 +124,7 @@ const createHighlightElementRangeBased = (highlightData: HighlightData) => {
 		null
 	).singleNodeValue;
 
+	debugger;
 	if (startNode && endNode) {
 		// Create a TreeWalker to iterate text nodes between startNode and endNode
 		const walker = document.createTreeWalker(
@@ -139,6 +144,8 @@ const createHighlightElementRangeBased = (highlightData: HighlightData) => {
 
 		walker.currentNode = startNode; // Start the walker at the startNode
 		let currentNode: Node | null = walker.currentNode;
+
+		// Reminder: change to "atEndNode" and flip the boolean values.
 		let inHighlight = true;
 		let characterLength =
 			highlightData.matching.textPosition.end -
@@ -152,7 +159,10 @@ const createHighlightElementRangeBased = (highlightData: HighlightData) => {
 
 		while (currentNode && inHighlight) {
 			// If we're at the end node, stop highlighting after this loop.
-			if (currentNode.parentElement === endNode) {
+			if (
+				currentNode === endNode ||
+				currentNode.parentElement === endNode
+			) {
 				inHighlight = false;
 			}
 
@@ -165,6 +175,7 @@ const createHighlightElementRangeBased = (highlightData: HighlightData) => {
 			// If in final container
 			if (!inHighlight) {
 				// If final container is smaller than character length, it may be because there's multiple text elements
+				// This should never happen when using creatHighlightTextBased
 				if (currentNode.length < characterLength + startOffset) {
 					inHighlight = true;
 					endOffset = currentNode.length;
@@ -206,7 +217,7 @@ const createHighlightElementRangeBased = (highlightData: HighlightData) => {
 const strategy = 'text-based';
 const createHighlight = {
 	'text-based': createHighlightElementTextBased,
-	'range-based': createHighlightElementRangeBased,
+	'range-based': createHighlightFromRange,
 };
 
 export const createHighlightElement = createHighlight[strategy];

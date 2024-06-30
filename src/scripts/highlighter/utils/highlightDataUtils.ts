@@ -65,29 +65,38 @@ export const extractHighlightData = (
 };
 
 export const generateXPathForElement = (element: Node): string => {
-	if (element.nodeType !== Node.ELEMENT_NODE) {
+	if (
+		element.nodeType !== Node.ELEMENT_NODE &&
+		element.nodeType !== Node.TEXT_NODE
+	) {
 		element = element.parentNode!;
 	}
 	const paths: string[] = [];
-	while (element && element.nodeType === Node.ELEMENT_NODE) {
+	while (element) {
 		let index = 1; // Start index from 1
 		let sibling = element.previousSibling;
 		while (sibling) {
 			// Check if sibling is of the same node type and has the same tag name
 			if (
-				sibling.nodeType === Node.ELEMENT_NODE &&
+				sibling.nodeType === element.nodeType &&
 				sibling.nodeName === element.nodeName
 			) {
 				index++;
 			}
 			sibling = sibling.previousSibling;
 		}
-		const tagName = element.nodeName.toLowerCase();
+		const tagName =
+			element.nodeType === Node.TEXT_NODE
+				? 'text()'
+				: element.nodeName.toLowerCase();
 		const pathIndex = `[${index}]`; // Always include index
 		paths.unshift(`${tagName}${pathIndex}`);
 		element = element.parentNode!;
 	}
-	return paths.length ? `/${paths.join('/')}` : '';
+	let xpath = paths.length ? `/${paths.join('/')}` : '';
+	// Remove the #document part if it exists
+	xpath = xpath.replace('/#document[1]', '');
+	return xpath;
 };
 
 const extractSurroundingText = (
