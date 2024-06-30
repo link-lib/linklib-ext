@@ -3,6 +3,10 @@ import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { generateXPathForElement } from '@/scripts/highlighter/utils/highlightDataUtils';
 import { createRoot } from 'react-dom/client';
 
+const removeWhiteSpace = (text: string): string => {
+	return text.replace(/\s+/g, ' ').trim();
+};
+
 const findTextPosition = (highlightData: HighlightData) => {
 	const doc = document;
 	const searchText =
@@ -29,9 +33,14 @@ const findTextPosition = (highlightData: HighlightData) => {
 	// Iterate through nodes to find the complete searchText
 	// Our general strategy is to find the entire text, and then go iterate back to fidn the startNode. This guarantees that we only start looking for the node once the entire searchstring is in the accumulated text. (ex. if prefix = "t" it will match really early)
 	while (currentNode) {
-		accumulatedText += currentNode.textContent;
+		if (currentNode.textContent === '\n') {
+			accumulatedText += currentNode.textContent;
+		} else {
+			accumulatedText += currentNode.textContent + '\n';
+		}
 
 		// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
+		// if (normalizedAccumulatedText.includes(normalizedSearchText)) {
 		if (accumulatedText.includes(searchText)) {
 			// Set the end node
 			endNode = currentNode;
@@ -39,26 +48,24 @@ const findTextPosition = (highlightData: HighlightData) => {
 			// So problem 1: the entire body might not be in the current node
 			// But we are guaranteed to be in the endNode, so we know the suffix will be in this node.
 
-			// For debugger variables
-			const index = accumulatedText.indexOf(searchText);
-			const startIndex =
-				accumulatedText.length - accumulatedText.indexOf(searchText);
-
 			//  Find the index where everything starts. Total text - the start of the search text + prefix + body = start of the suffix.
 			// Total text - start of the search text removes all the accumulated text up until our desired searchstring
 			const extraCharacters =
 				accumulatedText.length -
 				accumulatedText.indexOf(searchText) -
 				highlightData.matching.surroundingText.prefix.length -
-				highlightData.matching.body.length;
+				highlightData.matching.body.length -
+				1; /* 1 for the white space we add*/
+
 			// extra characters - suffix length = characters from the end of the body
 			endOffset = currentNode.textContent.length - extraCharacters;
-
+			145;
 			// WARNING: There could be chance the entire suffix isn't in this node?
 
 			// Backtrack to find the start node
 			let backtrackText = currentNode.textContent;
 			let backtrackNode = currentNode;
+			debugger;
 			while (backtrackNode) {
 				if (backtrackText.includes(searchText)) {
 					startNode = backtrackNode;
@@ -76,14 +83,18 @@ const findTextPosition = (highlightData: HighlightData) => {
 					break;
 				}
 				backtrackNode = walker.previousNode();
-				backtrackText = backtrackNode.textContent + backtrackText;
+				if (backtrackNode.textContent === '\n') {
+					backtrackText =
+						backtrackNode.textContent + '\n' + backtrackText;
+				} else {
+					backtrackText = backtrackNode.textContent + backtrackText;
+				}
 			}
 			break;
 		}
 
 		currentNode = walker.nextNode();
 	}
-
 	debugger;
 	return { startNode, startOffset, endNode, endOffset };
 };
