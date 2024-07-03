@@ -6,6 +6,11 @@ import { createRoot } from 'react-dom/client';
 const removeWhiteSpace = (text: string): string => {
 	return text.replace(/\s+/g, ' ').trim();
 };
+const isInlineElement = (element: Node): boolean => {
+	if (!element || element.nodeType !== Node.ELEMENT_NODE) return false;
+	const display = window.getComputedStyle(element as Element).display;
+	return display.startsWith('inline');
+};
 
 const findTextPosition = (highlightData: HighlightData) => {
 	const doc = document;
@@ -28,15 +33,33 @@ const findTextPosition = (highlightData: HighlightData) => {
 	let accumulatedText = '';
 	let startNode = null;
 	let endNode = null;
-	debugger;
 
 	// Iterate through nodes to find the complete searchText
 	// Our general strategy is to find the entire text, and then go iterate back to fidn the startNode. This guarantees that we only start looking for the node once the entire searchstring is in the accumulated text. (ex. if prefix = "t" it will match really early)
+	debugger;
 	while (currentNode) {
-		if (currentNode.textContent === '\n') {
-			accumulatedText += currentNode.textContent;
-		} else {
-			accumulatedText += currentNode.textContent + '\n';
+		// if (currentNode.textContent === '\n') {
+		// 	accumulatedText += currentNode.textContent;
+		// } else {
+		// 	accumulatedText += currentNode.textContent + '\n';
+		// }
+
+		accumulatedText += currentNode.textContent;
+
+		if (accumulatedText.includes('drop an image')) debugger;
+		// Check if a newline should be added
+		// const nextWalker = document.createTreeWalker(
+		// 	doc.body,
+		// 	NodeFilter.SHOW_TEXT,
+		// 	null
+		// );
+		// nextWalker.currentNode = currentNode;
+		// const nextNode = nextWalker.nextNode();
+		if (
+			currentNode.nextSibling?.nodeType === Node.ELEMENT_NODE &&
+			!isInlineElement(currentNode.nextSibling)
+		) {
+			accumulatedText += '\n';
 		}
 
 		// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
