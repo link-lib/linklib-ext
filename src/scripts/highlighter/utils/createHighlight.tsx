@@ -3,9 +3,10 @@ import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { generateXPathForElement } from '@/scripts/highlighter/utils/highlightDataUtils';
 import { createRoot } from 'react-dom/client';
 
-const removeWhiteSpace = (text: string): string => {
-	return text.replace(/\s+/g, ' ').trim();
-};
+// const removeWhiteSpace = (text: string): string => {
+// 	return text.replace(/\s+/g, ' ').trim();
+// };
+
 const isInlineElement = (element: Node): boolean => {
 	if (!element || element.nodeType !== Node.ELEMENT_NODE) return false;
 	const display = window.getComputedStyle(element as Element).display;
@@ -36,7 +37,6 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 	// Iterate through nodes to find the complete searchText
 	// Our general strategy is to find the entire text, and then go iterate back to fidn the startNode. This guarantees that we only start looking for the node once the entire searchstring is in the accumulated text. (ex. if prefix = "t" it will match really early)
-	debugger;
 	while (currentNode) {
 		// if (currentNode.textContent === '\n') {
 		// 	accumulatedText += currentNode.textContent;
@@ -46,7 +46,7 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 		accumulatedText += currentNode.textContent;
 
-		if (accumulatedText.includes('drop an image')) debugger;
+		// if (accumulatedText.includes('drop an image')) debugger;
 		// Check if a newline should be added
 		// const nextWalker = document.createTreeWalker(
 		// 	doc.body,
@@ -65,6 +65,7 @@ const findTextPosition = (highlightData: HighlightData) => {
 		// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
 		// if (normalizedAccumulatedText.includes(normalizedSearchText)) {
 		if (accumulatedText.includes(searchText)) {
+			debugger;
 			// Set the end node
 			endNode = currentNode;
 
@@ -82,13 +83,13 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 			// extra characters - suffix length = characters from the end of the body
 			endOffset = currentNode.textContent.length - extraCharacters;
-			145;
+
 			// WARNING: There could be chance the entire suffix isn't in this node?
+			// WARNING: Or a chance the entire
 
 			// Backtrack to find the start node
 			let backtrackText = currentNode.textContent;
 			let backtrackNode = currentNode;
-			debugger;
 			while (backtrackNode) {
 				if (backtrackText.includes(searchText)) {
 					startNode = backtrackNode;
@@ -126,7 +127,6 @@ const createHighlightElementTextBased = (highlightData: HighlightData) => {
 	const { startNode, startOffset, endNode, endOffset } =
 		findTextPosition(highlightData);
 
-	debugger;
 	if (startNode && endNode) {
 		// Update the highlightData with the current start and end containers
 		highlightData.matching.rangeSelector.startContainer =
@@ -158,7 +158,6 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 		null
 	).singleNodeValue;
 
-	debugger;
 	if (startNode && endNode) {
 		// Create a TreeWalker to iterate text nodes between startNode and endNode
 		const walker = document.createTreeWalker(
@@ -192,6 +191,7 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 		let startOffset = highlightData.matching.rangeSelector.startOffset;
 
 		while (currentNode && inHighlight) {
+			debugger;
 			// If we're at the end node, stop highlighting after this loop.
 			if (
 				currentNode === endNode ||
@@ -233,14 +233,16 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 			const highlightContainer = document.createElement('span');
 			highlightContainer.className = 'highlight';
 			highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
-			highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
+			// highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
+			// highlightContainer.innerText = range.toString(); // Set the innerHTML directly
+			const string = range.toString();
 			range.deleteContents(); // Remove the original contents of the range
 			range.insertNode(highlightContainer); // Insert the new element with the correct HTML
 
 			const root = createRoot(highlightContainer);
 			root.render(
 				<Highlight highlightElement={highlightContainer}>
-					{highlightContainer.innerHTML}
+					{string}
 				</Highlight>
 			);
 		}

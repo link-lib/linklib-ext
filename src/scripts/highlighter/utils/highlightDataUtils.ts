@@ -20,7 +20,7 @@ export const extractHighlightData = (
 		url: window.location.href,
 		pageTitle: document.title,
 		matching: {
-			body: selection.toString(),
+			body: selection.toString().replace(/\n+$/, ''),
 			textPosition: {
 				start: calculateAbsolutePosition(
 					firstRange.startContainer,
@@ -107,6 +107,15 @@ const extractSurroundingText = (
 	let textContent = '';
 	let currentNode = container;
 
+	// If you double clck on a paragraph, the endContainer endOffset is the followng paragraph for some reaosn
+	if (
+		direction === 'forward' &&
+		container.nodeType === Node.ELEMENT_NODE &&
+		offset === 0
+	) {
+		return '';
+	}
+
 	// Start collecting text from the correct position in the text node
 	if (currentNode.nodeType === Node.TEXT_NODE) {
 		const text = currentNode.textContent || '';
@@ -145,10 +154,11 @@ const extractSurroundingText = (
 		words = words.slice(0, 5);
 	}
 
-	return words.join(' ');
+	return words.filter((word) => word !== '').join(' ');
 };
 
 const calculateAbsolutePosition = (node: Node, offset: number): number => {
+	debugger;
 	let position = 0;
 	const walker = document.createTreeWalker(
 		document.body,
