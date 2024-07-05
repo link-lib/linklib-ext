@@ -46,7 +46,6 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 		accumulatedText += currentNode.textContent;
 
-		// if (accumulatedText.includes('drop an image')) debugger;
 		// Check if a newline should be added
 		// const nextWalker = document.createTreeWalker(
 		// 	doc.body,
@@ -65,7 +64,6 @@ const findTextPosition = (highlightData: HighlightData) => {
 		// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
 		// if (normalizedAccumulatedText.includes(normalizedSearchText)) {
 		if (accumulatedText.includes(searchText)) {
-			debugger;
 			// Set the end node
 			endNode = currentNode;
 
@@ -82,13 +80,14 @@ const findTextPosition = (highlightData: HighlightData) => {
 				1; /* 1 for the white space we add*/
 
 			// extra characters - suffix length = characters from the end of the body
+			// @ts-expect-error because we checked that this is a text node above
 			endOffset = currentNode.textContent.length - extraCharacters;
 
 			// WARNING: There could be chance the entire suffix isn't in this node?
 			// WARNING: Or a chance the entire
 
 			// Backtrack to find the start node
-			let backtrackText = currentNode.textContent;
+			let backtrackText = currentNode.textContent || '';
 			let backtrackNode = currentNode;
 			while (backtrackNode) {
 				if (backtrackText.includes(searchText)) {
@@ -98,8 +97,10 @@ const findTextPosition = (highlightData: HighlightData) => {
 						highlightData.matching.surroundingText.prefix.length;
 
 					// In case the suffix is in a previous textnode
+					// @ts-expect-error because we checked that this is a text node above
 					while (startOffset >= backtrackNode.textContent.length) {
 						startOffset =
+							// @ts-expect-error because we checked that this is a text node above
 							startOffset - backtrackNode.textContent.length;
 						backtrackNode = walker.nextNode();
 					}
@@ -119,7 +120,7 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 		currentNode = walker.nextNode();
 	}
-	debugger;
+
 	return { startNode, startOffset, endNode, endOffset };
 };
 
@@ -191,7 +192,6 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 		let startOffset = highlightData.matching.rangeSelector.startOffset;
 
 		while (currentNode && inHighlight) {
-			debugger;
 			// If we're at the end node, stop highlighting after this loop.
 			if (
 				currentNode === endNode ||
@@ -247,7 +247,6 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 			);
 		}
 	}
-	debugger;
 };
 
 const strategy = 'text-based';

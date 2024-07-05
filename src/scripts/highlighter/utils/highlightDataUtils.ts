@@ -15,6 +15,36 @@ export const extractHighlightData = (
 	const firstRange = selection.getRangeAt(0);
 	const lastRange = selection.getRangeAt(selection.rangeCount - 1);
 
+	if (
+		lastRange.endContainer.nodeType === Node.ELEMENT_NODE &&
+		lastRange.endOffset === 0
+	) {
+		const walker = document.createTreeWalker(
+			document.body,
+			NodeFilter.SHOW_TEXT,
+			{
+				acceptNode: function (node) {
+					if (node.nodeType === Node.TEXT_NODE) {
+						if (node.nodeValue && node.nodeValue.trim() !== '') {
+							return NodeFilter.FILTER_ACCEPT;
+						}
+					}
+					return NodeFilter.FILTER_REJECT;
+				},
+			}
+		);
+		// Create a tree walker that goes back until the the closest previous text node, and set lastRange endContainer to that and endOffset to the end of that container
+		walker.currentNode = lastRange.endContainer;
+		while (walker.currentNode.nodeType !== Node.TEXT_NODE) {
+			walker.previousNode();
+		}
+		lastRange.setEnd(
+			walker.currentNode,
+			// @ts-expect-error because we checked that this is a text node above
+			walker.currentNode.textContent?.length
+		);
+	}
+
 	const highlightData: HighlightData = {
 		uuid: uuid(),
 		url: window.location.href,
@@ -158,7 +188,21 @@ const extractSurroundingText = (
 };
 
 const calculateAbsolutePosition = (node: Node, offset: number): number => {
-	debugger;
+	// const tempWalker = document.createTreeWalker(
+	// 	document.body,
+	// 	NodeFilter.SHOW_TEXT,
+	// 	null
+	// );
+
+	// // there's a bug where someone double clicks a paragraph, the endContainer becomes a
+	// let minusOne = false;
+
+	// if (node.nodeType === Node.ELEMENT_NODE && offset === 0) {
+	// 	const nextNode = tempWalker.nextNode();
+	// 	if (nextNode) node = nextNode;
+	// 	minusOne = true;
+	// }
+
 	let position = 0;
 	const walker = document.createTreeWalker(
 		document.body,
