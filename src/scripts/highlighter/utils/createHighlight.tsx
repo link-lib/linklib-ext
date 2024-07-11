@@ -46,6 +46,7 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 		accumulatedText += currentNode.textContent;
 
+		// if (accumulatedText.includes('drop an image'))
 		// Check if a newline should be added
 		// const nextWalker = document.createTreeWalker(
 		// 	doc.body,
@@ -61,66 +62,72 @@ const findTextPosition = (highlightData: HighlightData) => {
 			accumulatedText += '\n';
 		}
 
-		// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
-		// if (normalizedAccumulatedText.includes(normalizedSearchText)) {
-		if (accumulatedText.includes(searchText)) {
-			// Set the end node
-			endNode = currentNode;
+		if (accumulatedText.includes('identified as an URL'))
+			if (accumulatedText.includes(searchText)) {
+				// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
 
-			// So problem 1: the entire body might not be in the current node
-			// But we are guaranteed to be in the endNode, so we know the suffix will be in this node.
+				// Set the end node
+				endNode = currentNode;
 
-			//  Find the index where everything starts. Total text - the start of the search text + prefix + body = start of the suffix.
-			// Total text - start of the search text removes all the accumulated text up until our desired searchstring
-			const extraCharacters =
-				accumulatedText.length -
-				accumulatedText.indexOf(searchText) -
-				highlightData.matching.surroundingText.prefix.length -
-				highlightData.matching.body.length -
-				1; /* 1 for the white space we add*/
+				// So problem 1: the entire body might not be in the current node
+				// But we are guaranteed to be in the endNode, so we know the suffix will be in this node.
 
-			// extra characters - suffix length = characters from the end of the body
-			// @ts-expect-error because we checked that this is a text node above
-			endOffset = currentNode.textContent.length - extraCharacters;
+				//  Find the index where everything starts. Total text - the start of the search text + prefix + body = start of the suffix.
+				// Total text - start of the search text removes all the accumulated text up until our desired searchstring
+				const extraCharacters =
+					accumulatedText.length -
+					accumulatedText.indexOf(searchText) -
+					highlightData.matching.surroundingText.prefix.length -
+					highlightData.matching.body.length -
+					1; /* 1 for the white space we add*/
 
-			// WARNING: There could be chance the entire suffix isn't in this node?
-			// WARNING: Or a chance the entire
+				// extra characters - suffix length = characters from the end of the body
+				// @ts-expect-error because we checked that this is a text node above
+				endOffset = currentNode.textContent.length - extraCharacters;
 
-			// Backtrack to find the start node
-			let backtrackText = currentNode.textContent || '';
-			let backtrackNode = currentNode;
-			while (backtrackNode) {
-				if (backtrackText.includes(searchText)) {
-					startNode = backtrackNode;
-					startOffset =
-						backtrackText.indexOf(searchText) +
-						highlightData.matching.surroundingText.prefix.length;
+				// WARNING: There could be chance the entire suffix isn't in this node?
+				// WARNING: Or a chance the entire
 
-					// In case the suffix is in a previous textnode
-					// @ts-expect-error because we checked that this is a text node above
-					while (startOffset >= backtrackNode.textContent.length) {
+				// Backtrack to find the start node
+				let backtrackText = currentNode.textContent || '';
+				let backtrackNode = currentNode;
+				while (backtrackNode) {
+					if (backtrackText.includes(searchText)) {
+						startNode = backtrackNode;
 						startOffset =
+							backtrackText.indexOf(searchText) +
+							highlightData.matching.surroundingText.prefix
+								.length;
+
+						// In case the suffix is in a previous textnode
+						while (
 							// @ts-expect-error because we checked that this is a text node above
-							startOffset - backtrackNode.textContent.length;
-						backtrackNode = walker.nextNode();
+							startOffset >= backtrackNode.textContent.length
+						) {
+							startOffset =
+								// @ts-expect-error because we checked that this is a text node above
+								startOffset - backtrackNode.textContent.length;
+							// @ts-expect-error because we checked that this is a text node above
+							backtrackNode = walker.nextNode();
+						}
+						startNode = backtrackNode;
+						break;
 					}
-					startNode = backtrackNode;
-					break;
+					// @ts-expect-error because we checked that this is a text node above
+					backtrackNode = walker.previousNode();
+					if (backtrackNode.textContent === '\n') {
+						backtrackText =
+							backtrackNode.textContent + '\n' + backtrackText;
+					} else {
+						backtrackText =
+							backtrackNode.textContent + backtrackText;
+					}
 				}
-				backtrackNode = walker.previousNode();
-				if (backtrackNode.textContent === '\n') {
-					backtrackText =
-						backtrackNode.textContent + '\n' + backtrackText;
-				} else {
-					backtrackText = backtrackNode.textContent + backtrackText;
-				}
+				break;
 			}
-			break;
-		}
 
 		currentNode = walker.nextNode();
 	}
-
 	return { startNode, startOffset, endNode, endOffset };
 };
 
@@ -167,7 +174,7 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 			{
 				acceptNode: function (node) {
 					if (node.nodeType === Node.TEXT_NODE) {
-						if (node.nodeValue && node.nodeValue.trim() !== '') {
+						if (node.nodeValue) {
 							return NodeFilter.FILTER_ACCEPT;
 						}
 					}
@@ -204,14 +211,17 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 
 			range.setStart(currentNode, startOffset);
 
+			// @ts-expect-error because we checked that this is a text node above
 			let endOffset = currentNode.length;
 
 			// If in final container
 			if (!inHighlight) {
 				// If final container is smaller than character length, it may be because there's multiple text elements
 				// This should never happen when using creatHighlightTextBased
+				// @ts-expect-error because we checked that this is a text node above
 				if (currentNode.length < characterLength + startOffset) {
 					inHighlight = true;
+					// @ts-expect-error because we checked that this is a text node above
 					endOffset = currentNode.length;
 					characterLength -=
 						endOffset -

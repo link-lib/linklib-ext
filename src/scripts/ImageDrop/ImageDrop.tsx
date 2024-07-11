@@ -107,7 +107,7 @@ const ImageDrop = () => {
 	return (
 		<div
 			id='dropContainer'
-			className='fixed bottom-1 right-1 z-50 image-drop'
+			className='fixed bottom-1 right-1 z-50 image-drop w-fit '
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			onDragOver={(e) => e.preventDefault()}
