@@ -169,8 +169,8 @@ const extractSurroundingText = (
 		const additionalText = currentNode.textContent || '';
 		textContent =
 			direction === 'backward'
-				? additionalText + ' ' + textContent
-				: textContent + ' ' + additionalText;
+				? additionalText + textContent
+				: textContent + additionalText;
 	}
 
 	let words = textContent.split(/\s+/);
