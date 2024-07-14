@@ -5,6 +5,7 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 export default {
 	corePlugins: {
 		preflight: false,
+		container: false,
 	},
 	important: true,
 	// prefix: 'tw-',
@@ -61,6 +62,9 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
 				},
+			},
+			zIndex: {
+				'1000': '1000', // Add custom z-index
 			},
 			transitionProperty: {
 				...defaultTheme.transitionProperty,
