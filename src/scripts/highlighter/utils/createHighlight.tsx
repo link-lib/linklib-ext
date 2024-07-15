@@ -1,7 +1,5 @@
-import { Highlight } from '@/scripts/highlighter/components/Highlight';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { generateXPathForElement } from '@/scripts/highlighter/utils/highlightDataUtils';
-import { createRoot } from 'react-dom/client';
 
 // const removeWhiteSpace = (text: string): string => {
 // 	return text.replace(/\s+/g, ' ').trim();
@@ -73,6 +71,7 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 			//  Find the index where everything starts. Total text - the start of the search text + prefix + body = start of the suffix.
 			// Total text - start of the search text removes all the accumulated text up until our desired searchstring
+
 			const extraCharacters =
 				accumulatedText.length -
 				accumulatedText.indexOf(searchText) -
@@ -103,11 +102,13 @@ const findTextPosition = (highlightData: HighlightData) => {
 						startOffset =
 							// @ts-expect-error because we checked that this is a text node above
 							startOffset - backtrackNode.textContent.length;
+						// @ts-expect-error because we checked that this is a text node above
 						backtrackNode = walker.nextNode();
 					}
 					startNode = backtrackNode;
 					break;
 				}
+				// @ts-expect-error because we checked that this is a text node above
 				backtrackNode = walker.previousNode();
 				if (backtrackNode.textContent === '\n') {
 					backtrackText =
@@ -138,7 +139,9 @@ const createHighlightElementTextBased = (highlightData: HighlightData) => {
 		highlightData.matching.rangeSelector.endOffset = endOffset;
 
 		// Use the range-based method to create the highlight
-		createHighlightFromRange(highlightData);
+		const containers = createHighlightFromRange(highlightData);
+
+		return containers;
 	}
 };
 
@@ -158,6 +161,8 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 		XPathResult.FIRST_ORDERED_NODE_TYPE,
 		null
 	).singleNodeValue;
+
+	const containers = [];
 
 	if (startNode && endNode) {
 		// Create a TreeWalker to iterate text nodes between startNode and endNode
@@ -203,15 +208,17 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 			const range = new Range();
 
 			range.setStart(currentNode, startOffset);
-
+			// @ts-expect-error because we checked that this is a text node above
 			let endOffset = currentNode.length;
 
 			// If in final container
 			if (!inHighlight) {
 				// If final container is smaller than character length, it may be because there's multiple text elements
 				// This should never happen when using creatHighlightTextBased
+				// @ts-expect-error because we checked that this is a text node above
 				if (currentNode.length < characterLength + startOffset) {
 					inHighlight = true;
+					// @ts-expect-error because we checked that this is a text node above
 					endOffset = currentNode.length;
 					characterLength -=
 						endOffset -
@@ -229,24 +236,44 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 			range.setEnd(currentNode, endOffset);
 
 			currentNode = walker.nextNode();
+			const string = range.toString();
+
+			if (string.trim() === '') continue;
 
 			const highlightContainer = document.createElement('span');
-			highlightContainer.className = 'highlight';
-			highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
+			// highlightContainer.className = 'highlight';
+			// highlightContainer.dataset.highlightId = `highlight-${highlightData.uuid}`;
 			// highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
-			// highlightContainer.innerText = range.toString(); // Set the innerHTML directly
-			const string = range.toString();
 			range.deleteContents(); // Remove the original contents of the range
 			range.insertNode(highlightContainer); // Insert the new element with the correct HTML
 
-			const root = createRoot(highlightContainer);
-			root.render(
-				<Highlight highlightElement={highlightContainer}>
-					{string}
-				</Highlight>
-			);
+			// reactRoot.render(
+			// 	createPortal(
+			// 		<Highlight
+			// 			highlightElement={highlightContainer}
+			// 			highlightId={highlightData.uuid}
+			// 		>
+			// 			{string}
+			// 		</Highlight>,
+			// 		highlightContainer
+			// 	)
+			// );
+
+			// const root = createRoot(highlightContainer);
+			// root.render(
+			// 	<Highlight
+			// 		highlightElement={highlightContainer}
+			// 		highlightId={highlightData.uuid}
+			// 	>
+			// 		{string}
+			// 	</Highlight>
+			// );
+
+			containers.push({ highlightContainer, string });
 		}
 	}
+
+	return containers;
 };
 
 const strategy = 'text-based';

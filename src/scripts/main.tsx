@@ -18,7 +18,9 @@ document.body.appendChild(root);
 // const renderIn = document.createElement('div');
 // shadow.appendChild(renderIn);
 
-ReactDOM.createRoot(root).render(
+const reactRoot = ReactDOM.createRoot(root);
+
+reactRoot.render(
 	<React.StrictMode>
 		{/* <style type='text/css'>{styles}</style> */}
 		{/* <style type='text/css'>{styles2}</style> */}
@@ -34,3 +36,5 @@ ReactDOM.createRoot(root).render(
 		</div>
 	</React.StrictMode>
 );
+
+export { reactRoot };

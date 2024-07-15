@@ -140,7 +140,7 @@ const extractSurroundingText = (
 	direction: 'forward' | 'backward'
 ): string => {
 	let textContent = '';
-	let currentNode = container;
+	const currentNode = container;
 
 	// Start collecting text from the correct position in the text node
 	if (currentNode.nodeType === Node.TEXT_NODE) {
@@ -152,28 +152,31 @@ const extractSurroundingText = (
 	}
 
 	// Navigate through sibling nodes to collect additional text
-	while (textContent.split(/\s+/).filter(Boolean).length < 5) {
-		currentNode =
-			direction === 'backward'
-				? (currentNode.previousSibling as Node)
-				: (currentNode.nextSibling as Node);
-		while (currentNode && currentNode.nodeType !== Node.TEXT_NODE) {
-			// Skip non-text nodes, navigating deeper if necessary
-			currentNode =
-				direction === 'backward'
-					? (currentNode.lastChild as Node)
-					: (currentNode.firstChild as Node);
-		}
-		if (!currentNode) break; // Stop if there are no more text nodes
+	// while (textContent.split(/\s+/).filter(Boolean).length < 5) {
+	// 	currentNode =
+	// 		direction === 'backward'
+	// 			? (currentNode.previousSibling as Node)
+	// 			: (currentNode.nextSibling as Node);
 
-		const additionalText = currentNode.textContent || '';
-		textContent =
-			direction === 'backward'
-				? additionalText + textContent
-				: textContent + additionalText;
-	}
+	// 	while (currentNode && currentNode.nodeType !== Node.TEXT_NODE) {
+	// 		// Skip non-text nodes, navigating deeper if necessary
+	// 		currentNode =
+	// 			direction === 'backward'
+	// 				? (currentNode.lastChild as Node)
+	// 				: (currentNode.firstChild as Node);
+	// 	}
+
+	// 	if (!currentNode) break; // Stop if there are no more text nodes
+
+	// 	const additionalText = currentNode.textContent || '';
+	// 	textContent =
+	// 		direction === 'backward'
+	// 			? additionalText + textContent
+	// 			: textContent + additionalText;
+	// }
 
 	let words = textContent.split(/\s+/);
+
 	if (direction === 'backward') {
 		words = words.slice(-5);
 	} else {
