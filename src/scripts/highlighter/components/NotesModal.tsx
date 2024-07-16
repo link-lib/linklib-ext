@@ -70,6 +70,7 @@ const NotesModal = ({
 				placeholder='Write your note'
 				value={note}
 				onChange={(e) => setNote(e.target.value)}
+				className='text-primary'
 			/>
 		</div>
 	);
