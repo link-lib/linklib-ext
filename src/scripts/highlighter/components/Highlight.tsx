@@ -22,7 +22,7 @@ export const Highlight = ({
 	highlightElement: HTMLElement | null;
 	initialRating?: number;
 }) => {
-	const [note, setNote] = useState<string>('');
+	const [note, setNote] = useState<string>(highlightData.note);
 	const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(notesOpen);
 	const [rating, setRating] = useState<number>(initialRating);
 
@@ -34,7 +34,7 @@ export const Highlight = ({
 				setNote(highlightData.note);
 			}
 		}
-	}, [isPopoverOpen, highlightData]);
+	}, [isPopoverOpen]);
 
 	const handleMouseEnter = () => {
 		const elements = document.querySelectorAll(
