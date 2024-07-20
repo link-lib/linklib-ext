@@ -10,7 +10,6 @@ import {
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
-import { createRoot } from 'react-dom/client';
 import { createPortal } from 'react-dom';
 
 const HighlighterApp = () => {
@@ -108,35 +107,10 @@ const HighlighterApp = () => {
 	};
 
 	const handleAddNote = () => {
-		const userSelection = window.getSelection();
-		if (userSelection) {
-			const highlightData = extractHighlightData(userSelection);
-			if (highlightData) {
-				setHighlights({
-					...highlights,
-					[highlightData.uuid]: highlightData,
-				});
-				const containers = createHighlightElement(highlightData);
-				containers?.forEach(({ highlightContainer, string }) => {
-					const root = createRoot(highlightContainer);
-					root.render(
-						<Highlight
-							highlightElement={highlightContainer}
-							highlightData={highlightData}
-							setHighlightData={handleEditHighlight}
-							notesOpen={true}
-						>
-							{string}
-						</Highlight>
-					);
-				});
-			}
-			window.getSelection()?.empty();
-		}
+		handleHighlight();
 	};
 
 	const handleClose = () => {
-		// setMarkerPosition({ display: 'none' });
 		window.getSelection()?.empty();
 	};
 
@@ -145,48 +119,65 @@ const HighlighterApp = () => {
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
-				setHighlights({
-					...highlights,
+				setHighlights((prevHighlights) => ({
+					...prevHighlights,
 					[highlightData.uuid]: { ...highlightData, rating },
-				});
+				}));
 				const containers = createHighlightElement(highlightData);
-				containers?.forEach(({ highlightContainer, string }) => {
-					const root = createRoot(highlightContainer);
-					root.render(
-						<Highlight
-							highlightElement={highlightContainer}
-							highlightData={highlightData}
-							setHighlightData={handleEditHighlight}
-							initialRating={rating}
-						>
-							{string}
-						</Highlight>
-					);
+				setHighlightContainers((prev) => {
+					const newContainers = { ...prev };
+					if (!newContainers[highlightData.uuid]) {
+						newContainers[highlightData.uuid] = [];
+					}
+					containers?.forEach((container) => {
+						newContainers[highlightData.uuid].push({
+							...container,
+							uuid: highlightData.uuid,
+						});
+					});
+					return newContainers;
 				});
 			}
 			window.getSelection()?.empty();
 		}
 	};
 
+	const handleDeleteHighlight = (uuid: string) => {
+		const unwrap = (element: HTMLElement) => {
+			const parent = element.parentNode;
+			while (element.firstChild) {
+				if (element.firstChild instanceof HTMLElement) {
+					unwrap(element.firstChild);
+				} else {
+					parent?.insertBefore(element.firstChild, element);
+				}
+			}
+			parent?.removeChild(element);
+		};
+
+		// for every container of this uuid, call unwrap on the container
+		setHighlights((prevHighlights) => {
+			const newHighlights = { ...prevHighlights };
+			delete newHighlights[uuid];
+			return newHighlights;
+		});
+
+		debugger;
+
+		setHighlightContainers(() => {
+			delete highlightContainers[uuid];
+			return { ...highlightContainers };
+		});
+
+		if (highlightContainers[uuid]) {
+			highlightContainers[uuid].forEach(({ highlightContainer }) => {
+				unwrap(highlightContainer);
+			});
+		}
+	};
+
 	useEffect(() => {
 		console.log(highlights);
-		// 	const huh = Object.values(highlights).flatMap((highlightData) => {
-		// 		const containers = createHighlightElement(highlightData);
-
-		// 		const debug = containers.map(({ highlightContainer, string }) =>
-		// 			createPortal(
-		// 				<Highlight
-		// 					highlightElement={highlightContainer}
-		// 					highlightId={highlightData.uuid}
-		// 				>
-		// 					{string}
-		// 				</Highlight>,
-		// 				highlightContainer
-		// 			)
-		// 		);
-		// 		return debug;
-		// 	});
-		// 	console.log(huh);
 	}, [highlights]);
 
 	return (
@@ -199,49 +190,39 @@ const HighlighterApp = () => {
 				handleRate={handleRate}
 			/>
 			{Object.values(highlightContainers).flatMap((containers) =>
-				containers.map(({ highlightContainer, string, uuid }) =>
-					createPortal(
+				containers.map(({ highlightContainer, string, uuid }) => {
+					console.log(string);
+					console.log(highlights[uuid].matching.body);
+					debugger;
+					return createPortal(
 						<Highlight
 							highlightElement={highlightContainer}
 							highlightData={highlights[uuid]}
 							setHighlightData={handleEditHighlight}
+							onDelete={() => handleDeleteHighlight(uuid)} // Pass the handleDeleteHighlight function
 						>
 							{string}
 						</Highlight>,
 						highlightContainer
-					)
-				)
-			)}
-			{/* {Object.values(highlights).flatMap((highlightData) => {
-				const containers = createHighlightElement(highlightData);
-
-				debugger;
-				containers?.forEach(({ highlightContainer, string }) => {
-					const root = createRoot(highlightContainer);
-					root.render(
-						<Highlight
-							highlightElement={highlightContainer}
-							highlightId={highlightData.uuid}
-							highlightData={highlightData}
-							setHighlightData={handleEditHighlight}
-						>
-							{string}
-						</Highlight>
 					);
-				});
-				// const portals = containers?.map(
-				// 	({ highlightContainer, string }) =>
-				// createPortal(
-				// 	<Highlight
-				// 		highlightElement={highlightContainer}
-				// 		highlightId={highlightData.uuid}
-				// 	>
-				// 		{string}
-				// 	</Highlight>,
-				// 	highlightContainer
-				// )
-				// );
-				// return portals;
+				})
+			)}
+			{/* {Object.entries(highlightContainers).map(([uuid, containers]) => {
+				const firstContainer = containers[0];
+				const highlightElement = firstContainer.highlightContainer;
+				const rect = highlightElement.getBoundingClientRect();
+				const top = rect.top + window.scrollY;
+
+				if (!highlights[uuid].note) return null;
+
+				return (
+					<Comment
+						key={uuid}
+						uuid={uuid}
+						note={highlights[uuid].note}
+						top={top}
+					/>
+				);
 			})} */}
 			<div className='md:sticky lg:block md:tw-left-auto md:tw-bottom-5 md:tw-right-5 md:tw-pl-4'></div>
 		</>

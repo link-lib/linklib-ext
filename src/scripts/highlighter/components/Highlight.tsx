@@ -3,6 +3,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
+import useStateCallback from '@/lib/hooks/useStateCallback';
 import NotesModal from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { useEffect, useState } from 'react';
@@ -13,18 +14,29 @@ export const Highlight = ({
 	setHighlightData,
 	notesOpen = false,
 	highlightElement,
-	initialRating = 0,
+	onDelete,
 }: {
 	children: React.ReactNode;
 	highlightData: HighlightData;
 	setHighlightData: (highlightData: HighlightData) => void;
 	notesOpen?: boolean;
 	highlightElement: HTMLElement | null;
-	initialRating?: number;
+	onDelete: () => void;
 }) => {
 	const [note, setNote] = useState<string>(highlightData.note);
-	const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(notesOpen);
-	const [rating, setRating] = useState<number>(initialRating);
+	const [isPopoverOpen, setIsPopoverOpen] =
+		useStateCallback<boolean>(notesOpen);
+	const [rating, setRating] = useState<number>(highlightData.rating);
+
+	useEffect(() => {
+		const highlightContainer = document.createElement('span');
+		// highlightContainer.className = 'highlight';
+		// highlightContainer.dataset.highlightId = `highlight-${highlightData.uuid}`;
+		// highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
+		range.deleteContents(); // Remove the original contents of the range
+		range.insertNode(highlightContainer); // Insert the new element with the correct HTML
+	}, []);
+
 
 	useEffect(() => {
 		if (note !== highlightData.note) {
@@ -56,6 +68,13 @@ export const Highlight = ({
 		});
 	};
 
+	// const handleDelete = () => {
+	// 	setIsPopoverOpen(false, () => {
+	// 		debugger;
+	// 		onDelete();
+	// 	});
+	// };
+
 	return (
 		<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
 			<PopoverTrigger asChild>
@@ -78,7 +97,9 @@ export const Highlight = ({
 				<NotesModal
 					note={note}
 					setNote={setNote}
-					onClose={() => setIsPopoverOpen(false)}
+					onClose={() => {
+						setIsPopoverOpen(false);
+					}}
 					highlightElement={highlightElement}
 					rating={rating}
 					setRating={setRating}
