@@ -7,36 +7,134 @@ import useStateCallback from '@/lib/hooks/useStateCallback';
 import NotesModal from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export const Highlight = ({
-	children,
+	rangeData,
+	range,
 	highlightData,
 	setHighlightData,
 	notesOpen = false,
-	highlightElement,
 	onDelete,
 }: {
-	children: React.ReactNode;
+	rangeData: {
+		startContainer: Node;
+		startOffset: number;
+		endContainer: Node;
+		endOffset: number;
+	};
+	range: Range;
 	highlightData: HighlightData;
 	setHighlightData: (highlightData: HighlightData) => void;
 	notesOpen?: boolean;
-	highlightElement: HTMLElement | null;
 	onDelete: () => void;
 }) => {
 	const [note, setNote] = useState<string>(highlightData.note);
 	const [isPopoverOpen, setIsPopoverOpen] =
 		useStateCallback<boolean>(notesOpen);
 	const [rating, setRating] = useState<number>(highlightData.rating);
+	const [highlightContainer, setHighlightContainer] = useState<{
+		container: HTMLElement;
+		content: string;
+	} | null>(null);
 
 	useEffect(() => {
-		const highlightContainer = document.createElement('span');
-		// highlightContainer.className = 'highlight';
-		// highlightContainer.dataset.highlightId = `highlight-${highlightData.uuid}`;
-		// highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
-		range.deleteContents(); // Remove the original contents of the range
-		range.insertNode(highlightContainer); // Insert the new element with the correct HTML
-	}, []);
+		try {
+			const container = document.createElement('span');
+			range.setStart(rangeData.startContainer, rangeData.startOffset);
+			range.setEnd(rangeData.endContainer, rangeData.endOffset);
+			const content = range.toString();
 
+			// Store the parent node and its original content before any changes
+			const parentNode =
+				range.commonAncestorContainer.nodeType === Node.TEXT_NODE
+					? range.commonAncestorContainer.parentNode
+					: range.commonAncestorContainer;
+			// const originalContent = parentNode?.textContent;
+			const startingContainerContent = range.startContainer.textContent;
+
+			range.deleteContents();
+			range.insertNode(container);
+			const prefix = range.startContainer.textContent;
+
+			setHighlightContainer({ container, content });
+
+			return () => {
+				if (parentNode) {
+					if (range.startContainer.nodeType === Node.ELEMENT_NODE) {
+						range.startContainer.textContent =
+							startingContainerContent;
+						parentNode.normalize();
+					} else {
+						range.startContainer.textContent = prefix + content;
+						parentNode.removeChild(container);
+						parentNode.normalize();
+					}
+				}
+			};
+		} catch {
+			console.log('uhoh ');
+		}
+	}, [range, highlightData.uuid]);
+
+	// useEffect(() => {
+	// 	const { startContainer, startOffset, endContainer, endOffset } =
+	// 		rangeData;
+
+	// 	const startNode = document.evaluate(
+	// 		startContainer,
+	// 		document,
+	// 		null,
+	// 		XPathResult.FIRST_ORDERED_NODE_TYPE,
+	// 		null
+	// 	).singleNodeValue;
+
+	// 	const endNode = document.evaluate(
+	// 		endContainer,
+	// 		document,
+	// 		null,
+	// 		XPathResult.FIRST_ORDERED_NODE_TYPE,
+	// 		null
+	// 	).singleNodeValue;
+
+	// 	if (!endNode || !startNode) return;
+
+	// 	const range = document.createRange();
+	// 	range.setStart(startNode, startOffset);
+	// 	range.setEnd(endNode, endOffset);
+
+	// 	if (!range) return;
+
+	// 	const container = document.createElement('span');
+	// 	const content = range.toString();
+
+	// 	// Store the parent node and its original content before any changes
+	// 	const parentNode =
+	// 		range.commonAncestorContainer.nodeType === Node.TEXT_NODE
+	// 			? range.commonAncestorContainer.parentNode
+	// 			: range.commonAncestorContainer;
+	// 	const originalContent = parentNode?.textContent;
+
+	// 	range.deleteContents();
+	// 	range.insertNode(container);
+	// 	setHighlightContainer({ container, content });
+
+	// 	return () => {
+	// 		// The plan is to restore based on the first correct childNode/container more than anything else.
+
+	// 		if (parentNode) {
+	// 			// Remove all child nodes
+	// 			while (parentNode.firstChild) {
+	// 				parentNode.removeChild(parentNode.firstChild);
+	// 			}
+	// 			// Repopulate with the original content
+	// 			parentNode.appendChild(
+	// 				document.createTextNode(originalContent || '')
+	// 			);
+	// 			parentNode.normalize();
+	// 		}
+	// 	};
+	// }, [rangeData, highlightData.uuid]);
 
 	useEffect(() => {
 		if (note !== highlightData.note) {
@@ -70,12 +168,14 @@ export const Highlight = ({
 
 	// const handleDelete = () => {
 	// 	setIsPopoverOpen(false, () => {
-	// 		debugger;
+
 	// 		onDelete();
 	// 	});
 	// };
 
-	return (
+	if (!highlightContainer) return null;
+
+	return createPortal(
 		<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
 			<PopoverTrigger asChild>
 				<span
@@ -90,7 +190,11 @@ export const Highlight = ({
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
 				>
-					{children}
+					{(() => {
+						console.log('highlightContainer:', highlightContainer);
+						// return highlightContainer.content;
+						return highlightContainer.content;
+					})()}
 				</span>
 			</PopoverTrigger>
 			<PopoverContent className='w-[550px]'>
@@ -100,11 +204,12 @@ export const Highlight = ({
 					onClose={() => {
 						setIsPopoverOpen(false);
 					}}
-					highlightElement={highlightElement}
 					rating={rating}
 					setRating={setRating}
+					onDelete={onDelete}
 				/>
 			</PopoverContent>
-		</Popover>
+		</Popover>,
+		highlightContainer.container
 	);
 };

@@ -162,7 +162,7 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 		null
 	).singleNodeValue;
 
-	const containers = [];
+	const ranges = [];
 
 	if (startNode && endNode) {
 		// Create a TreeWalker to iterate text nodes between startNode and endNode
@@ -240,12 +240,13 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 
 			if (string.trim() === '') continue;
 
-			const highlightContainer = document.createElement('span');
-			// highlightContainer.className = 'highlight';
-			// highlightContainer.dataset.highlightId = `highlight-${highlightData.uuid}`;
-			// highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
-			range.deleteContents(); // Remove the original contents of the range
-			range.insertNode(highlightContainer); // Insert the new element with the correct HTML
+			ranges.push(range);
+			// const highlightContainer = document.createElement('span');
+			// // highlightContainer.className = 'highlight';
+			// // highlightContainer.dataset.highlightId = `highlight-${highlightData.uuid}`;
+			// // highlightContainer.innerHTML = range.toString(); // Set the innerHTML directly
+			// range.deleteContents(); // Remove the original contents of the range
+			// range.insertNode(highlightContainer); // Insert the new element with the correct HTML
 
 			// reactRoot.render(
 			// 	createPortal(
@@ -269,11 +270,11 @@ const createHighlightFromRange = (highlightData: HighlightData) => {
 			// 	</Highlight>
 			// );
 
-			containers.push({ highlightContainer, string });
+			// ranges.push({ highlightContainer, string });
 		}
 	}
 
-	return containers;
+	return ranges;
 };
 
 const strategy = 'text-based';

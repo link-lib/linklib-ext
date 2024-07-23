@@ -6,36 +6,21 @@ const NotesModal = ({
 	note,
 	setNote,
 	onClose,
-	highlightElement,
 	rating,
 	setRating,
+	onDelete,
 }: {
 	note: string;
 	setNote: (note: string) => void;
 	onClose: () => void;
-	highlightElement: HTMLElement | null;
 	rating: number;
 	setRating: (rating: number) => void;
+	onDelete: () => void;
 }) => {
-	// Because this works in NotesModal, the idea is to pass in a callback and execute this on the callback 
-	// Simple set delete, and then use state to iterate through all the containers to call this delete function. 
 	const handleDelete = () => {
 		setNote('');
-		if (highlightElement) {
-			const unwrap = (element: HTMLElement) => {
-				const parent = element.parentNode;
-				while (element.firstChild) {
-					if (element.firstChild instanceof HTMLElement) {
-						unwrap(element.firstChild);
-					} else { 
-						parent?.insertBefore(element.firstChild, element);
-					}
-				}
-				parent?.removeChild(element);
-			};
-			unwrap(highlightElement);
-		}
 		onClose();
+		onDelete();
 	};
 
 	return (
@@ -69,10 +54,10 @@ const NotesModal = ({
 				</div>
 			</div>
 			<Textarea
+				className='text-primary'
 				placeholder='Write your note'
 				value={note}
 				onChange={(e) => setNote(e.target.value)}
-				className='font-white'
 			/>
 		</div>
 	);

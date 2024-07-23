@@ -10,7 +10,6 @@ import {
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
-import { createPortal } from 'react-dom';
 
 const HighlighterApp = () => {
 	const initialHighlights: { [key: string]: HighlightData } = {};
@@ -20,8 +19,7 @@ const HighlighterApp = () => {
 
 	const [highlightContainers, setHighlightContainers] = useState<{
 		[key: string]: {
-			highlightContainer: HTMLElement;
-			string: string;
+			range: Range;
 			uuid: string;
 		}[];
 	}>({});
@@ -93,9 +91,9 @@ const HighlighterApp = () => {
 					if (!newContainers[highlightData.uuid]) {
 						newContainers[highlightData.uuid] = [];
 					}
-					containers?.forEach((container) => {
+					containers?.forEach((range) => {
 						newContainers[highlightData.uuid].push({
-							...container,
+							range: range,
 							uuid: highlightData.uuid,
 						});
 					});
@@ -129,9 +127,9 @@ const HighlighterApp = () => {
 					if (!newContainers[highlightData.uuid]) {
 						newContainers[highlightData.uuid] = [];
 					}
-					containers?.forEach((container) => {
+					containers?.forEach((range) => {
 						newContainers[highlightData.uuid].push({
-							...container,
+							range: range,
 							uuid: highlightData.uuid,
 						});
 					});
@@ -143,18 +141,6 @@ const HighlighterApp = () => {
 	};
 
 	const handleDeleteHighlight = (uuid: string) => {
-		const unwrap = (element: HTMLElement) => {
-			const parent = element.parentNode;
-			while (element.firstChild) {
-				if (element.firstChild instanceof HTMLElement) {
-					unwrap(element.firstChild);
-				} else {
-					parent?.insertBefore(element.firstChild, element);
-				}
-			}
-			parent?.removeChild(element);
-		};
-
 		// for every container of this uuid, call unwrap on the container
 		setHighlights((prevHighlights) => {
 			const newHighlights = { ...prevHighlights };
@@ -162,18 +148,16 @@ const HighlighterApp = () => {
 			return newHighlights;
 		});
 
-		debugger;
-
 		setHighlightContainers(() => {
 			delete highlightContainers[uuid];
 			return { ...highlightContainers };
 		});
 
-		if (highlightContainers[uuid]) {
-			highlightContainers[uuid].forEach(({ highlightContainer }) => {
-				unwrap(highlightContainer);
-			});
-		}
+		// if (highlightContainers[uuid]) {
+		// 	highlightContainers[uuid].forEach(({ highlightContainer }) => {
+		// 		unwrap(highlightContainer);
+		// 	});
+		// }
 	};
 
 	useEffect(() => {
@@ -190,20 +174,20 @@ const HighlighterApp = () => {
 				handleRate={handleRate}
 			/>
 			{Object.values(highlightContainers).flatMap((containers) =>
-				containers.map(({ highlightContainer, string, uuid }) => {
-					console.log(string);
-					console.log(highlights[uuid].matching.body);
-					debugger;
-					return createPortal(
+				containers.reverse().map(({ range, uuid }) => {
+					return (
 						<Highlight
-							highlightElement={highlightContainer}
+							rangeData={{
+								startContainer: range.endContainer,
+								startOffset: range.startOffset,
+								endContainer: range.endContainer,
+								endOffset: range.endOffset,
+							}}
+							range={range}
 							highlightData={highlights[uuid]}
 							setHighlightData={handleEditHighlight}
 							onDelete={() => handleDeleteHighlight(uuid)} // Pass the handleDeleteHighlight function
-						>
-							{string}
-						</Highlight>,
-						highlightContainer
+						/>
 					);
 				})
 			)}

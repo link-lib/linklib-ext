@@ -60,11 +60,6 @@ export const extractHighlightData = (
 					lastRange.endContainer,
 					lastRange.endOffset
 				),
-				// end:
-				// 	calculateAbsolutePosition(
-				// 		firstRange.startContainer,
-				// 		firstRange.startOffset
-				// 	) + selection.toString().replace(/\n+$/, '').length,
 			},
 			rangeSelector: {
 				startOffset: firstRange.startOffset,
