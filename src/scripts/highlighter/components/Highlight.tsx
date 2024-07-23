@@ -37,6 +37,15 @@ export const Highlight = ({
 		container: HTMLElement;
 		content: string;
 	} | null>(null);
+	const [shouldFocusInput, setShouldFocusInput] = useState(notesOpen);
+
+	useEffect(() => {
+		if (notesOpen) {
+			setIsPopoverOpen(true, () => {
+				setShouldFocusInput(true);
+			});
+		}
+	}, [notesOpen]);
 
 	useEffect(() => {
 		try {
@@ -77,65 +86,6 @@ export const Highlight = ({
 		}
 	}, [range, highlightData.uuid]);
 
-	// useEffect(() => {
-	// 	const { startContainer, startOffset, endContainer, endOffset } =
-	// 		rangeData;
-
-	// 	const startNode = document.evaluate(
-	// 		startContainer,
-	// 		document,
-	// 		null,
-	// 		XPathResult.FIRST_ORDERED_NODE_TYPE,
-	// 		null
-	// 	).singleNodeValue;
-
-	// 	const endNode = document.evaluate(
-	// 		endContainer,
-	// 		document,
-	// 		null,
-	// 		XPathResult.FIRST_ORDERED_NODE_TYPE,
-	// 		null
-	// 	).singleNodeValue;
-
-	// 	if (!endNode || !startNode) return;
-
-	// 	const range = document.createRange();
-	// 	range.setStart(startNode, startOffset);
-	// 	range.setEnd(endNode, endOffset);
-
-	// 	if (!range) return;
-
-	// 	const container = document.createElement('span');
-	// 	const content = range.toString();
-
-	// 	// Store the parent node and its original content before any changes
-	// 	const parentNode =
-	// 		range.commonAncestorContainer.nodeType === Node.TEXT_NODE
-	// 			? range.commonAncestorContainer.parentNode
-	// 			: range.commonAncestorContainer;
-	// 	const originalContent = parentNode?.textContent;
-
-	// 	range.deleteContents();
-	// 	range.insertNode(container);
-	// 	setHighlightContainer({ container, content });
-
-	// 	return () => {
-	// 		// The plan is to restore based on the first correct childNode/container more than anything else.
-
-	// 		if (parentNode) {
-	// 			// Remove all child nodes
-	// 			while (parentNode.firstChild) {
-	// 				parentNode.removeChild(parentNode.firstChild);
-	// 			}
-	// 			// Repopulate with the original content
-	// 			parentNode.appendChild(
-	// 				document.createTextNode(originalContent || '')
-	// 			);
-	// 			parentNode.normalize();
-	// 		}
-	// 	};
-	// }, [rangeData, highlightData.uuid]);
-
 	useEffect(() => {
 		if (note !== highlightData.note) {
 			if (!isPopoverOpen) {
@@ -166,13 +116,6 @@ export const Highlight = ({
 		});
 	};
 
-	// const handleDelete = () => {
-	// 	setIsPopoverOpen(false, () => {
-
-	// 		onDelete();
-	// 	});
-	// };
-
 	if (!highlightContainer) return null;
 
 	return createPortal(
@@ -190,11 +133,7 @@ export const Highlight = ({
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
 				>
-					{(() => {
-						console.log('highlightContainer:', highlightContainer);
-						// return highlightContainer.content;
-						return highlightContainer.content;
-					})()}
+					{highlightContainer.content}
 				</span>
 			</PopoverTrigger>
 			<PopoverContent className='w-[550px]'>
@@ -207,6 +146,8 @@ export const Highlight = ({
 					rating={rating}
 					setRating={setRating}
 					onDelete={onDelete}
+					shouldFocusInput={shouldFocusInput}
+					onInputFocused={() => setShouldFocusInput(false)}
 				/>
 			</PopoverContent>
 		</Popover>,

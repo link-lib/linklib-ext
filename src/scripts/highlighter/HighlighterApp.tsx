@@ -21,6 +21,7 @@ const HighlighterApp = () => {
 		[key: string]: {
 			range: Range;
 			uuid: string;
+			notesOpen?: boolean;
 		}[];
 	}>({});
 
@@ -76,7 +77,7 @@ const HighlighterApp = () => {
 		// });
 	};
 
-	const handleHighlight = () => {
+	const handleHighlight = (openNotes: boolean = false) => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
@@ -91,10 +92,12 @@ const HighlighterApp = () => {
 					if (!newContainers[highlightData.uuid]) {
 						newContainers[highlightData.uuid] = [];
 					}
-					containers?.forEach((range) => {
+					containers?.forEach((range, index) => {
 						newContainers[highlightData.uuid].push({
 							range: range,
 							uuid: highlightData.uuid,
+							notesOpen:
+								openNotes && index === containers.length - 1, // Open notes for the first container if openNotes is true
 						});
 					});
 					return newContainers;
@@ -105,7 +108,7 @@ const HighlighterApp = () => {
 	};
 
 	const handleAddNote = () => {
-		handleHighlight();
+		handleHighlight(true); // Pass true to open notes for the new highlight
 	};
 
 	const handleClose = () => {
@@ -174,7 +177,7 @@ const HighlighterApp = () => {
 				handleRate={handleRate}
 			/>
 			{Object.values(highlightContainers).flatMap((containers) =>
-				containers.reverse().map(({ range, uuid }) => {
+				containers.reverse().map(({ range, uuid, notesOpen }) => {
 					return (
 						<Highlight
 							rangeData={{
@@ -186,7 +189,8 @@ const HighlighterApp = () => {
 							range={range}
 							highlightData={highlights[uuid]}
 							setHighlightData={handleEditHighlight}
-							onDelete={() => handleDeleteHighlight(uuid)} // Pass the handleDeleteHighlight function
+							onDelete={() => handleDeleteHighlight(uuid)}
+							notesOpen={notesOpen || false}
 						/>
 					);
 				})
