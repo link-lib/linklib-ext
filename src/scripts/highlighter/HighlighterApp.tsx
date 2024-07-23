@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
 import { Highlight } from '@/scripts/highlighter/components/Highlight';
@@ -10,6 +10,7 @@ import {
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
+import { isEqual } from 'lodash';
 
 const HighlighterApp = () => {
 	const initialHighlights: { [key: string]: HighlightData } = {};
@@ -24,6 +25,8 @@ const HighlighterApp = () => {
 			notesOpen?: boolean;
 		}[];
 	}>({});
+
+	const prevHighlightsRef = useRef<typeof highlights>({});
 
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
@@ -57,27 +60,52 @@ const HighlighterApp = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		const newContainers: typeof highlightContainers = {
+			...highlightContainers,
+		};
+		let hasChanges = false;
+
+		Object.entries(highlights).forEach(([uuid, highlightData]) => {
+			const prevHighlight = prevHighlightsRef.current[uuid];
+			if (
+				!prevHighlight ||
+				!isEqual(prevHighlight.matching, highlightData.matching)
+			) {
+				const containers = createHighlightElement(highlightData);
+				if (containers) {
+					newContainers[uuid] = containers.map((range) => ({
+						range,
+						uuid,
+					}));
+					hasChanges = true;
+				}
+			}
+		});
+
+		// Remove containers for deleted highlights
+		Object.keys(highlightContainers).forEach((uuid) => {
+			if (!highlights[uuid]) {
+				delete newContainers[uuid];
+				hasChanges = true;
+			}
+		});
+
+		if (hasChanges) {
+			setHighlightContainers(newContainers);
+		}
+
+		prevHighlightsRef.current = highlights;
+	}, [highlights]);
+
 	const handleEditHighlight = (highlightData: HighlightData) => {
 		setHighlights((prevHighlights) => ({
 			...prevHighlights,
 			[highlightData.uuid]: highlightData,
 		}));
-		// setHighlightContainers((prev) => {
-		// 	const newMap = new Map(prev);
-		// 	if (newMap.has(highlightData.uuid)) {
-		// 		const container = newMap.get(highlightData.uuid);
-		// 		if (container) {
-		// 			newMap.set(highlightData.uuid, {
-		// 				...container,
-		// 				highlightData,
-		// 			});
-		// 		}
-		// 	}
-		// 	return newMap;
-		// });
 	};
 
-	const handleHighlight = (openNotes: boolean = false) => {
+	const handleHighlight = () => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
@@ -86,29 +114,23 @@ const HighlighterApp = () => {
 					...highlights,
 					[highlightData.uuid]: highlightData,
 				});
-				const containers = createHighlightElement(highlightData);
-				setHighlightContainers((prev) => {
-					const newContainers = { ...prev };
-					if (!newContainers[highlightData.uuid]) {
-						newContainers[highlightData.uuid] = [];
-					}
-					containers?.forEach((range, index) => {
-						newContainers[highlightData.uuid].push({
-							range: range,
-							uuid: highlightData.uuid,
-							notesOpen:
-								openNotes && index === containers.length - 1, // Open notes for the first container if openNotes is true
-						});
-					});
-					return newContainers;
-				});
 			}
 			window.getSelection()?.empty();
 		}
 	};
 
 	const handleAddNote = () => {
-		handleHighlight(true); // Pass true to open notes for the new highlight
+		const userSelection = window.getSelection();
+		if (userSelection) {
+			const highlightData = extractHighlightData(userSelection);
+			if (highlightData) {
+				setHighlights({
+					...highlights,
+					[highlightData.uuid]: highlightData,
+				});
+			}
+			window.getSelection()?.empty();
+		}
 	};
 
 	const handleClose = () => {
@@ -124,20 +146,6 @@ const HighlighterApp = () => {
 					...prevHighlights,
 					[highlightData.uuid]: { ...highlightData, rating },
 				}));
-				const containers = createHighlightElement(highlightData);
-				setHighlightContainers((prev) => {
-					const newContainers = { ...prev };
-					if (!newContainers[highlightData.uuid]) {
-						newContainers[highlightData.uuid] = [];
-					}
-					containers?.forEach((range) => {
-						newContainers[highlightData.uuid].push({
-							range: range,
-							uuid: highlightData.uuid,
-						});
-					});
-					return newContainers;
-				});
 			}
 			window.getSelection()?.empty();
 		}
