@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
+import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -7,6 +8,7 @@ const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const { toast } = useToast();
 
 	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
@@ -31,13 +33,18 @@ const ImageDrop = () => {
 		setIsDragging(false);
 
 		if (e.dataTransfer?.files[0]) {
+			const file = e.dataTransfer.files[0];
 			console.log('is a file');
 			const dT = new DataTransfer();
-			dT.items.add(e.dataTransfer.files[0]);
+			dT.items.add(file);
 			// Backend: Upload file to linklib
 			// This is to put it into an input
 			// fileInput.files = dT.files;
 			// debugger;
+			toast({
+				title: 'Image saved',
+				description: `File: ${file.name}`,
+			});
 		} else {
 			// Try dataTransfer url second
 			const dataTransferUrl = e.dataTransfer?.getData('url');
@@ -50,24 +57,10 @@ const ImageDrop = () => {
 				// Backend: Save link to linklib
 				// This may be more complicated, because the URL domain might have to
 				// If we need to fetch the image.
-				// const urlArray = Array.from(url);
-				// urlArray.splice(4, 0, 's');
-				// const urlFinal = urlArray.join('');
-				// fetch(dataTransferUrl)
-				// 	.then(async (res) => {
-				// 		const contentType = await res.headers.get(
-				// 			'Content-Type'
-				// 		);
-				// 		const blob = await response.blob();
-				// 		debugger;
-				// 		const file = new File([blob], 'image.jpeg', {
-				// 			contentType,
-				// 		});
-				// 	})
-				// 	.catch((e) => {
-				// 		console.log(e);
-				// 		debugger;
-				// 	});
+				toast({
+					title: 'Image URL saved',
+					description: dataTransferUrl,
+				});
 			}
 		}
 	};
@@ -101,13 +94,17 @@ const ImageDrop = () => {
 		if (file) {
 			console.log('Selected file:', file);
 			// Handle the file upload to the backend here
+			toast({
+				title: 'Image uploaded',
+				description: `File: ${file.name}`,
+			});
 		}
 	};
 
 	return (
 		<div
 			id='dropContainer'
-			className='fixed bottom-1 right-1 z-50 image-drop'
+			className='fixed bottom-1 right-1 z-50 image-drop w-fit '
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			onDragOver={(e) => e.preventDefault()}

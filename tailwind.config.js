@@ -5,6 +5,7 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 export default {
 	corePlugins: {
 		preflight: false,
+		container: false,
 	},
 	important: true,
 	// prefix: 'tw-',
@@ -27,6 +28,17 @@ export default {
 			},
 		},
 		extend: {
+			fontFamily: {
+				apple: [
+				'-apple-system',
+				'BlinkMacSystemFont',
+				'Segoe UI',
+				'Roboto',
+				'Helvetica Neue',
+				'Arial',
+				'sans-serif',
+				],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -61,6 +73,9 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
 				},
+			},
+			zIndex: {
+				'1000': '1000', // Add custom z-index
 			},
 			transitionProperty: {
 				...defaultTheme.transitionProperty,

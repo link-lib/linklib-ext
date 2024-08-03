@@ -1,22 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
+import { Highlight } from '@/scripts/highlighter/components/Highlight';
+import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
+import { createHighlightElement } from '@/scripts/highlighter/utils/createHighlight';
+import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
 import {
 	MarkerPosition,
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
-import { createRoot } from 'react-dom/client';
-import { Highlight } from '@/scripts/highlighter/components/Highlight';
-import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
-import { extractHighlightData } from '@/scripts/highlighter/utils/highlightUtils';
-// import ReactDOM from 'react-dom';
+import { isEqual } from 'lodash';
 
 const HighlighterApp = () => {
-	const initialHighlights: HighlightData[] = [];
+	const initialHighlights: { [key: string]: HighlightData } = {};
+	const [highlights, setHighlights] = useState<{
+		[key: string]: HighlightData;
+	}>(initialHighlights);
 
-	const [highlights, setHighlights] =
-		useState<HighlightData[]>(initialHighlights);
+	const [highlightContainers, setHighlightContainers] = useState<{
+		[key: string]: {
+			range: Range;
+			uuid: string;
+			notesOpen?: boolean;
+		}[];
+	}>({});
+
+	const prevHighlightsRef = useRef<typeof highlights>({});
+
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
 	>({ display: 'none' });
@@ -49,166 +60,120 @@ const HighlighterApp = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		const newContainers: typeof highlightContainers = {
+			...highlightContainers,
+		};
+		let hasChanges = false;
+
+		Object.entries(highlights).forEach(([uuid, highlightData]) => {
+			const prevHighlight = prevHighlightsRef.current[uuid];
+			if (
+				!prevHighlight ||
+				!isEqual(prevHighlight.matching, highlightData.matching)
+			) {
+				const containers = createHighlightElement(highlightData);
+				if (containers) {
+					newContainers[uuid] = containers.map((range) => ({
+						range,
+						uuid,
+					}));
+					hasChanges = true;
+				}
+			}
+		});
+
+		// Remove containers for deleted highlights
+		Object.keys(highlightContainers).forEach((uuid) => {
+			if (!highlights[uuid]) {
+				delete newContainers[uuid];
+				hasChanges = true;
+			}
+		});
+
+		if (hasChanges) {
+			setHighlightContainers(newContainers);
+		}
+
+		prevHighlightsRef.current = highlights;
+	}, [highlights]);
+
+	const handleEditHighlight = (highlightData: HighlightData) => {
+		setHighlights((prevHighlights) => ({
+			...prevHighlights,
+			[highlightData.uuid]: highlightData,
+		}));
+	};
+
 	const handleHighlight = () => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
-				setHighlights([...highlights, highlightData]);
-				createHighlightElement(highlightData);
+				setHighlights({
+					...highlights,
+					[highlightData.uuid]: highlightData,
+				});
 			}
 			window.getSelection()?.empty();
-		}
-	};
-
-	const createHighlightElement = (highlightData: HighlightData) => {
-		const doc = document; // Adjust if working within iframes or other contexts
-		const startNode = document.evaluate(
-			highlightData.matching.rangeSelector.startContainer,
-			doc,
-			null,
-			XPathResult.FIRST_ORDERED_NODE_TYPE,
-			null
-		).singleNodeValue;
-		const endNode = document.evaluate(
-			highlightData.matching.rangeSelector.endContainer,
-			doc,
-			null,
-			XPathResult.FIRST_ORDERED_NODE_TYPE,
-			null
-		).singleNodeValue;
-
-		if (startNode && endNode) {
-			// Create a TreeWalker to iterate text nodes between startNode and endNode
-			const walker = document.createTreeWalker(
-				doc.body,
-				NodeFilter.SHOW_TEXT,
-				{
-					acceptNode: function (node) {
-						// Only consider nodes that are logically between startNode and endNode
-						if (node.nodeType === Node.TEXT_NODE) {
-							if (
-								node.nodeValue === '\n' ||
-								node.nodeValue === ''
-							)
-								return NodeFilter.FILTER_REJECT;
-							return NodeFilter.FILTER_ACCEPT;
-						}
-						return NodeFilter.FILTER_REJECT;
-					},
-				}
-			);
-
-			walker.currentNode = startNode; // Start the walker at the startNode
-			let currentNode: Node | null = walker.currentNode;
-			let inHighlight = true;
-
-			debugger;
-
-			if (currentNode.nodeType !== Node.TEXT_NODE) {
-				currentNode = walker.nextNode();
-			}
-
-			while (currentNode && inHighlight) {
-				// If we're at the end node, stop highlighting after this loop.
-				if (currentNode.parentElement === endNode) {
-					inHighlight = false;
-				}
-				const isStartNode = currentNode.parentElement === startNode;
-
-				debugger;
-
-				// Go to next node if we're not going to highlight it.
-				if (
-					currentNode.nodeType !== Node.TEXT_NODE ||
-					currentNode.nodeValue === '\n'
-				) {
-					debugger;
-					currentNode = walker.nextNode();
-					continue;
-				}
-
-				const range = new Range();
-
-				range.setStart(
-					currentNode,
-					isStartNode
-						? highlightData.matching.rangeSelector.startOffset
-						: 0
-				);
-
-				const highlightContainer = document.createElement('span');
-				highlightContainer.className = 'highlight';
-				highlightContainer.dataset.highlightId = `highlight-${highlightData.createdAt.getTime()}`;
-				range.setEnd(
-					currentNode,
-					inHighlight
-						? currentNode.length
-						: highlightData.matching.rangeSelector.endOffset
-				);
-
-				debugger;
-				currentNode = walker.nextNode();
-
-				range.surroundContents(highlightContainer);
-
-				const root = createRoot(highlightContainer);
-				root.render(
-					<Highlight highlightElement={highlightContainer}>
-						{highlightContainer.innerHTML}
-					</Highlight>
-				);
-			}
 		}
 	};
 
 	const handleAddNote = () => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
-			for (let i = 0; i < userSelection.rangeCount; i++) {
-				debugger;
-				const range = userSelection.getRangeAt(i);
-				const highlightContainer = document.createElement('span');
-				range.surroundContents(highlightContainer);
-				const root = createRoot(highlightContainer);
-				root.render(
-					<Highlight
-						highlightElement={highlightContainer}
-						notesOpen={true}
-					>
-						{highlightContainer.innerHTML}
-					</Highlight>
-				);
+			const highlightData = extractHighlightData(userSelection);
+			if (highlightData) {
+				setHighlights({
+					...highlights,
+					[highlightData.uuid]: highlightData,
+				});
 			}
 			window.getSelection()?.empty();
 		}
 	};
 
 	const handleClose = () => {
-		// setMarkerPosition({ display: 'none' });
 		window.getSelection()?.empty();
 	};
 
 	const handleRate = (rating: number) => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
-			for (let i = 0; i < userSelection.rangeCount; i++) {
-				const range = userSelection.getRangeAt(i);
-				const highlightContainer = document.createElement('span');
-				range.surroundContents(highlightContainer);
-				const root = createRoot(highlightContainer);
-				root.render(
-					<Highlight
-						highlightElement={highlightContainer}
-						initialRating={rating}
-					>
-						{highlightContainer.innerHTML}
-					</Highlight>
-				);
+			const highlightData = extractHighlightData(userSelection);
+			if (highlightData) {
+				setHighlights((prevHighlights) => ({
+					...prevHighlights,
+					[highlightData.uuid]: { ...highlightData, rating },
+				}));
 			}
 			window.getSelection()?.empty();
 		}
 	};
+
+	const handleDeleteHighlight = (uuid: string) => {
+		// for every container of this uuid, call unwrap on the container
+		setHighlights((prevHighlights) => {
+			const newHighlights = { ...prevHighlights };
+			delete newHighlights[uuid];
+			return newHighlights;
+		});
+
+		setHighlightContainers(() => {
+			delete highlightContainers[uuid];
+			return { ...highlightContainers };
+		});
+
+		// if (highlightContainers[uuid]) {
+		// 	highlightContainers[uuid].forEach(({ highlightContainer }) => {
+		// 		unwrap(highlightContainer);
+		// 	});
+		// }
+	};
+
+	useEffect(() => {
+		console.log(highlights);
+	}, [highlights]);
 
 	return (
 		<>
@@ -219,6 +184,42 @@ const HighlighterApp = () => {
 				handleClose={handleClose}
 				handleRate={handleRate}
 			/>
+			{Object.values(highlightContainers).flatMap((containers) =>
+				containers.reverse().map(({ range, uuid, notesOpen }) => {
+					return (
+						<Highlight
+							rangeData={{
+								startContainer: range.endContainer,
+								startOffset: range.startOffset,
+								endContainer: range.endContainer,
+								endOffset: range.endOffset,
+							}}
+							range={range}
+							highlightData={highlights[uuid]}
+							setHighlightData={handleEditHighlight}
+							onDelete={() => handleDeleteHighlight(uuid)}
+							notesOpen={notesOpen || false}
+						/>
+					);
+				})
+			)}
+			{/* {Object.entries(highlightContainers).map(([uuid, containers]) => {
+				const firstContainer = containers[0];
+				const highlightElement = firstContainer.highlightContainer;
+				const rect = highlightElement.getBoundingClientRect();
+				const top = rect.top + window.scrollY;
+
+				if (!highlights[uuid].note) return null;
+
+				return (
+					<Comment
+						key={uuid}
+						uuid={uuid}
+						note={highlights[uuid].note}
+						top={top}
+					/>
+				);
+			})} */}
 			<div className='md:sticky lg:block md:tw-left-auto md:tw-bottom-5 md:tw-right-5 md:tw-pl-4'></div>
 		</>
 	);

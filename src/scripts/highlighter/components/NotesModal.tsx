@@ -1,39 +1,40 @@
 import { Textarea } from '@/components/ui/textarea';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { CirclePlus, Trash2, X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 const NotesModal = ({
 	note,
 	setNote,
 	onClose,
-	highlightElement,
 	rating,
 	setRating,
+	onDelete,
+	shouldFocusInput,
+	onInputFocused,
 }: {
 	note: string;
 	setNote: (note: string) => void;
 	onClose: () => void;
-	highlightElement: HTMLElement | null;
 	rating: number;
 	setRating: (rating: number) => void;
+	onDelete: () => void;
+	shouldFocusInput: boolean;
+	onInputFocused: () => void;
 }) => {
+	const inputRef = useRef<HTMLTextAreaElement>(null);
+
+	useEffect(() => {
+		if (shouldFocusInput && inputRef.current) {
+			inputRef.current.focus();
+			onInputFocused();
+		}
+	}, [shouldFocusInput, onInputFocused]);
+
 	const handleDelete = () => {
 		setNote('');
-		if (highlightElement) {
-			const unwrap = (element: HTMLElement) => {
-				const parent = element.parentNode;
-				while (element.firstChild) {
-					if (element.firstChild instanceof HTMLElement) {
-						unwrap(element.firstChild);
-					} else {
-						parent?.insertBefore(element.firstChild, element);
-					}
-				}
-				parent?.removeChild(element);
-			};
-			unwrap(highlightElement);
-		}
 		onClose();
+		onDelete();
 	};
 
 	return (
@@ -67,6 +68,8 @@ const NotesModal = ({
 				</div>
 			</div>
 			<Textarea
+				ref={inputRef}
+				className='text-primary'
 				placeholder='Write your note'
 				value={note}
 				onChange={(e) => setNote(e.target.value)}
