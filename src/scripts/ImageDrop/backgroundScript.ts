@@ -19,11 +19,12 @@ chrome.contextMenus.create({
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	if (info.menuItemId === 'ImageLinklib') {
 		const imageUrl = info.srcUrl;
+		// TODO (backend) save image URL from context menu
 		// Handle the image URL (e.g., save it to linklib)
 		console.log('Image URL:', imageUrl);
 		console.log('Tab:', tab);
 		if (tab?.id) {
-            console.log(tab.id);
+			console.log(tab.id);
 			chrome.tabs.sendMessage(tab.id, { type: 'saveImage', imageUrl });
 		}
 	}
@@ -32,25 +33,24 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	if (info.menuItemId === 'VideoLinklib') {
 		const videoUrl = info.srcUrl;
+		// TODO (backend) save video URL from context menu
 		// Handle the video URL (e.g., save it to linklib)
 		console.log('video URL:', videoUrl);
 		console.log('Tab:', tab);
 		if (tab?.id) {
-            console.log(tab.id);
+			console.log(tab.id);
 			chrome.tabs.sendMessage(tab.id, { type: 'saveVideo', videoUrl });
 		}
 	}
 });
 
-
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	if (info.menuItemId === 'link-Linklib') {
-		const linkUrl = info.srcUrl;
-		// Handle the link URL (e.g., save it to linklib)
+		const linkUrl = info.linkUrl;
 		console.log('link URL:', linkUrl);
 		console.log('Tab:', tab);
 		if (tab?.id) {
-            console.log(tab.id);
+			console.log(tab.id);
 			chrome.tabs.sendMessage(tab.id, { type: 'saveLink', linkUrl });
 		}
 	}

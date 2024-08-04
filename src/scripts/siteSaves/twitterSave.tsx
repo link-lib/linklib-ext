@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
+import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -29,15 +30,31 @@ const TwitterSave = () => {
 				const tweetLink =
 					(tweetLinkElement as HTMLAnchorElement)?.href || null;
 				if (tweetLink) {
-					// Send the tweet link to the background script
-					chrome.runtime.sendMessage({
-						action: 'saveTweet',
-						link: tweetLink,
-					});
-					toast({
-						title: 'Tweet saved',
-						description: tweetLink,
-					});
+					const tweetIdMatch = tweetLink.match(/status\/(\d+)/);
+					const tweetId = tweetIdMatch ? tweetIdMatch[1] : null;
+					if (tweetId) {
+						// Send the tweet link to the background script
+						chrome.runtime.sendMessage({
+							action: 'saveTweet',
+							link: tweetLink,
+						});
+						saveSocialSiteItem({
+							type: 'TWITTER',
+							nativeid: tweetId,
+						})
+							.then(() =>
+								toast({
+									title: 'Tweet saved',
+									description: tweetLink,
+								})
+							)
+							.catch(() =>
+								toast({
+									title: 'Failed to save tweet',
+									description: tweetLink,
+								})
+							);
+					}
 				}
 			} else if (target.closest('button[data-testid="removeBookmark"]')) {
 				const tweetElement = target.closest('article');

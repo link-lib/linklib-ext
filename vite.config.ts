@@ -5,15 +5,18 @@ import manifest from './manifest.json';
 import path from 'path';
 
 export default defineConfig({
-	plugins: [react(), crx({ manifest })],
-	resolve: {
-		alias: {
-			'@': path.resolve(__dirname, './src'),
-		},
-	},
-	server: {
-		watch: {
-			usePolling: true,
-		},
-	},
+  plugins: [react(), crx({ manifest })],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    watch: {
+      usePolling: true,
+    },
+    fs: {
+      cachedChecks: false,
+    },
+  },
 });
