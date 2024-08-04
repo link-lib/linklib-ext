@@ -14,7 +14,7 @@
 			"js": ["src/scripts/main.tsx"]
 		},
 		{
-			"matches": ["*://twitter.com/*"],
+			"matches": ["*://twitter.com/*", "*://x.com/*"],
 			"js": ["src/scripts/siteSaves/twitterSave.tsx"]
 		},
 		{
