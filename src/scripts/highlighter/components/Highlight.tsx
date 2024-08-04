@@ -9,6 +9,8 @@ import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+// What if we had one highlight per highlightData, but it rendered multiple portals and just calculatde the containers on render? I think that would work.
+
 export const Highlight = ({
 	rangeData,
 	range,
@@ -49,10 +51,11 @@ export const Highlight = ({
 
 	useEffect(() => {
 		try {
+			debugger;
 			const container = document.createElement('span');
-			range.setStart(rangeData.startContainer, rangeData.startOffset);
-			range.setEnd(rangeData.endContainer, rangeData.endOffset);
-			const content = range.toString();
+			range.setStart(range.startContainer, rangeData.startOffset);
+			range.setEnd(range.endContainer, rangeData.endOffset);
+			// const content = range.toString();
 
 			// Store the parent node and its original content before any changes
 			const parentNode =
@@ -62,23 +65,35 @@ export const Highlight = ({
 			// const originalContent = parentNode?.textContent;
 			const startingContainerContent = range.startContainer.textContent;
 
-			range.deleteContents();
+			const content = range.extractContents();
 			range.insertNode(container);
 			const prefix = range.startContainer.textContent;
 
 			setHighlightContainer({ container, content });
 
 			return () => {
+				debugger;
 				if (parentNode) {
-					if (range.startContainer.nodeType === Node.ELEMENT_NODE) {
-						range.startContainer.textContent =
-							startingContainerContent;
-						parentNode.normalize();
-					} else {
-						range.startContainer.textContent = prefix + content;
-						parentNode.removeChild(container);
-						parentNode.normalize();
+					if (container.parentNode) {
+						container.parentNode.removeChild(container);
 					}
+
+					if (range.startContainer.nodeType === Node.ELEMENT_NODE) {
+						range.startContainer.appendChild(content);
+					} else {
+						const textNode = document.createTextNode(
+							startingContainerContent || ''
+						);
+						range.startContainer.parentNode?.replaceChild(
+							textNode,
+							range.startContainer
+						);
+						range.setStart(textNode, rangeData.startOffset);
+						range.setEnd(textNode, rangeData.endOffset);
+						range.insertNode(content);
+					}
+
+					parentNode.normalize();
 				}
 			};
 		} catch {
