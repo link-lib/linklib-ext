@@ -5,6 +5,39 @@ import {
 	highlightColours,
 } from '@/scripts/highlighter/types/HighlightData';
 
+function getSelectionWithNewlines(selection: Selection): string {
+	if (selection.rangeCount === 0) return '';
+
+	const range = selection.getRangeAt(0);
+	const fragment = range.cloneContents();
+	const div = document.createElement('div');
+	div.appendChild(fragment);
+
+	// Function to recursively process nodes
+	function processNode(node: Node): string {
+		if (node.nodeType === Node.TEXT_NODE) {
+			return node.textContent || '';
+		}
+		if (node.nodeType === Node.ELEMENT_NODE) {
+			const element = node as Element;
+			if (element.tagName === 'BR') {
+				return '\n';
+			}
+			if (window.getComputedStyle(element).display === 'block') {
+				return (
+					'\n' +
+					Array.from(element.childNodes).map(processNode).join('') +
+					'\n'
+				);
+			}
+		}
+		return Array.from(node.childNodes).map(processNode).join('');
+	}
+
+	const body = processNode(div).trim();
+	return body;
+}
+
 export const extractHighlightData = (
 	selection: Selection
 ): HighlightData | null => {
@@ -45,12 +78,14 @@ export const extractHighlightData = (
 		);
 	}
 
+	const body = getSelectionWithNewlines(selection);
+
 	const highlightData: HighlightData = {
 		uuid: uuid(),
 		url: window.location.href,
 		pageTitle: document.title,
 		matching: {
-			body: selection.toString().replace(/\n+$/, ''),
+			body: body,
 			textPosition: {
 				start: calculateAbsolutePosition(
 					firstRange.startContainer,

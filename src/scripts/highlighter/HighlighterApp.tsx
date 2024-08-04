@@ -92,6 +92,7 @@ const HighlighterApp = () => {
 		});
 
 		if (hasChanges) {
+			debugger;
 			setHighlightContainers(newContainers);
 		}
 
