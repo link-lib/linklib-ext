@@ -9,7 +9,7 @@ import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-// What if we had one highlight per highlightData, but it rendered multiple portals and just calculatde the containers on render? I think that would work. 
+// What if we had one highlight per highlightData, but it rendered multiple portals and just calculatde the containers on render? I think that would work.
 
 export const Highlight = ({
 	rangeData,
