@@ -3,15 +3,24 @@ import { useToast } from '@/components/ui/use-toast';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import '../../index.css';
+import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {
 	console.log('Save item with ID:', itemId);
-	toast({
-		title: 'Item saved',
-		description: `Item ID: ${itemId}`,
-	});
-	// Add your save logic here
+	saveSocialSiteItem({ type: 'HN', nativeid: itemId })
+		.then(() =>
+			toast({
+				title: 'Item saved',
+				description: `Item ID: ${itemId}`,
+			})
+		)
+		.catch(() =>
+			toast({
+				title: 'Error saving item',
+				description: `Item ID: ${itemId}`,
+			})
+		);
 }
 
 // Function to inject "save" link into subtext menu

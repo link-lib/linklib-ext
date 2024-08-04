@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
+import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -26,14 +27,25 @@ const InstagramSave = () => {
 				const postLink =
 					(postLinkElement as HTMLAnchorElement)?.href || null;
 				if (postLink) {
-					// Send the post link to the background script
+					saveSocialSiteItem({
+						type: 'INSTAGRAM',
+						link: postLink,
+					})
+						.then(() =>
+							toast({
+								title: 'Post saved',
+								description: postLink,
+							})
+						)
+						.catch(() =>
+							toast({
+								title: 'Error saving post',
+								description: postLink,
+							})
+						);
 					chrome.runtime.sendMessage({
 						action: 'savePost',
 						link: postLink,
-					});
-					toast({
-						title: 'Post saved',
-						description: postLink,
 					});
 				}
 			} else if (unsaveButton) {
