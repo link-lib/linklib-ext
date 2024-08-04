@@ -11,7 +11,7 @@ const createHighlight = {
 	'element-range': createRangesByElement,
 };
 
-export const createHighlightElement = createHighlight['element-range'];
+export const createHighlightElement = createHighlight['range-based'];
 
 export const checkOverlap = (
 	existing: HighlightData,

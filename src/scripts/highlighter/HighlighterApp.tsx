@@ -184,25 +184,15 @@ const HighlighterApp = () => {
 				handleClose={handleClose}
 				handleRate={handleRate}
 			/>
-			{Object.values(highlightContainers).flatMap((containers) =>
-				containers.reverse().map(({ range, uuid, notesOpen }) => {
-					return (
-						<Highlight
-							rangeData={{
-								startContainer: range.endContainer,
-								startOffset: range.startOffset,
-								endContainer: range.endContainer,
-								endOffset: range.endOffset,
-							}}
-							range={range}
-							highlightData={highlights[uuid]}
-							setHighlightData={handleEditHighlight}
-							onDelete={() => handleDeleteHighlight(uuid)}
-							notesOpen={notesOpen || false}
-						/>
-					);
-				})
-			)}
+			{Object.entries(highlights).map(([uuid, highlightData]) => (
+				<Highlight
+					key={uuid}
+					highlightData={highlightData}
+					setHighlightData={handleEditHighlight}
+					onDelete={() => handleDeleteHighlight(uuid)}
+					notesOpen={false}
+				/>
+			))}
 			{/* {Object.entries(highlightContainers).map(([uuid, containers]) => {
 				const firstContainer = containers[0];
 				const highlightElement = firstContainer.highlightContainer;
