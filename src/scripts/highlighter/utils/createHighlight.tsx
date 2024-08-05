@@ -1,17 +1,28 @@
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { createRangesByElement } from '@/scripts/highlighter/utils/createHighlight/createRangeByElement';
+
 import { createHighlightElementTextBased } from '@/scripts/highlighter/utils/createHighlight/createRangeFromTextSearch';
+import { createRangeUsingWindowFind } from '@/scripts/highlighter/utils/createHighlight/createRangeUsingWindowFind';
 import { createHighlightFromRange } from '@/scripts/highlighter/utils/createHighlight/utils/splitRanges';
 import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createRangesClaude';
 
-const createHighlight = {
+export const createElementFallbackOrder = [
+	'text-based',
+	'range-based',
+	'element-range',
+	'text-window-find',
+	'claude-3.5-restore',
+];
+
+export const createHighlight = {
 	'text-based': createHighlightElementTextBased,
 	'range-based': createHighlightFromRange,
-	'claude-3.5-restore': createHighlightElementClaudeBased,
 	'element-range': createRangesByElement,
+	'claude-3.5-restore': createHighlightElementClaudeBased,
+	'text-window-find': createRangeUsingWindowFind,
 };
 
-export const createHighlightElement = createHighlight['range-based'];
+export const createHighlightElement = createHighlight['element-range'];
 
 export const checkOverlap = (
 	existing: HighlightData,

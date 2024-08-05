@@ -199,4 +199,6 @@ export const createHighlightElementClaudeBased = (
 
 		return containers;
 	}
+
+	return [];
 };

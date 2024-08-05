@@ -6,7 +6,10 @@ import {
 import useStateCallback from '@/lib/hooks/useStateCallback';
 import NotesModal from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
-import { createHighlightElement } from '@/scripts/highlighter/utils/createHighlight';
+import {
+	createElementFallbackOrder,
+	createHighlight,
+} from '@/scripts/highlighter/utils/createHighlight';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -58,24 +61,40 @@ export const Highlight = ({
 	const [shouldFocusInput, setShouldFocusInput] = useState(notesOpen);
 
 	useEffect(() => {
-		const ranges = createHighlightElement(highlightData);
-		const containers = ranges.map((range) => {
-			const container = document.createElement('span');
-			const content = range.extractContents();
-			range.insertNode(container);
-			return { container, content };
-		});
-		setHighlightContainers(containers);
+		for (const strategy of createElementFallbackOrder) {
+			let ranges: Range[] = [];
+			try {
+				ranges =
+					createHighlight[strategy as keyof typeof createHighlight](
+						highlightData
+					);
 
-		return () => {
-			containers.forEach(({ container, content }) => {
-				const parentNode = container.parentNode;
-				if (parentNode) {
-					parentNode.replaceChild(content, container);
-					parentNode?.normalize();
+				if (ranges.length === 0) {
+					continue;
 				}
-			});
-		};
+
+				const containers = ranges.map((range) => {
+					const container = document.createElement('span');
+					const content = range.extractContents();
+					range.insertNode(container);
+					return { container, content };
+				});
+
+				setHighlightContainers(containers);
+
+				return () => {
+					containers.forEach(({ container, content }) => {
+						const parentNode = container.parentNode;
+						if (parentNode) {
+							parentNode.replaceChild(content, container);
+							parentNode?.normalize();
+						}
+					});
+				};
+			} catch (e) {
+				console.error(`Error with ${strategy} strategy:`, e);
+			}
+		}
 	}, [highlightData]);
 
 	useEffect(() => {
@@ -88,7 +107,7 @@ export const Highlight = ({
 
 	useEffect(() => {
 		if (note !== highlightData.note && !isPopoverOpen) {
-			setHighlightData({ ...highlightData, note });
+			// setHighlightData({ ...highlightData, note });
 		}
 	}, [isPopoverOpen, note, highlightData, setHighlightData]);
 

@@ -19,7 +19,6 @@ export const createHighlightFromRange = (highlightData: HighlightData) => {
 
 	const ranges = [];
 
-	debugger;
 	if (startNode && endNode) {
 		// Create a TreeWalker to iterate text nodes between startNode and endNode
 		const walker = document.createTreeWalker(
