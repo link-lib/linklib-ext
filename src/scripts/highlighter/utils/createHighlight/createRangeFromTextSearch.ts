@@ -122,4 +122,5 @@ export const createHighlightElementTextBased = (
 
 		return containers;
 	}
+	return [];
 };
