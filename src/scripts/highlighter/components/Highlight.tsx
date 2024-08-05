@@ -69,7 +69,17 @@ export const Highlight = ({
 						highlightData
 					);
 
-				if (ranges.length === 0) {
+				const validRanges = ranges.filter(
+					(range) =>
+						range.startContainer.nodeType === Node.TEXT_NODE &&
+						range.endContainer.nodeType === Node.TEXT_NODE
+				);
+
+				if (
+					validRanges.length < ranges.length ||
+					validRanges.length === 0 ||
+					validRanges.length > 100
+				) {
 					continue;
 				}
 

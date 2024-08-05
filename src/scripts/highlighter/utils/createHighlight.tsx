@@ -9,8 +9,8 @@ import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/c
 export const createElementFallbackOrder = [
 	'text-based',
 	'range-based',
-	'element-range',
 	'text-window-find',
+	'element-range',
 	'claude-3.5-restore',
 ];
 
