@@ -31,7 +31,7 @@ reactRoot.render(
 				<ImageDrop />
 				<Toaster />
 				<MenuToasts />
-				<div className='md:sticky md:block'></div>
+				<div className='md:bb-sticky md:bb-block'></div>
 			</html>
 		</div>
 	</React.StrictMode>

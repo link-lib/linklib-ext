@@ -8,7 +8,7 @@ export default {
 		container: false,
 	},
 	important: true,
-	// prefix: 'tw-',
+	prefix: 'bb-',
 	darkMode: ['class'],
 	content: [
 		'./index.html',

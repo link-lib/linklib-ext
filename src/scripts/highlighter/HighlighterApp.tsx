@@ -152,7 +152,7 @@ const HighlighterApp = () => {
 					/>
 				);
 			})} */}
-			<div className='md:sticky lg:block md:tw-left-auto md:tw-bottom-5 md:tw-right-5 md:tw-pl-4'></div>
+			<div className='md:bb-sticky lg:bb-block md:bb-tw-left-auto md:bb-tw-bottom-5 md:bb-tw-right-5 md:bb-tw-pl-4'></div>
 		</>
 	);
 };
