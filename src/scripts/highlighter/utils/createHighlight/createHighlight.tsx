@@ -4,7 +4,7 @@ import { createRangesByElement } from '@/scripts/highlighter/utils/createHighlig
 import { createHighlightElementTextBased } from '@/scripts/highlighter/utils/createHighlight/createRangeFromTextSearch';
 import { createRangeUsingWindowFind } from '@/scripts/highlighter/utils/createHighlight/createRangeUsingWindowFind';
 import { createHighlightFromRange } from '@/scripts/highlighter/utils/createHighlight/utils/splitRanges';
-import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createRangesClaude';
+import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createHighlight/createRangesClaude';
 
 export const createElementFallbackOrder = [
 	'text-based',

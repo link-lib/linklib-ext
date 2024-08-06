@@ -9,7 +9,7 @@ import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
 	createElementFallbackOrder,
 	createHighlight,
-} from '@/scripts/highlighter/utils/createHighlight';
+} from '@/scripts/highlighter/utils/createHighlight/createHighlight';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
