@@ -4,7 +4,7 @@
 @tailwind screens;
 
 @layer base {
-	.linklib-ext {
+	html {
 		--background: 225 7% 19%;
 		--foreground: 210 40% 98%;
 
@@ -43,7 +43,7 @@
 		--rem: 16px;
 	}
 
-	.linklib-ext .dark {
+	.dark {
 		--background: 45 46 52;
 		--foreground: 210 40% 98%;
 
@@ -80,8 +80,7 @@
 		--success-foreground: 0 0% 100%;
 	}
 
-	.linklib-ext,
-	.linklib-ext * {
+	* {
 		box-sizing: border-box; /* 1 */
 		border-width: 0; /* 2 */
 		border-style: solid; /* 2 */
@@ -90,17 +89,16 @@
 		font-size: var(--rem) !important;
 	}
 
-	.linklib-ext ::before,
-	.linklib-ext ::after {
+	::before,
+	::after {
 		--tw-content: '';
 	}
 
-	.linklib-ext :root {
+	:root {
 		font-size: var(--rem) !important;
 	}
 
-	.linklib-ext html,
-	.linklib-ext {
+	html {
 		line-height: 1.5; /* 1 */
 		-webkit-text-size-adjust: 100%; /* 2 */
 		-moz-tab-size: 4; /* 3 */
@@ -113,45 +111,45 @@
 		font-size: 16px !important;
 	}
 
-	.linklib-ext body {
+	body {
 		margin: 0; /* 1 */
 		line-height: inherit; /* 2 */
 	}
 
-	.linklib-ext hr {
+	hr {
 		height: 0; /* 1 */
 		color: inherit; /* 2 */
 		border-top-width: 1px; /* 3 */
 	}
 
-	.linklib-ext abbr[title] {
+	abbr[title] {
 		text-decoration: underline dotted;
 	}
 
-	.linklib-ext h1,
-	.linklib-ext h2,
-	.linklib-ext h3,
-	.linklib-ext h4,
-	.linklib-ext h5,
-	.linklib-ext h6 {
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
 		font-size: inherit;
 		font-weight: inherit;
 	}
 
-	.linklib-ext a {
+	a {
 		color: inherit;
 		text-decoration: inherit;
 	}
 
-	.linklib-ext b,
-	.linklib-ext strong {
+	b,
+	strong {
 		font-weight: bolder;
 	}
 
-	.linklib-ext code,
-	.linklib-ext kbd,
-	.linklib-ext samp,
-	.linklib-ext pre {
+	code,
+	kbd,
+	samp,
+	pre {
 		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
 			'Liberation Mono', 'Courier New', monospace; /* 1 */
 		font-feature-settings: normal; /* 2 */
@@ -159,37 +157,37 @@
 		font-size: 1em; /* 4 */
 	}
 
-	.linklib-ext small {
+	small {
 		font-size: 80%;
 	}
 
-	.linklib-ext sub,
-	.linklib-ext sup {
+	sub,
+	sup {
 		font-size: 75%;
 		line-height: 0;
 		position: relative;
 		vertical-align: baseline;
 	}
 
-	.linklib-ext sub {
+	sub {
 		bottom: -0.25em;
 	}
 
-	.linklib-ext sup {
+	sup {
 		top: -0.5em;
 	}
 
-	.linklib-ext table {
+	table {
 		text-indent: 0; /* 1 */
 		border-color: inherit; /* 2 */
 		border-collapse: collapse; /* 3 */
 	}
 
-	.linklib-ext button,
-	.linklib-ext input,
-	.linklib-ext optgroup,
-	.linklib-ext select,
-	.linklib-ext textarea {
+	button,
+	input,
+	optgroup,
+	select,
+	textarea {
 		font-family: inherit; /* 1 */
 		font-feature-settings: inherit; /* 1 */
 		font-variation-settings: inherit; /* 1 */
@@ -202,116 +200,127 @@
 		padding: 0; /* 3 */
 	}
 
-	.linklib-ext button,
-	.linklib-ext select {
+	button,
+	select {
 		text-transform: none;
 	}
 
-	.linklib-ext button,
-	.linklib-ext [type='button'],
-	.linklib-ext [type='reset'],
-	.linklib-ext [type='submit'] {
+	button,
+	[type='button'],
+	[type='reset'],
+	[type='submit'] {
 		-webkit-appearance: button; /* 1 */
 		background-color: transparent; /* 2 */
 		background-image: none; /* 3 */
 	}
 
-	.linklib-ext :-moz-focusring {
+	:-moz-focusring {
 		outline: auto;
 	}
 
-	.linklib-ext :-moz-ui-invalid {
+	:-moz-ui-invalid {
 		box-shadow: none;
 	}
 
-	.linklib-ext progress {
+	progress {
 		vertical-align: baseline;
 	}
 
-	.linklib-ext ::-webkit-inner-spin-button,
-	.linklib-ext ::-webkit-outer-spin-button {
+	::-webkit-inner-spin-button,
+	::-webkit-outer-spin-button {
 		height: auto;
 	}
 
-	.linklib-ext [type='search'] {
+	[type='search'] {
 		-webkit-appearance: textfield; /* 1 */
 		outline-offset: -2px; /* 2 */
 	}
 
-	.linklib-ext ::-webkit-search-decoration {
+	::-webkit-search-decoration {
 		-webkit-appearance: none;
 	}
 
-	.linklib-ext ::-webkit-file-upload-button {
+	::-webkit-file-upload-button {
 		-webkit-appearance: button; /* 1 */
 		font: inherit; /* 2 */
 	}
 
-	.linklib-ext summary {
+	summary {
 		display: list-item;
 	}
 
-	.linklib-ext p,
-	.linklib-ext pre {
+	p,
+	pre {
 		margin: 0;
 	}
 
-	.linklib-ext fieldset {
+	fieldset {
 		margin: 0;
 		padding: 0;
 	}
 
-	.linklib-ext legend {
+	legend {
 		padding: 0;
 	}
 
-	.linklib-ext ol,
-	.linklib-ext ul,
-	.linklib-ext menu {
+	ol,
+	ul,
+	menu {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.linklib-ext textarea {
+	textarea {
 		resize: vertical;
 	}
 
-	.linklib-ext input::placeholder,
-	.linklib-ext textarea::placeholder {
+	input::placeholder,
+	textarea::placeholder {
 		opacity: 1; /* 1 */
 		color: #9ca3af; /* 2 */
 	}
 
-	.linklib-ext button,
-	.linklib-ext [role='button'] {
+	button,
+	[role='button'] {
 		cursor: pointer;
 	}
 
-	.linklib-ext :disabled,
-	.linklib-ext [aria-disabled='true'] {
+	:disabled,
+	[aria-disabled='true'] {
 		cursor: default;
 	}
 
-	.linklib-ext img,
-	.linklib-ext svg,
-	.linklib-ext video,
-	.linklib-ext canvas,
-	.linklib-ext audio,
-	.linklib-ext iframe,
-	.linklib-ext embed,
-	.linklib-ext object {
+	img,
+	svg,
+	video,
+	canvas,
+	audio,
+	iframe,
+	embed,
+	object {
 		display: block;
 		vertical-align: middle;
 	}
 
-	.linklib-ext img,
-	.linklib-ext video {
+	img,
+	video {
 		max-width: 100%;
 		height: auto;
 	}
 
-	.linklib-ext [hidden] {
+	[hidden] {
 		display: none;
 	}
 }
+
+/* -sidebar {
+	font-size: 16px;
+	line-height: 1.5;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Helvetica Neue', Arial, sans-serif;
+}
+
+-sidebar * {
+	box-sizing: border-box;
+} */
