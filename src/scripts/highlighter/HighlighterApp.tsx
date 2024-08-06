@@ -16,6 +16,8 @@ const HighlighterApp = () => {
 		[key: string]: HighlightData;
 	}>(initialHighlights);
 
+	const [openNoteUuid, setOpenNoteUuid] = useState<string | null>(null);
+
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
 	>({ display: 'none' });
@@ -74,10 +76,11 @@ const HighlighterApp = () => {
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
-				setHighlights({
-					...highlights,
+				setHighlights((prevHighlights) => ({
+					...prevHighlights,
 					[highlightData.uuid]: highlightData,
-				});
+				}));
+				setOpenNoteUuid(highlightData.uuid);
 			}
 			window.getSelection()?.empty();
 		}
@@ -129,7 +132,7 @@ const HighlighterApp = () => {
 					highlightData={highlightData}
 					setHighlightData={handleEditHighlight}
 					onDelete={() => handleDeleteHighlight(uuid)}
-					notesOpen={false}
+					notesOpen={openNoteUuid === uuid}
 				/>
 			))}
 			{/* {Object.entries(highlightContainers).map(([uuid, containers]) => {
