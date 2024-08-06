@@ -106,8 +106,6 @@ export const extractHighlightData = (
 					firstRange.startContainer
 				),
 				endContainer: generateXPathForElement(lastRange.endContainer),
-				startContainerObj: firstRange.startContainer,
-				endContainerObj: lastRange.endContainer,
 			},
 			surroundingText: {
 				prefix: extractSurroundingText(

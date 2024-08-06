@@ -107,7 +107,7 @@ export const Highlight = ({
 				console.error(`Error with ${strategy} strategy:`, e);
 			}
 		}
-	}, [highlightData]);
+	}, [highlightData.matching]);
 
 	useEffect(() => {
 		if (notesOpen) {
@@ -119,7 +119,7 @@ export const Highlight = ({
 
 	useEffect(() => {
 		if (note !== highlightData.note && !isPopoverOpen) {
-			// setHighlightData({ ...highlightData, note });
+			setHighlightData({ ...highlightData, note });
 		}
 	}, [isPopoverOpen, note, highlightData, setHighlightData]);
 

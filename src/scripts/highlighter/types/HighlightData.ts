@@ -13,8 +13,6 @@ export type HighlightData = {
 			// "/div[1]/div[1]/div[2]/div[2]/div[2]/div[1]/article[1]/div[4]/div[1]/div[1]/p[4]/span[3]"
 			startContainer: string;
 			endContainer: string;
-			startContainerObj?: Node;
-			endContainerObj?: Node;
 		};
 		surroundingText: {
 			prefix: string;
