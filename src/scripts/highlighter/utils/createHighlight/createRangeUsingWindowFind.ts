@@ -14,6 +14,7 @@ export const createRangeUsingWindowFind = (
 	window.getSelection()?.removeAllRanges();
 
 	// Use window.find() to locate the text
+	// debugger;
 	if (window.find(searchText, false, false, true, false, true, false)) {
 		const selection = window.getSelection();
 		if (selection && selection.rangeCount > 0) {

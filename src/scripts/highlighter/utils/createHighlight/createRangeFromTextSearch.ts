@@ -37,6 +37,8 @@ const findTextPosition = (highlightData: HighlightData) => {
 			accumulatedText += '\n';
 		}
 
+		// if (accumulatedText.includes('with the image')) debugger;
+
 		if (accumulatedText.includes(searchText)) {
 			// Once we have accumulated the text of the whole document, we stop at the textnode where our searchText is found
 
@@ -99,6 +101,7 @@ const findTextPosition = (highlightData: HighlightData) => {
 
 		currentNode = walker.nextNode();
 	}
+	// debugger;
 	return { startNode, startOffset, endNode, endOffset };
 };
 

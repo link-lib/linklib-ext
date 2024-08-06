@@ -86,7 +86,9 @@ export const Highlight = ({
 				const containers = ranges.map((range) => {
 					const container = document.createElement('span');
 					const content = range.extractContents();
+					range.startContainer.parentNode?.normalize();
 					range.insertNode(container);
+					container.parentNode?.normalize();
 					return { container, content };
 				});
 
