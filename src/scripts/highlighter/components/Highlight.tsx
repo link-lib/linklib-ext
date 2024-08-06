@@ -9,7 +9,7 @@ import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
 	createElementFallbackOrder,
 	createHighlight,
-} from '@/scripts/highlighter/utils/createHighlight';
+} from '@/scripts/highlighter/utils/createHighlight/createHighlight';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -86,7 +86,9 @@ export const Highlight = ({
 				const containers = ranges.map((range) => {
 					const container = document.createElement('span');
 					const content = range.extractContents();
+					range.startContainer.parentNode?.normalize();
 					range.insertNode(container);
+					container.parentNode?.normalize();
 					return { container, content };
 				});
 
@@ -105,7 +107,7 @@ export const Highlight = ({
 				console.error(`Error with ${strategy} strategy:`, e);
 			}
 		}
-	}, [highlightData]);
+	}, [highlightData.matching]);
 
 	useEffect(() => {
 		if (notesOpen) {
@@ -117,7 +119,7 @@ export const Highlight = ({
 
 	useEffect(() => {
 		if (note !== highlightData.note && !isPopoverOpen) {
-			// setHighlightData({ ...highlightData, note });
+			setHighlightData({ ...highlightData, note });
 		}
 	}, [isPopoverOpen, note, highlightData, setHighlightData]);
 

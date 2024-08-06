@@ -4,22 +4,22 @@ import { createRangesByElement } from '@/scripts/highlighter/utils/createHighlig
 import { createHighlightElementTextBased } from '@/scripts/highlighter/utils/createHighlight/createRangeFromTextSearch';
 import { createRangeUsingWindowFind } from '@/scripts/highlighter/utils/createHighlight/createRangeUsingWindowFind';
 import { createHighlightFromRange } from '@/scripts/highlighter/utils/createHighlight/utils/splitRanges';
-import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createRangesClaude';
+import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createHighlight/createRangesClaude';
 
 export const createElementFallbackOrder = [
 	'text-based',
-	'range-based',
 	'text-window-find',
+	'range-based',
 	'element-range',
 	'claude-3.5-restore',
 ];
 
 export const createHighlight = {
 	'text-based': createHighlightElementTextBased,
+	'text-window-find': createRangeUsingWindowFind,
 	'range-based': createHighlightFromRange,
 	'element-range': createRangesByElement,
 	'claude-3.5-restore': createHighlightElementClaudeBased,
-	'text-window-find': createRangeUsingWindowFind,
 };
 
 export const createHighlightElement = createHighlight['element-range'];
@@ -94,7 +94,7 @@ export const extendHighlight = (
 			...existing.matching,
 			body: mergedBody,
 			textPosition: { start, end },
-			rangeSelector: {
+				rangeSelector: {
 				startOffset: Math.min(
 					existing.matching.rangeSelector.startOffset,
 					newHighlight.matching.rangeSelector.startOffset
