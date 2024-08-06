@@ -155,7 +155,7 @@ export const Highlight = ({
 						<PopoverTrigger asChild>
 							<span
 								highlight-id={`highlight-${highlightData.uuid}`}
-								className='bg-yellow-400 cursor-pointer'
+								className='bb-bg-yellow-400 bb-cursor-pointer'
 								onClick={(e) => {
 									e.preventDefault();
 									e.stopPropagation();
@@ -170,7 +170,7 @@ export const Highlight = ({
 							</span>
 						</PopoverTrigger>
 						{index === 0 && (
-							<PopoverContent className='w-[550px]'>
+							<PopoverContent className='bb-w-[550px]'>
 								<NotesModal
 									note={note}
 									setNote={setNote}

@@ -81,7 +81,7 @@ const ToastClose = React.forwardRef<
 		toast-close=''
 		{...props}
 	>
-		<Cross2Icon className='h-4 w-4' />
+		<Cross2Icon className='bb-h-4 bb-w-4' />
 	</ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
@@ -92,7 +92,7 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
 	<ToastPrimitives.Title
 		ref={ref}
-		className={cn('text-sm font-semibold [&+div]:text-xs', className)}
+		className={cn(':bb-text-sm font-semibold [&+div]:text-xs', className)}
 		{...props}
 	/>
 ));
@@ -104,7 +104,7 @@ const ToastDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
 	<ToastPrimitives.Description
 		ref={ref}
-		className={cn('text-sm opacity-90', className)}
+		className={cn(':bb-text-sm opacity-90', className)}
 		{...props}
 	/>
 ));

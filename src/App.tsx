@@ -15,7 +15,7 @@ function App() {
 				<a href='https://react.dev' target='_blank'>
 					<img
 						src={reactLogo}
-						className='logo react'
+						className='logo bb-react'
 						alt='React logo'
 					/>
 				</a>
@@ -23,12 +23,12 @@ function App() {
 			<h1>Linklib</h1>
 			<div className='card'>
 				<button
-					className='pb-2 mb-3'
+					className='bb-pb-2 bb-mb-3'
 					onClick={() => setCount((count) => count + 1)}
 				>
 					count is {count}
 				</button>
-				<p className='text-center'>I don' think this is working</p>
+				<p className='bb-text-center'>I don' think this is working</p>
 			</div>
 		</>
 	);

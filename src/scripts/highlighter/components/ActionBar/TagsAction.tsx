@@ -38,16 +38,16 @@ const frameworks = [
 
 export function TagsAction() {
 	return (
-		<div className='relative group cursor-pointer'>
-			<button className='group-hover:text-white group-hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-				<Plus className='w-full h-full' />
+		<div className='bb-relative bb-group bb-cursor-pointer'>
+			<button className='bb-group-hover:text-white bb-group-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'>
+				<Plus className='bb-w-full bb-h-full' />
 			</button>
-			<div className='absolute left-1/2 transform -translate-x-1/2 p-0 hidden group-hover:block rounded-lg'>
-				<div className='mt-2'>
+			<div className='bb-absolute bb-left-1/2 bb-transform bb--translate-x-1/2 bb-p-0 bb-hidden bb-group-hover:block bb-rounded-lg'>
+				<div className='bb-mt-2'>
 					<Command>
 						<CommandInput
 							placeholder='Search framework...'
-							className='h-9'
+							className='bb-h-9'
 						/>
 						<CommandEmpty>No framework found.</CommandEmpty>
 						<CommandList>

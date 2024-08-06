@@ -38,7 +38,7 @@ export const StarRating = ({
 					stars.push(
 						<button>
 							<Star
-								className='w-4 h-4 cursor-pointer'
+								className='bb-w-4 bb-h-4 bb-cursor-pointer'
 								key={i}
 								fill='yellow'
 								strokeWidth={1}
@@ -64,7 +64,7 @@ export const StarRating = ({
 					stars.push(
 						<button>
 							<StarHalf
-								className='w-4 h-4 cursor-pointer'
+								className='bb-w-4 bb-h-4 bb-cursor-pointer'
 								key={i}
 								fill='yellow'
 								strokeWidth={1}
@@ -90,7 +90,7 @@ export const StarRating = ({
 					stars.push(
 						<button>
 							<Star
-								className='w-4 h-4 cursor-pointer'
+								className='bb-w-4 bb-h-4 bb-cursor-pointer'
 								key={i}
 								strokeWidth={1}
 								onMouseMove={(e) =>
@@ -120,7 +120,7 @@ export const StarRating = ({
 					stars.push(
 						<button>
 							<Star
-								className='w-4 h-4 cursor-pointer'
+								className='bb-w-4 bb-h-4 bb-cursor-pointer'
 								key={i}
 								fill='yellow'
 								strokeWidth={1}
@@ -146,7 +146,7 @@ export const StarRating = ({
 					stars.push(
 						<button>
 							<StarHalf
-								className='w-4 h-4 cursor-pointer'
+								className='bb-w-4 bb-h-4 bb-cursor-pointer'
 								key={i}
 								fill='yellow'
 								strokeWidth={1}
@@ -172,7 +172,7 @@ export const StarRating = ({
 					stars.push(
 						<button>
 							<Star
-								className='w-4 h-4 cursor-pointer'
+								className='bb-w-4 bb-h-4 bb-cursor-pointer'
 								key={i}
 								strokeWidth={1}
 								onMouseMove={(e) =>
@@ -200,10 +200,14 @@ export const StarRating = ({
 	};
 
 	if (horizontal) {
-		return <div className='flex flex-row gap-x-1'>{renderStars()}</div>;
+		return (
+			<div className='bb-flex bb-flex-row bb-gap-x-1'>
+				{renderStars()}
+			</div>
+		);
 	} else {
 		return (
-			<div className='flex flex-col gap-y-1'>
+			<div className='bb-flex bb-flex-col bb-gap-y-1'>
 				{renderStars().reverse()}
 			</div>
 		);

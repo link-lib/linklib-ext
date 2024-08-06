@@ -25,7 +25,10 @@ const Message: React.FC<MessageProps> = ({
 }) => {
 	return (
 		<div
-			className={cn('flex', user === 0 ? 'justify-end' : 'justify-start')}
+			className={cn(
+				':bb-flex',
+				user === 0 ? 'justify-end' : 'justify-start'
+			)}
 		>
 			<div
 				className={cn(

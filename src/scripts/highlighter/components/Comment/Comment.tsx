@@ -11,7 +11,7 @@ const Comment: React.FC<CommentProps> = ({ uuid, note, top }) => {
 	return (
 		<div
 			key={uuid}
-			className='absolute right-5 w-72'
+			className='bb-absolute bb-right-5 bb-w-72'
 			style={{ top: `${top}px` }}
 		>
 			<Card>

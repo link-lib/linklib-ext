@@ -39,37 +39,37 @@ const NotesModal = ({
 
 	return (
 		<div>
-			<div className='flex gap-2 justify-between items-center flex-row rounded-md p-2 text-sm'>
+			<div className='bb-flex bb-gap-2 bb-justify-between bb-items-center bb-flex-row bb-rounded-md bb-p-2 bb-text-sm'>
 				<div>
-					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-						<CirclePlus className='w-full h-full' />
+					<button className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'>
+						<CirclePlus className='bb-w-full bb-h-full' />
 					</button>
-					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+					<button className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'>
 						😂
 					</button>
-					<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+					<button className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'>
 						🥲
 					</button>
 				</div>
-				<div className='flex flex-row items-center'>
+				<div className='bb-flex bb-flex-row bb-items-center'>
 					<StarRating onRating={setRating} initialRating={rating} />
 					<button
-						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+						className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'
 						onClick={handleDelete}
 					>
-						<Trash2 className='w-full h-full' />
+						<Trash2 className='bb-w-full bb-h-full' />
 					</button>
 					<button
-						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+						className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'
 						onClick={onClose}
 					>
-						<X className='w-full h-full' />
+						<X className='bb-w-full bb-h-full' />
 					</button>
 				</div>
 			</div>
 			<Textarea
 				ref={inputRef}
-				className='text-primary'
+				className='bb-text-primary'
 				placeholder='Write your note'
 				value={note}
 				onChange={(e) => setNote(e.target.value)}

@@ -117,19 +117,19 @@ const ImageDrop = () => {
 	return (
 		<div
 			id='dropContainer'
-			className='fixed bottom-1 right-1 z-50 image-drop w-fit '
+			className='bb-fixed bb-bottom-1 bb-right-1 bb-z-50 bb-image-drop bb-w-fit bb-'
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			onDragOver={(e) => e.preventDefault()}
 		>
 			{isDragging ? (
-				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
-					<PlusCircle className='w-full h-full text-yellow-500' />
+				<div className='bb-rounded-full bb-w-10 bb-h-10 bb-flex bb-items-center bb-justify-center bb-bg-popover'>
+					<PlusCircle className='bb-w-full bb-h-full bb-text-yellow-500' />
 				</div>
 			) : isHovered || isSelectingFile ? (
 				<Card>
 					<CardHeader>
-						<div className='flex flex-col items-center gap-2'>
+						<div className='bb-flex bb-flex-col bb-items-center bb-gap-2'>
 							<p>
 								Drag & Drop Images onto the plus to save it in
 								Linklib
@@ -145,8 +145,8 @@ const ImageDrop = () => {
 					</CardHeader>
 				</Card>
 			) : (
-				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
-					<PlusCircle className='w-full h-full text-white' />
+				<div className='bb-rounded-full bb-w-10 bb-h-10 bb-flex bb-items-center bb-justify-center bb-bg-popover'>
+					<PlusCircle className='bb-w-full bb-h-full bb-text-white' />
 				</div>
 			)}
 		</div>

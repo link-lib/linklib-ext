@@ -25,13 +25,13 @@ reactRoot.render(
 		{/* <style type='text/css'>{styles}</style> */}
 		{/* <style type='text/css'>{styles2}</style> */}
 		{/* <script src='https://cdn.tailwindcss.com'></script> */}
-		<div className='linklib-ext'>
+		<div className='bb-linklib-ext'>
 			<html>
 				<HighlighterApp />
 				<ImageDrop />
 				<Toaster />
 				<MenuToasts />
-				<div className='md:bb-sticky md:bb-block'></div>
+				<div className='bb-md:bb-sticky bb-md:bb-block'></div>
 			</html>
 		</div>
 	</React.StrictMode>

@@ -17,34 +17,34 @@ const ActionBar = ({
 }) => {
 	return (
 		<div
-			className='bg-popover text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
+			className='bb-bg-popover bb-text-slate-400 bb-ll-gap-3 bb-gap-2 bb-w-fit bb-absolute bb-justify-center bb-items-center bb-flex-row bb-rounded-md bb-border bb-p-2 bb-z-50 bb-text-sm'
 			style={markerPosition}
 		>
 			<button
-				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+				className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'
 				onClick={handleHighlight}
 			>
-				<Highlighter className='w-full h-full' />
+				<Highlighter className='bb-w-full bb-h-full' />
 			</button>
 			<button
-				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+				className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'
 				onClick={handleAddNote}
 			>
-				<PenBoxIcon className='w-full h-full' />
+				<PenBoxIcon className='bb-w-full bb-h-full' />
 			</button>
 			<RatingsBar onRate={handleRate} />
 			<TagsAction />
 			<button
-				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+				className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'
 				onClick={handleAddNote}
 			>
-				<Brain className='w-full h-full' />
+				<Brain className='bb-w-full bb-h-full' />
 			</button>
 			<button
-				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+				className='bb-hover:text-white bb-hover:border-white bb-border bb-border-transparent bb-cursor-pointer bb-w-6 bb-h-6 bb-rounded-lg bb-p-1 bb-transition-colors bb-duration-150'
 				onClick={handleClose}
 			>
-				<X className='w-full h-full' />
+				<X className='bb-w-full bb-h-full' />
 			</button>
 		</div>
 	);
