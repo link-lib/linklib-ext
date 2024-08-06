@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
 import { Highlight } from '@/scripts/highlighter/components/Highlight';
@@ -11,6 +11,10 @@ import {
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
 import { isEqual } from 'lodash';
+import { saveHighlight } from '@/backend/saveHighlight';
+import { toast } from '@/components/ui/use-toast';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
 
 const HighlighterApp = () => {
 	const initialHighlights: { [key: string]: HighlightData } = {};
@@ -105,19 +109,30 @@ const HighlighterApp = () => {
 		}));
 	};
 
-	const handleHighlight = () => {
-		const userSelection = window.getSelection();
-		if (userSelection) {
-			const highlightData = extractHighlightData(userSelection);
-			if (highlightData) {
-				setHighlights({
-					...highlights,
-					[highlightData.uuid]: highlightData,
-				});
+	const authModal = useContext(AuthModalContext);
+
+	const handleHighlight = useWithAuth(
+		async () => {
+			const userSelection = window.getSelection();
+			if (userSelection) {
+				const highlightData = extractHighlightData(userSelection);
+				if (highlightData) {
+					saveHighlight(highlightData)
+						.then(() =>
+							setHighlights({
+								...highlights,
+								[highlightData.uuid]: highlightData,
+							})
+						)
+						.catch(() =>
+							toast({ title: 'Error saving highlight' })
+						);
+				}
+				window.getSelection()?.empty();
 			}
-			window.getSelection()?.empty();
-		}
-	};
+		},
+		() => authModal?.setIsOpen(true)
+	);
 
 	const handleAddNote = () => {
 		const userSelection = window.getSelection();

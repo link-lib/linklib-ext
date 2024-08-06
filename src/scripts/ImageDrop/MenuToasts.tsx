@@ -1,9 +1,12 @@
+import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
 import { saveLink } from '@/backend/saveLink';
 import { useToast } from '@/components/ui/use-toast';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 const MenuToasts = () => {
 	const { toast } = useToast();
+	const authModalContext = useContext(AuthModalContext);
 
 	useEffect(() => {
 		chrome.runtime.onMessage.addListener((request) => {
@@ -19,25 +22,30 @@ const MenuToasts = () => {
 			}
 		});
 
+		// TODO: For some reason this listener is triggering twice with each save
 		chrome.runtime.onMessage.addListener((request) => {
 			if (request.type === 'saveLink') {
 				console.log('Link saved');
 				console.log(request);
-				saveLink(request.linkUrl)
-					.then(() =>
-						toast({
-							duration: 3000,
-							title: 'Link saved',
-							description: request.linkUrl,
-						})
-					)
-					.catch(() =>
-						toast({
-							duration: 3000,
-							title: 'Failed to save link',
-							description: request.linkUrl,
-						})
-					);
+				useWithAuth(
+					() =>
+						saveLink(request.linkUrl)
+							.then(() =>
+								toast({
+									duration: 3000,
+									title: 'Link saved',
+									description: request.linkUrl,
+								})
+							)
+							.catch(() =>
+								toast({
+									duration: 3000,
+									title: 'Failed to save link',
+									description: request.linkUrl,
+								})
+							),
+					() => authModalContext?.setIsOpen(true)
+				)();
 			}
 		});
 

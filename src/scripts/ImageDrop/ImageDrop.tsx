@@ -1,15 +1,24 @@
+import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
 import { saveImage } from '@/backend/saveImage';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle } from 'lucide-react';
-import { FormEventHandler, useEffect, useRef, useState } from 'react';
+import {
+	FormEventHandler,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
 	const [isSelectingFile, setIsSelectingFile] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const authModalContext = useContext(AuthModalContext);
 	const { toast } = useToast();
 
 	const handleDragEnter = (e: DragEvent) => {
@@ -97,19 +106,23 @@ const ImageDrop = () => {
 		const file = fileInputRef.current?.files?.[0];
 		if (file) {
 			console.log('Selected file:', file);
-			saveImage(file)
-				.then(() =>
-					toast({
-						title: 'Image uploaded',
-						description: `File: ${file.name}`,
-					})
-				)
-				.catch(() =>
-					toast({
-						title: 'Error uploading image',
-						description: `File: ${file.name}`,
-					})
-				);
+			useWithAuth(
+				() =>
+					saveImage(file)
+						.then(() =>
+							toast({
+								title: 'Image uploaded',
+								description: `File: ${file.name}`,
+							})
+						)
+						.catch(() =>
+							toast({
+								title: 'Error uploading image',
+								description: `File: ${file.name}`,
+							})
+						),
+				() => authModalContext?.setIsOpen(true)
+			);
 		}
 		setIsSelectingFile(false);
 	};
