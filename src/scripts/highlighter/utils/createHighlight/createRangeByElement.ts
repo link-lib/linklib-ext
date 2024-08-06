@@ -63,6 +63,7 @@ export const createRangesByElement = (highlightData: HighlightData) => {
 						}
 						break;
 					} else {
+						// @ts-expect-error ts doesn't know currentNode is a text node
 						range.setEnd(currentNode, currentNode.length);
 						if (range.toString().trim() !== '') {
 							ranges.push(range);
