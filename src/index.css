@@ -4,7 +4,7 @@
 @tailwind screens;
 
 @layer base {
-	html {
+	.linklib-ext {
 		--background: 225 7% 19%;
 		--foreground: 210 40% 98%;
 

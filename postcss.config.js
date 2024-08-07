@@ -3,7 +3,8 @@ export default {
     tailwindcss: {},
     autoprefixer: {},
     'postcss-parent-selector': {
-      selector: '.linklib-ext'
+      selector: '.linklib-ext',
+      exclude: '.linklib-ext'
     },
   },
 }
