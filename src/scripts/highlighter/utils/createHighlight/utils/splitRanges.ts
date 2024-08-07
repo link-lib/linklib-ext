@@ -1,4 +1,4 @@
-import { HighlightData } from "@/scripts/highlighter/types/HighlightData";
+import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 
 export const createHighlightFromRange = (highlightData: HighlightData) => {
 	const doc = document; // Adjust if working within iframes or other contexts

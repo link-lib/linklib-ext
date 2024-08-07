@@ -34,6 +34,10 @@ export const createRangesByElement = (highlightData: HighlightData) => {
 
 		while (currentNode) {
 			if (!rangeStart) {
+				if (currentNode.textContent?.trim() === '') {
+					currentNode = walker.nextNode();
+					continue;
+				}
 				rangeStart = currentNode;
 				rangeStartOffset =
 					currentNode === startNode

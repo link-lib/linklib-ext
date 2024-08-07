@@ -38,6 +38,9 @@ function getSelectionWithNewlines(selection: Selection): string {
 	return body;
 }
 
+('/html[1]/body[1]/div[7]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[2]/div[1]/p[5]/text()[2]');
+('/html[1]/body[1]/div[7]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[2]/div[1]/p[6]/strong[1]/text()[1]');
+
 export const extractHighlightData = (
 	selection: Selection
 ): HighlightData | null => {
@@ -181,30 +184,6 @@ const extractSurroundingText = (
 				: text.substring(offset);
 	}
 
-	// Navigate through sibling nodes to collect additional text
-	// while (textContent.split(/\s+/).filter(Boolean).length < 5) {
-	// 	currentNode =
-	// 		direction === 'backward'
-	// 			? (currentNode.previousSibling as Node)
-	// 			: (currentNode.nextSibling as Node);
-
-	// 	while (currentNode && currentNode.nodeType !== Node.TEXT_NODE) {
-	// 		// Skip non-text nodes, navigating deeper if necessary
-	// 		currentNode =
-	// 			direction === 'backward'
-	// 				? (currentNode.lastChild as Node)
-	// 				: (currentNode.firstChild as Node);
-	// 	}
-
-	// 	if (!currentNode) break; // Stop if there are no more text nodes
-
-	// 	const additionalText = currentNode.textContent || '';
-	// 	textContent =
-	// 		direction === 'backward'
-	// 			? additionalText + textContent
-	// 			: textContent + additionalText;
-	// }
-
 	let words = textContent.split(/\s+/);
 
 	if (direction === 'backward') {
@@ -221,21 +200,6 @@ const extractSurroundingText = (
 };
 
 const calculateAbsolutePosition = (node: Node, offset: number): number => {
-	// const tempWalker = document.createTreeWalker(
-	// 	document.body,
-	// 	NodeFilter.SHOW_TEXT,
-	// 	null
-	// );
-
-	// // there's a bug where someone double clicks a paragraph, the endContainer becomes a
-	// let minusOne = false;
-
-	// if (node.nodeType === Node.ELEMENT_NODE && offset === 0) {
-	// 	const nextNode = tempWalker.nextNode();
-	// 	if (nextNode) node = nextNode;
-	// 	minusOne = true;
-	// }
-
 	let position = 0;
 	const walker = document.createTreeWalker(
 		document.body,

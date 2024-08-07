@@ -24,10 +24,7 @@ const reactRoot = ReactDOM.createRoot(root);
 
 reactRoot.render(
 	<React.StrictMode>
-		{/* <style type='text/css'>{styles}</style> */}
-		{/* <style type='text/css'>{styles2}</style> */}
-		<script src='https://cdn.tailwindcss.com'></script>
-		<div className='linklib-ext'>
+		<div className='linklib-ext .linklib-ext'>
 			<html>
 				<AuthModalProvider>
 					<HighlighterApp />
