@@ -312,6 +312,12 @@
 	[hidden] {
 		display: none;
 	}
+
+	/* Add this near the end of your file, after your Tailwind imports */
+	[type='button'] {
+		-webkit-appearance: none;
+		appearance: none;
+	}
 }
 
 /* -sidebar {
