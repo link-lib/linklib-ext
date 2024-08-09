@@ -142,7 +142,7 @@ const ImageDrop = () => {
 	const handleSaveLink = () => {
 		// Implement the logic to save the current page link
 		console.log('Saving current page link');
-		// You might want to call a function from your backend here
+		// backend
 	};
 
 	const handleOpenDrawer = () => {};
@@ -169,13 +169,16 @@ const ImageDrop = () => {
 				<div className='bg-popover p-2 rounded-lg flex items-center gap-2'>
 					<HoverCard>
 						<HoverCardTrigger>
-							<Button onClick={handleButtonClick}>
+							<Button
+								onClick={handleButtonClick}
+								variant='outline'
+							>
 								<ImageUp className='w-4 h-4' />
 							</Button>
 						</HoverCardTrigger>
 						<HoverCardContent>
-							Drag and drop onto the image to the Bytebelli
-							monster to save to linklib!
+							Drag and drop any image directly on bytey to save to
+							ByteBelli!
 						</HoverCardContent>
 					</HoverCard>
 
