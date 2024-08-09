@@ -6,7 +6,6 @@ import {
 	DialogContent,
 	DialogDescription,
 	DialogTitle,
-	DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -47,10 +46,7 @@ export const AuthModal = () => {
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogTrigger asChild>
-				<button>Open Login/Signup</button>
-			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className='absolute left-0 top-0 z-1000'>
 				<DialogTitle>Login or Sign Up</DialogTitle>
 				<DialogDescription>
 					Please log in or sign up to continue.

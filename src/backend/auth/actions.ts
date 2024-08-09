@@ -1,4 +1,4 @@
-import { createClient } from '../../../utils/supabase/client';
+import { createClient, setLocalStorage } from '../../../utils/supabase/client';
 import { LoginFormSchema, SignupFormSchema } from './definitions';
 
 export async function logIn(formData: FormData) {
@@ -8,19 +8,19 @@ export async function logIn(formData: FormData) {
 	});
 
 	if (!validatedFields.success) {
-		return {
-			errors: validatedFields.error.flatten().fieldErrors,
-		};
+		throw new Error('Error in logging in');
 	}
 
 	const supabase = createClient();
-	const { error } = await supabase.auth.signInWithPassword(
+	const { data, error } = await supabase.auth.signInWithPassword(
 		validatedFields.data
 	);
 
 	if (error) {
 		throw new Error('Error in logging in');
 	}
+
+	await setLocalStorage({ session: data.session });
 }
 
 export const signUp = async (formData: FormData) => {

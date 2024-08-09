@@ -121,7 +121,7 @@ const ImageDrop = () => {
 								description: `File: ${file.name}`,
 							})
 						),
-				() => authModalContext?.setIsOpen(true)
+				authModalContext
 			);
 		}
 		setIsSelectingFile(false);

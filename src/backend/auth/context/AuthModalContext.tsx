@@ -1,6 +1,6 @@
 import React, { createContext, useState, ReactNode } from 'react';
 
-interface AuthModalContextType {
+export interface AuthModalContextType {
 	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
 }

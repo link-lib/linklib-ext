@@ -61,30 +61,25 @@ const HighlighterApp = () => {
 		}));
 	};
 
-	const authModal = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthModalContext);
 
-	const handleHighlight = useWithAuth(
-		async () => {
-			const userSelection = window.getSelection();
-			if (userSelection) {
-				const highlightData = extractHighlightData(userSelection);
-				if (highlightData) {
-					saveHighlight(highlightData)
-						.then(() =>
-							setHighlights({
-								...highlights,
-								[highlightData.uuid]: highlightData,
-							})
-						)
-						.catch(() =>
-							toast({ title: 'Error saving highlight' })
-						);
-				}
-				window.getSelection()?.empty();
+	const handleHighlight = useWithAuth(async () => {
+		const userSelection = window.getSelection();
+		if (userSelection) {
+			const highlightData = extractHighlightData(userSelection);
+			if (highlightData) {
+				saveHighlight(highlightData)
+					.then(() =>
+						setHighlights({
+							...highlights,
+							[highlightData.uuid]: highlightData,
+						})
+					)
+					.catch(() => toast({ title: 'Error saving highlight' }));
 			}
-		},
-		() => authModal?.setIsOpen(true)
-	);
+			window.getSelection()?.empty();
+		}
+	}, authModalContext);
 
 	const handleAddNote = () => {
 		const userSelection = window.getSelection();

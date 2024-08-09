@@ -44,7 +44,7 @@ const MenuToasts = () => {
 									description: request.linkUrl,
 								})
 							),
-					() => authModalContext?.setIsOpen(true)
+					authModalContext
 				)();
 			}
 		});

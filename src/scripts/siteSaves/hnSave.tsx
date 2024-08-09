@@ -1,9 +1,16 @@
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import '../../index.css';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
+import {
+	AuthModalContext,
+	AuthModalContextType,
+	AuthModalProvider,
+} from '@/backend/auth/context/AuthModalContext';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {
@@ -24,7 +31,10 @@ function saveItem(itemId: string, toast: any): void {
 }
 
 // Function to inject "save" link into subtext menu
-function injectSaveLink(toast: any): void {
+function injectSaveLink(
+	toast: any,
+	AuthModalContext: AuthModalContextType | undefined
+): void {
 	// Get all subline elements
 	const sublineElements =
 		document.querySelectorAll<HTMLSpanElement>('.subline');
@@ -56,9 +66,13 @@ function injectSaveLink(toast: any): void {
 		saveLink.className = 'linklib-save';
 
 		// Add click event to call saveItem function with the item ID
+		const saveHNPostHandler = useWithAuth(
+			() => saveItem(itemId, toast),
+			AuthModalContext
+		);
 		saveLink.addEventListener('click', (e) => {
 			e.preventDefault();
-			saveItem(itemId, toast);
+			saveHNPostHandler();
 		});
 
 		// Append the separator and the "save" link to the subline element
@@ -70,10 +84,11 @@ function injectSaveLink(toast: any): void {
 // React component to handle toast notifications
 const HNToast = () => {
 	const { toast } = useToast();
+	const authModalContext = useContext(AuthModalContext);
 
 	useEffect(() => {
-		injectSaveLink(toast);
-	}, [toast]);
+		injectSaveLink(toast, authModalContext);
+	}, [toast, authModalContext?.setIsOpen]);
 
 	return <div></div>;
 };
@@ -87,7 +102,10 @@ document.body.appendChild(root);
 // Render the React component
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<Toaster />
-		<HNToast />
+		<AuthModalProvider>
+			<Toaster />
+			<HNToast />
+			<AuthModal />
+		</AuthModalProvider>
 	</React.StrictMode>
 );
