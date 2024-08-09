@@ -1,8 +1,14 @@
+import iconImage from '@/assets/icon.png';
 import { saveImage } from '@/backend/saveImage';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from '@/components/ui/hover-card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle } from 'lucide-react';
+import { ArrowLeftFromLine, Heart, ImageUp, PlusCircle } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 
 const ImageDrop = () => {
@@ -114,6 +120,14 @@ const ImageDrop = () => {
 		setIsSelectingFile(false);
 	};
 
+	const handleSaveLink = () => {
+		// Implement the logic to save the current page link
+		console.log('Saving current page link');
+		// You might want to call a function from your backend here
+	};
+
+	const handleOpenDrawer = () => {};
+
 	return (
 		<div
 			id='dropContainer'
@@ -129,15 +143,32 @@ const ImageDrop = () => {
 			) : isHovered || isSelectingFile ? (
 				<Card>
 					<CardHeader>
-						<div className='flex flex-col items-center gap-2'>
-							<p>
-								Drag & Drop Images onto the plus to save it in
-								Linklib
-							</p>
-							<Button onClick={handleButtonClick}>
-								Upload Image
+						<div className='flex items-center gap-2'>
+							<HoverCard>
+								<HoverCardTrigger>
+									<Button onClick={handleButtonClick}>
+										<ImageUp className='w-4 h-4' />
+									</Button>
+								</HoverCardTrigger>
+								<HoverCardContent>
+									Drag & Drop Images onto the plus to save it
+									in Linklib
+								</HoverCardContent>
+							</HoverCard>
+
+							<Button onClick={handleSaveLink} variant='outline'>
+								<Heart className='w-4 h-4' />
 							</Button>
-							<form onSubmit={handleFileChange}>
+							<Button
+								onClick={handleOpenDrawer}
+								variant='outline'
+							>
+								<ArrowLeftFromLine className='w-4 h-4' />
+							</Button>
+							<form
+								onSubmit={handleFileChange}
+								className='hidden'
+							>
 								<input type='file' ref={fileInputRef} />
 								<input type='submit' role='button' />
 							</form>
@@ -146,7 +177,11 @@ const ImageDrop = () => {
 				</Card>
 			) : (
 				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
-					<PlusCircle className='w-full h-full text-white' />
+					<img
+						src={iconImage}
+						alt='Linklib Icon'
+						className='w-full h-full object-cover rounded-full'
+					/>
 				</div>
 			)}
 		</div>
