@@ -15,6 +15,7 @@ const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
 	const [isSelectingFile, setIsSelectingFile] = useState(false);
+	const [isIconUp, setIsIconUp] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
 
@@ -78,10 +79,26 @@ const ImageDrop = () => {
 		window.addEventListener('dragleave', handleDragLeave, false);
 		window.addEventListener('drop', handleDrop, false);
 
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.ctrlKey && e.shiftKey && e.key === '4') {
+				setIsIconUp((prev) => !prev);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+
+		const handleMessage = (message: any) => {
+			if (message.action === 'toggleIconPosition') {
+				setIsIconUp((prev) => !prev);
+			}
+		};
+		chrome.runtime.onMessage.addListener(handleMessage);
+
 		return () => {
 			window.removeEventListener('dragenter', handleDragEnter);
 			window.removeEventListener('dragleave', handleDragLeave);
 			window.removeEventListener('drop', handleDrop);
+			window.removeEventListener('keydown', handleKeyDown);
+			chrome.runtime.onMessage.removeListener(handleMessage);
 		};
 	}, []);
 
@@ -133,7 +150,9 @@ const ImageDrop = () => {
 	return (
 		<div
 			id='dropContainer'
-			className='fixed bottom-1 right-1 z-50 image-drop w-fit '
+			className={`fixed right-1 z-50 image-drop w-fit transition-all duration-300 ${
+				isIconUp ? 'bottom-20' : 'bottom-1'
+			}`}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			onDragOver={(e) => e.preventDefault()}
@@ -147,7 +166,7 @@ const ImageDrop = () => {
 					/>
 				</div>
 			) : isHovered || isSelectingFile ? (
-				<div className='bg-background p-2 rounded-lg flex items-center gap-2'>
+				<div className='bg-popover p-2 rounded-lg flex items-center gap-2'>
 					<HoverCard>
 						<HoverCardTrigger>
 							<Button onClick={handleButtonClick}>
@@ -155,8 +174,8 @@ const ImageDrop = () => {
 							</Button>
 						</HoverCardTrigger>
 						<HoverCardContent>
-							Drag & Drop Images onto the plus to save it in
-							Linklib
+							Drag and drop onto the image to the Bytebelli
+							monster to save to linklib!
 						</HoverCardContent>
 					</HoverCard>
 
