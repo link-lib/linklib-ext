@@ -1,14 +1,14 @@
 import iconImage from '@/assets/icon.png';
+import iconEating from '@/assets/iconEating.png';
 import { saveImage } from '@/backend/saveImage';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
 import {
 	HoverCard,
 	HoverCardContent,
 	HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { useToast } from '@/components/ui/use-toast';
-import { ArrowLeftFromLine, Heart, ImageUp, PlusCircle } from 'lucide-react';
+import { ArrowLeftFromLine, Heart, ImageUp } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 
 const ImageDrop = () => {
@@ -95,6 +95,7 @@ const ImageDrop = () => {
 
 	const handleButtonClick = () => {
 		setIsSelectingFile(true);
+		setIsDragging(false); // Ensure isDragging is false when opening file input
 		fileInputRef.current?.click();
 	};
 
@@ -118,6 +119,7 @@ const ImageDrop = () => {
 				);
 		}
 		setIsSelectingFile(false);
+		setIsDragging(false); // Reset isDragging state
 	};
 
 	const handleSaveLink = () => {
@@ -138,43 +140,43 @@ const ImageDrop = () => {
 		>
 			{isDragging ? (
 				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
-					<PlusCircle className='w-full h-full text-yellow-500' />
+					<img
+						src={chrome.runtime.getURL(iconEating)}
+						alt='Linklib Icon'
+						className='w-full h-full p-1 object-cover rounded-full'
+					/>
 				</div>
 			) : isHovered || isSelectingFile ? (
-				<Card>
-					<CardHeader>
-						<div className='flex items-center gap-2'>
-							<HoverCard>
-								<HoverCardTrigger>
-									<Button onClick={handleButtonClick}>
-										<ImageUp className='w-4 h-4' />
-									</Button>
-								</HoverCardTrigger>
-								<HoverCardContent>
-									Drag & Drop Images onto the plus to save it
-									in Linklib
-								</HoverCardContent>
-							</HoverCard>
+				<div className='bg-background p-2 rounded-lg flex items-center gap-2'>
+					<HoverCard>
+						<HoverCardTrigger>
+							<Button onClick={handleButtonClick}>
+								<ImageUp className='w-4 h-4' />
+							</Button>
+						</HoverCardTrigger>
+						<HoverCardContent>
+							Drag & Drop Images onto the plus to save it in
+							Linklib
+						</HoverCardContent>
+					</HoverCard>
 
-							<Button onClick={handleSaveLink} variant='outline'>
-								<Heart className='w-4 h-4' />
-							</Button>
-							<Button
-								onClick={handleOpenDrawer}
-								variant='outline'
-							>
-								<ArrowLeftFromLine className='w-4 h-4' />
-							</Button>
-							<form
-								onSubmit={handleFileChange}
-								className='hidden'
-							>
-								<input type='file' ref={fileInputRef} />
-								<input type='submit' role='button' />
-							</form>
-						</div>
-					</CardHeader>
-				</Card>
+					<Button onClick={handleSaveLink} variant='outline'>
+						<Heart className='w-4 h-4' />
+					</Button>
+					<Button onClick={handleOpenDrawer} variant='outline'>
+						<ArrowLeftFromLine className='w-4 h-4' />
+					</Button>
+					<form
+						onSubmit={handleFileChange}
+						className='hidden'
+						onAbort={() => {
+							setIsDragging(false);
+						}}
+					>
+						<input type='file' ref={fileInputRef} />
+						<input type='submit' role='button' />
+					</form>
+				</div>
 			) : (
 				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
 					<img
