@@ -75,7 +75,8 @@ export default {
 				},
 			},
 			zIndex: {
-				'1000': '1000', // Add custom z-index
+				'1000': '1000', 
+				'infinite': '9999999',
 			},
 			transitionProperty: {
 				...defaultTheme.transitionProperty,

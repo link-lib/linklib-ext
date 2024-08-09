@@ -87,6 +87,7 @@
 		border-color: currentColor; /* 2 */
 		font-family: 'Inter', sans-serif;
 		font-size: var(--rem) !important;
+		color: hsl(var(--foreground));
 	}
 
 	::before,
