@@ -1,9 +1,16 @@
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import '../../index.css';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
+import {
+    AuthModalContext,
+    AuthModalContextType,
+    AuthModalProvider,
+} from '@/backend/auth/context/AuthModalContext';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {
@@ -77,7 +84,10 @@ function createSvgIcon(): SVGSVGElement {
 }
 
 // Function to inject "save to Linklib" button into YouTube menu
-function injectSaveButton(toast: any): void {
+function injectSaveButton(
+    toast: any,
+    authModalContext: AuthModalContextType | undefined
+): void {
     // Get the menu element
     const menu = document.querySelector<HTMLDivElement>(
         '#above-the-fold #top-level-buttons-computed'
@@ -156,8 +166,14 @@ function injectSaveButton(toast: any): void {
     button.addEventListener('click', (e) => {
         e.preventDefault();
         const videoId = new URLSearchParams(window.location.search).get('v');
+
         if (videoId) {
-            saveItem(videoId, toast);
+            const saveYoutubeHandler = useWithAuth(
+                () => saveItem(videoId, toast),
+                authModalContext
+            );
+
+            saveYoutubeHandler();
         }
     });
 
@@ -167,7 +183,10 @@ function injectSaveButton(toast: any): void {
 }
 
 // Function to observe changes in the DOM and inject the button when the menu is available
-function observeMenu(toast: any): void {
+function observeMenu(
+    toast: any,
+    authModalContext: AuthModalContextType | undefined
+): void {
     const observer = new MutationObserver(() => {
         const fold = document.querySelector<HTMLDivElement>('#above-the-fold');
         if (!fold) return;
@@ -177,7 +196,7 @@ function observeMenu(toast: any): void {
         );
 
         if (menu) {
-            injectSaveButton(toast);
+            injectSaveButton(toast, authModalContext);
             observer.disconnect();
         }
     });
@@ -188,10 +207,11 @@ function observeMenu(toast: any): void {
 // React component to handle toast notifications
 const YouTubeToast = () => {
     const { toast } = useToast();
+    const authModalContext = useContext(AuthModalContext);
 
     useEffect(() => {
-        observeMenu(toast);
-    }, [toast]);
+        observeMenu(toast, authModalContext);
+    }, [toast, authModalContext]);
 
     return <div></div>;
 };
@@ -205,7 +225,10 @@ document.body.appendChild(root);
 // Render the React component
 ReactDOM.createRoot(root).render(
     <React.StrictMode>
-        <Toaster />
-        <YouTubeToast />
+        <AuthModalProvider>
+            <Toaster />
+            <YouTubeToast />
+            <AuthModal />
+        </AuthModalProvider>
     </React.StrictMode>
 );

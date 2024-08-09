@@ -1,9 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
+import {
+	AuthModalContext,
+	AuthModalProvider,
+} from '@/backend/auth/context/AuthModalContext';
+import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -13,6 +19,29 @@ document.body.appendChild(root);
 
 const InstagramSave = () => {
 	const { toast } = useToast();
+
+	const authModalContext = useContext(AuthModalContext);
+	const getSaveInstagramPostHandler = (postLink: string) =>
+		useWithAuth(
+			() =>
+				saveSocialSiteItem({
+					type: 'INSTAGRAM',
+					link: postLink,
+				})
+					.then(() =>
+						toast({
+							title: 'Post saved',
+							description: postLink,
+						})
+					)
+					.catch(() =>
+						toast({
+							title: 'Error saving post',
+							description: postLink,
+						})
+					),
+			authModalContext
+		);
 
 	useEffect(() => {
 		const savePost = (event: MouseEvent) => {
@@ -27,22 +56,9 @@ const InstagramSave = () => {
 				const postLink =
 					(postLinkElement as HTMLAnchorElement)?.href || null;
 				if (postLink) {
-					saveSocialSiteItem({
-						type: 'INSTAGRAM',
-						link: postLink,
-					})
-						.then(() =>
-							toast({
-								title: 'Post saved',
-								description: postLink,
-							})
-						)
-						.catch(() =>
-							toast({
-								title: 'Error saving post',
-								description: postLink,
-							})
-						);
+					console.log('found post link', postLink);
+					const handler = getSaveInstagramPostHandler(postLink);
+					handler();
 					chrome.runtime.sendMessage({
 						action: 'savePost',
 						link: postLink,
@@ -81,7 +97,10 @@ const InstagramSave = () => {
 
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<Toaster />
-		<InstagramSave />
+		<AuthModalProvider>
+			<Toaster />
+			<InstagramSave />
+			<AuthModal />
+		</AuthModalProvider>
 	</React.StrictMode>
 );

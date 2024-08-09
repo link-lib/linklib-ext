@@ -1,50 +1,47 @@
 {
-	"manifest_version": 3,
-	"name": "Linklib",
-	"description": "Extension for Linklib",
-	"version": "1.0",
-	"action": {
-		"default_popup": "index.html",
-		"default_icon": "hello_extensions.png"
-	},
-	"content_scripts": [
-		{
-			"matches": ["<all_urls>"],
-			"exclude_matches": ["http://localhost/*", "https://localhost/*"],
-			"js": ["src/scripts/main.tsx"]
-		},
-		{
-			"matches": ["*://twitter.com/*", "*://x.com/*"],
-			"js": ["src/scripts/siteSaves/twitterSave.tsx"]
-		},
-		{
-			"matches": ["*://instagram.com/*", "*://www.instagram.com/*"],
-			"js": ["src/scripts/siteSaves/instagramSave.tsx"]
-		},
-		{
-			"matches": ["*://youtube.com/*", "*://www.youtube.com/*"],
-			"js": ["src/scripts/siteSaves/youtubeSave.tsx"]
-		},
-		{
-			"matches": [
-				"*://news.ycombinator.com/*",
-				"*://www.ycombinator.com/*"
-			],
-			"js": ["src/scripts/siteSaves/hnSave.tsx"]
-		},
-		{
-			"matches": ["*://reddit.com/*", "*://www.reddit.com/*"],
-			"js": ["src/scripts/siteSaves/redditSave.tsx"]
-		}
-	],
-	"background": {
-		"service_worker": "src/scripts/ImageDrop/backgroundScript.ts",
-		"scripts": ["src/scripts/siteSaves/backgroundScript.ts"]
-	},
-	"permissions": ["contextMenus"],
-	"icons": {
-		"16": "hello_extensions.png",
-		"48": "hello_extensions.png",
-		"128": "hello_extensions.png"
-	}
+  "manifest_version": 3,
+  "name": "Linklib",
+  "description": "Extension for Linklib",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "hello_extensions.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "exclude_matches": ["http://localhost/*", "https://localhost/*"],
+      "js": ["src/scripts/main.tsx"]
+    },
+    {
+      "matches": ["*://twitter.com/*", "*://x.com/*"],
+      "js": ["src/scripts/siteSaves/twitterSave.tsx"]
+    },
+    {
+      "matches": ["*://instagram.com/*", "*://www.instagram.com/*"],
+      "js": ["src/scripts/siteSaves/instagramSave.tsx"]
+    },
+    {
+      "matches": ["*://youtube.com/*", "*://www.youtube.com/*"],
+      "js": ["src/scripts/siteSaves/youtubeSave.tsx"]
+    },
+    {
+      "matches": ["*://news.ycombinator.com/*", "*://www.ycombinator.com/*"],
+      "js": ["src/scripts/siteSaves/hnSave.tsx"]
+    },
+    {
+      "matches": ["*://reddit.com/*", "*://www.reddit.com/*"],
+      "js": ["src/scripts/siteSaves/redditSave.tsx"]
+    }
+  ],
+  "background": {
+    "service_worker": "src/scripts/ImageDrop/backgroundScript.ts",
+    "scripts": ["src/scripts/siteSaves/backgroundScript.ts"]
+  },
+  "permissions": ["contextMenus", "storage"],
+  "icons": {
+    "16": "hello_extensions.png",
+    "48": "hello_extensions.png",
+    "128": "hello_extensions.png"
+  }
 }

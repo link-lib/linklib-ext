@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           createdat: string | null
           fullPath: string | null
+          highlight_data: Json | null
           id: string
           link: string | null
           nativeid: string | null
@@ -24,6 +25,7 @@ export type Database = {
         Insert: {
           createdat?: string | null
           fullPath?: string | null
+          highlight_data?: Json | null
           id: string
           link?: string | null
           nativeid?: string | null
@@ -35,6 +37,7 @@ export type Database = {
         Update: {
           createdat?: string | null
           fullPath?: string | null
+          highlight_data?: Json | null
           id?: string
           link?: string | null
           nativeid?: string | null
