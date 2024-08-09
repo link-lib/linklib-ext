@@ -17,7 +17,7 @@ const ActionBar = ({
 }) => {
 	return (
 		<div
-			className='bg-popover text-slate-400 ll-gap-3 gap-2 w-fit absolute justify-center items-center flex-row rounded-md border p-2 z-50 text-sm'
+			className='bg-popover text-slate-400 ll-gap-3 gap-2 w-fit fixed justify-center items-center flex-row rounded-md border p-2 text-sm z-infinite'
 			style={markerPosition}
 		>
 			<button

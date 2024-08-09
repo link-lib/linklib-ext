@@ -8,6 +8,10 @@ import {
 	HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { useToast } from '@/components/ui/use-toast';
+import {
+	getArticleMetadata,
+	getLinkIcon,
+} from '@/scripts/ImageDrop/saveWebsite';
 import { ArrowLeftFromLine, Heart, ImageUp } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 
@@ -140,9 +144,43 @@ const ImageDrop = () => {
 	};
 
 	const handleSaveLink = () => {
-		// Implement the logic to save the current page link
-		console.log('Saving current page link');
-		// backend
+		// Get the current page URL
+		const url = window.location.href;
+
+		// Get the page title
+		const title = document.title;
+
+		// Get the favicon URL
+		const favicon = getLinkIcon();
+
+		// Get the author and publish date
+		const { author, publishDate } = getArticleMetadata();
+		const savedDate = new Date().toString();
+		// Log the collected data (replace with your save logic)
+		console.log('Saving link:', {
+			url,
+			title,
+			favicon,
+			author,
+			publishDate,
+			savedDate,
+		});
+
+		// const obj = {
+		// 	url,
+		// 	title,
+		// 	favicon,
+		// 	author,
+		// 	publishDate,
+		// 	savedDate,
+		// };
+		// TODO: Implement your logic to save this data
+		// saveLink({ url, title, favicon, author, publishDate });
+
+		toast({
+			title: 'Link saved',
+			description: title,
+		});
 	};
 
 	const handleOpenDrawer = () => {};
