@@ -178,9 +178,9 @@ const ImageDrop = () => {
 			) : (
 				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
 					<img
-						src={iconImage}
+						src={chrome.runtime.getURL(iconImage)}
 						alt='Linklib Icon'
-						className='w-full h-full object-cover rounded-full'
+						className='w-full h-full p-1 object-cover rounded-full'
 					/>
 				</div>
 			)}
