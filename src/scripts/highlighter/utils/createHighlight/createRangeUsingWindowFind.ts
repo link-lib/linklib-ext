@@ -14,7 +14,7 @@ export const createRangeUsingWindowFind = (
 	window.getSelection()?.removeAllRanges();
 
 	// Use window.find() to locate the text
-	// debugger;
+	// @ts-expect-error because we checked that this is a text node above
 	if (window.find(searchText, false, false, true, false, true, false)) {
 		const selection = window.getSelection();
 		if (selection && selection.rangeCount > 0) {
@@ -49,6 +49,7 @@ export const createRangeUsingWindowFind = (
 					}
 					remainingLength -= nodeLength;
 				}
+				// @ts-expect-error because we checked that this is a text node above
 				currentNode = getNextTextNode(currentNode);
 				if (currentNode) {
 					endNode = currentNode;
@@ -90,6 +91,7 @@ const getNextTextNode = (node: Node): Node | null => {
 			next = next.nextSibling;
 		} else {
 			while (next && !next.nextSibling) {
+				// @ts-expect-error because we checked that this is a text node above
 				next = next.parentNode;
 			}
 			next = next ? next.nextSibling : null;

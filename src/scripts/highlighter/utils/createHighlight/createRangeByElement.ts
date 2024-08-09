@@ -63,6 +63,7 @@ export const createRangesByElement = (highlightData: HighlightData) => {
 						}
 						break;
 					} else {
+						// @ts-expect-error because we checked that this is a text node above
 						range.setEnd(currentNode, currentNode.length);
 						if (range.toString().trim() !== '') {
 							ranges.push(range);
