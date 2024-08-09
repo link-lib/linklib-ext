@@ -18,7 +18,7 @@ const reactRoot = ReactDOM.createRoot(root);
 
 reactRoot.render(
 	<React.StrictMode>
-		<div className='linklib-ext '>
+		<div className='linklib-ext bytebelli-internal'>
 			<html>
 				<HighlighterApp />
 				<ImageDrop />

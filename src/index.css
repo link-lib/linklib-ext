@@ -43,6 +43,12 @@
 		--rem: 16px;
 	}
 
+	.bytebelli-internal * {
+		font-family: 'Inter', sans-serif;
+		font-size: var(--rem) !important;
+		color: var(--primary);
+	}
+
 	.dark {
 		--background: 45 46 52;
 		--foreground: 210 40% 98%;
