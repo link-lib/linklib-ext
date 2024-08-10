@@ -12,7 +12,7 @@ const MenuToasts = () => {
 				console.log('Image saved');
 				console.log(request);
 				toast({
-					duration: 3000,
+					duration: 1500,
 					title: 'Image saved',
 					description: 'Friday, February 10, 2023 at 5:57 PM',
 				});
@@ -26,14 +26,14 @@ const MenuToasts = () => {
 				saveLink(request.linkUrl)
 					.then(() =>
 						toast({
-							duration: 3000,
+							duration: 1500,
 							title: 'Link saved',
 							description: request.linkUrl,
 						})
 					)
 					.catch(() =>
 						toast({
-							duration: 3000,
+							duration: 1500,
 							title: 'Failed to save link',
 							description: request.linkUrl,
 						})
@@ -47,7 +47,7 @@ const MenuToasts = () => {
 				console.log('Video saved');
 				console.log(request);
 				toast({
-					duration: 3000,
+					duration: 1500,
 					title: 'Scheduled: Catch up',
 					description: 'Friday, February 10, 2023 at 5:57 PM',
 				});
