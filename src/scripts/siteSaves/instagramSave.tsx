@@ -35,14 +35,14 @@ const InstagramSave = () => {
 							toast({
 								title: 'Post saved',
 								description: postLink,
-								duration: 2000,
+								duration: 1500,
 							})
 						)
 						.catch(() =>
 							toast({
 								title: 'Error saving post',
 								description: postLink,
-								duration: 2000,
+								duration: 1500,
 							})
 						);
 					chrome.runtime.sendMessage({
@@ -65,7 +65,7 @@ const InstagramSave = () => {
 					toast({
 						title: 'Post removed',
 						description: postLink,
-						duration: 2000,
+						duration: 1500,
 					});
 				}
 			}

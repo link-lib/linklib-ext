@@ -37,7 +37,7 @@ const TwitterSave = () => {
 					toast({
 						title: 'Tweet saved',
 						description: tweetLink,
-						duration: 2000,
+						duration: 1500,
 					});
 				}
 			} else if (target.closest('button[data-testid="removeBookmark"]')) {
@@ -56,7 +56,7 @@ const TwitterSave = () => {
 					toast({
 						title: 'Tweet removed',
 						description: tweetLink,
-						duration: 2000,
+						duration: 1500,
 					});
 				}
 			}
