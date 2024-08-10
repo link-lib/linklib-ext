@@ -118,8 +118,8 @@ const ImageDrop = () => {
 	};
 
 	const handleButtonClick = () => {
-		setIsSelectingFile(true);
-		setIsDragging(false); // Ensure isDragging is false when opening file input
+		setIsHovered(false);
+		setIsDragging(false);
 		fileInputRef.current?.click();
 	};
 
@@ -232,13 +232,7 @@ const ImageDrop = () => {
 					<Button onClick={handleOpenDrawer} variant='outline'>
 						<ArrowLeftFromLine className='w-4 h-4' />
 					</Button>
-					<form
-						onSubmit={handleFileChange}
-						className='hidden'
-						onAbort={() => {
-							setIsDragging(false);
-						}}
-					>
+					<form onSubmit={handleFileChange} className='hidden'>
 						<input type='file' ref={fileInputRef} />
 						<input type='submit' role='button' />
 					</form>
