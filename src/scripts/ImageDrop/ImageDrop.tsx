@@ -55,12 +55,14 @@ const ImageDrop = () => {
 					toast({
 						title: 'Image saved',
 						description: `File: ${file.name}`,
+						duration: 2000,
 					})
 				)
 				.catch(() =>
 					toast({
 						title: 'Failed to save image',
 						description: `File: ${file.name}`,
+						duration: 2000,
 					})
 				);
 		} else {
@@ -73,6 +75,7 @@ const ImageDrop = () => {
 				toast({
 					title: 'Image URL saved',
 					description: dataTransferUrl,
+					duration: 2000,
 				});
 			}
 		}
@@ -130,12 +133,14 @@ const ImageDrop = () => {
 					toast({
 						title: 'Image uploaded',
 						description: `File: ${file.name}`,
+						duration: 2000,
 					})
 				)
 				.catch(() =>
 					toast({
 						title: 'Error uploading image',
 						description: `File: ${file.name}`,
+						duration: 2000,
 					})
 				);
 		}
@@ -180,6 +185,7 @@ const ImageDrop = () => {
 		toast({
 			title: 'Link saved',
 			description: title,
+			duration: 2000,
 		});
 	};
 
