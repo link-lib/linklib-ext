@@ -1,14 +1,25 @@
+import iconImage from '@/assets/icon.png';
+import iconEating from '@/assets/iconEating.png';
 import { saveImage } from '@/backend/saveImage';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from '@/components/ui/hover-card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle } from 'lucide-react';
+import {
+	getArticleMetadata,
+	getLinkIcon,
+} from '@/scripts/ImageDrop/saveWebsite';
+import { ArrowLeftFromLine, Heart, ImageUp } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
 	const [isSelectingFile, setIsSelectingFile] = useState(false);
+	const [isIconUp, setIsIconUp] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
 
@@ -44,12 +55,14 @@ const ImageDrop = () => {
 					toast({
 						title: 'Image saved',
 						description: `File: ${file.name}`,
+						duration: 1500,
 					})
 				)
 				.catch(() =>
 					toast({
 						title: 'Failed to save image',
 						description: `File: ${file.name}`,
+						duration: 1500,
 					})
 				);
 		} else {
@@ -62,6 +75,7 @@ const ImageDrop = () => {
 				toast({
 					title: 'Image URL saved',
 					description: dataTransferUrl,
+					duration: 1500,
 				});
 			}
 		}
@@ -72,10 +86,26 @@ const ImageDrop = () => {
 		window.addEventListener('dragleave', handleDragLeave, false);
 		window.addEventListener('drop', handleDrop, false);
 
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.ctrlKey && e.shiftKey && e.key === '4') {
+				setIsIconUp((prev) => !prev);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+
+		const handleMessage = (message: any) => {
+			if (message.action === 'toggleIconPosition') {
+				setIsIconUp((prev) => !prev);
+			}
+		};
+		chrome.runtime.onMessage.addListener(handleMessage);
+
 		return () => {
 			window.removeEventListener('dragenter', handleDragEnter);
 			window.removeEventListener('dragleave', handleDragLeave);
 			window.removeEventListener('drop', handleDrop);
+			window.removeEventListener('keydown', handleKeyDown);
+			chrome.runtime.onMessage.removeListener(handleMessage);
 		};
 	}, []);
 
@@ -88,7 +118,8 @@ const ImageDrop = () => {
 	};
 
 	const handleButtonClick = () => {
-		setIsSelectingFile(true);
+		setIsHovered(false);
+		setIsDragging(false);
 		fileInputRef.current?.click();
 	};
 
@@ -102,51 +133,118 @@ const ImageDrop = () => {
 					toast({
 						title: 'Image uploaded',
 						description: `File: ${file.name}`,
+						duration: 1500,
 					})
 				)
 				.catch(() =>
 					toast({
 						title: 'Error uploading image',
 						description: `File: ${file.name}`,
+						duration: 1500,
 					})
 				);
 		}
 		setIsSelectingFile(false);
+		setIsDragging(false); // Reset isDragging state
 	};
+
+	const handleSaveLink = () => {
+		// Get the current page URL
+		const url = window.location.href;
+
+		// Get the page title
+		const title = document.title;
+
+		// Get the favicon URL
+		const favicon = getLinkIcon();
+
+		// Get the author and publish date
+		const { author, publishDate } = getArticleMetadata();
+		const savedDate = new Date().toString();
+		// Log the collected data (replace with your save logic)
+		console.log('Saving link:', {
+			url,
+			title,
+			favicon,
+			author,
+			publishDate,
+			savedDate,
+		});
+
+		// const obj = {
+		// 	url,
+		// 	title,
+		// 	favicon,
+		// 	author,
+		// 	publishDate,
+		// 	savedDate,
+		// };
+		// TODO: Implement your logic to save this data
+		// saveLink({ url, title, favicon, author, publishDate });
+
+		toast({
+			title: 'Link saved',
+			description: title,
+			duration: 1500,
+		});
+	};
+
+	const handleOpenDrawer = () => {};
 
 	return (
 		<div
 			id='dropContainer'
-			className='fixed bottom-1 right-1 z-50 image-drop w-fit '
+			className={`fixed right-1 z-50 image-drop w-fit transition-all duration-300 ${
+				isIconUp ? 'bottom-20' : 'bottom-1'
+			}`}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			onDragOver={(e) => e.preventDefault()}
 		>
 			{isDragging ? (
 				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
-					<PlusCircle className='w-full h-full text-yellow-500' />
+					<img
+						src={chrome.runtime.getURL(iconEating)}
+						alt='Linklib Icon'
+						className='w-full h-full p-1 object-cover rounded-full'
+					/>
 				</div>
 			) : isHovered || isSelectingFile ? (
-				<Card>
-					<CardHeader>
-						<div className='flex flex-col items-center gap-2'>
-							<p>
-								Drag & Drop Images onto the plus to save it in
-								Linklib
-							</p>
-							<Button onClick={handleButtonClick}>
-								Upload Image
+				<div className='bg-popover p-2 rounded-lg flex items-center gap-2'>
+					<HoverCard>
+						<HoverCardTrigger>
+							<Button
+								onClick={handleButtonClick}
+								variant='outline'
+							>
+								<ImageUp className='w-4 h-4' />
 							</Button>
-							<form onSubmit={handleFileChange}>
-								<input type='file' ref={fileInputRef} />
-								<input type='submit' role='button' />
-							</form>
-						</div>
-					</CardHeader>
-				</Card>
+						</HoverCardTrigger>
+						<HoverCardContent>
+							Drag and drop any image directly on bytey to save to
+							ByteBelli!
+						</HoverCardContent>
+					</HoverCard>
+
+					<Button onClick={handleSaveLink} variant='outline'>
+						{/* TODO: Fill heart if link is already saved */}
+						<Heart className='w-4 h-4' />
+					</Button>
+					<Button onClick={handleOpenDrawer} variant='outline'>
+						<ArrowLeftFromLine className='w-4 h-4' />
+					</Button>
+					<form onSubmit={handleFileChange} className='hidden'>
+						<input type='file' ref={fileInputRef} />
+						<input type='submit' role='button' />
+					</form>
+				</div>
 			) : (
 				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
-					<PlusCircle className='w-full h-full text-white' />
+					<img
+						src={chrome.runtime.getURL(iconImage)}
+						alt='Linklib Icon'
+						className='w-full h-full p-1 object-cover rounded-full'
+					/>
 				</div>
 			)}
 		</div>

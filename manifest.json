@@ -41,7 +41,16 @@
 		"service_worker": "src/scripts/ImageDrop/backgroundScript.ts",
 		"scripts": ["src/scripts/siteSaves/backgroundScript.ts"]
 	},
-	"permissions": ["contextMenus"],
+	"permissions": ["contextMenus", "commands"],
+	"commands": {
+		"toggle-icon-position": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+4",
+				"mac": "Command+Shift+4"
+			},
+			"description": "Toggle icon position"
+		}
+	},
 	"icons": {
 		"16": "icon16.png",
 		"32": "icon32.png",

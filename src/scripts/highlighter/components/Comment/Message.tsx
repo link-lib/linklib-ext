@@ -19,7 +19,7 @@ const userColour = [
 ];
 const Message: React.FC<MessageProps> = ({
 	text,
-	timestamp,
+	// timestamp,
 	user,
 	className,
 }) => {

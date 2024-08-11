@@ -5,7 +5,8 @@ export const getMarkerPosition = () => {
 	if (!selection || selection.rangeCount === 0) return {}; // Early return if selection is null or no range is selected
 
 	const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-	const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+	const scrollLeft =
+		window.pageXOffset || document.documentElement.scrollLeft;
 
 	const rangeBounds = selection.getRangeAt(0).getBoundingClientRect();
 	return {

@@ -17,20 +17,20 @@
 		--primary: 210 40% 98%;
 		--primary-foreground: 222.2 47.4% 11.2%;
 
-		--secondary: 217.2 32.6% 17.5%;
+		--secondary: 0 0% 98%;
 		--secondary-foreground: 210 40% 98%;
 
 		--muted: 217.2 32.6% 17.5%;
 		--muted-foreground: 215 20.2% 65.1%;
 
 		--accent: 134.4 48.6% 64.3%;
-		--accent-foreground: 210 40% 98%;
+		--accent-foreground: 240 5.9% 10%;
 
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 210 40% 98%;
 
 		--border: 0 0% 100% / 50%;
-		--input: 217.2 32.6% 17.5%;
+		--input: 240 3.7% 15.9%;
 		--ring: 212.7 26.8% 83.9%;
 
 		--radius: 0.5rem;
@@ -40,7 +40,13 @@
 		--success: 120 39% 49%;
 		--success-foreground: 0 0% 100%;
 
-		--rem: 16px;
+		--rem: 14px;
+	}
+
+	.bytebelli-internal * {
+		font-family: 'Inter', sans-serif;
+		font-size: var(--rem) !important;
+		color: var(--primary);
 	}
 
 	.dark {
@@ -63,13 +69,13 @@
 		--muted-foreground: 215 20.2% 65.1%;
 
 		--accent: 101 200 128;
-		--accent-foreground: 210 40% 98%;
+		--accent-foreground: 240 5.9% 10%;
 
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 210 40% 98%;
 
 		--border: 0 0% 100% / 50%;
-		--input: 217.2 32.6% 17.5%;
+		--input: 240 3.7% 15.9%;
 		--ring: 212.7 26.8% 83.9%;
 
 		--radius: 0.5rem;
@@ -85,8 +91,6 @@
 		border-width: 0; /* 2 */
 		border-style: solid; /* 2 */
 		border-color: currentColor; /* 2 */
-		font-family: 'Inter', sans-serif;
-		font-size: var(--rem) !important;
 	}
 
 	::before,
@@ -108,7 +112,7 @@
 		font-feature-settings: normal; /* 5 */
 		font-variation-settings: normal; /* 6 */
 		-webkit-tap-highlight-color: transparent; /* 7 */
-		font-size: 16px !important;
+		/* font-size: 16px !important; */
 	}
 
 	body {
@@ -312,21 +316,4 @@
 	[hidden] {
 		display: none;
 	}
-
-	/* Add this near the end of your file, after your Tailwind imports */
-	[type='button'] {
-		-webkit-appearance: none;
-		appearance: none;
-	}
 }
-
-/* -sidebar {
-	font-size: 16px;
-	line-height: 1.5;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-		'Helvetica Neue', Arial, sans-serif;
-}
-
--sidebar * {
-	box-sizing: border-box;
-} */

@@ -13,12 +13,14 @@ function saveItem(itemId: string, toast: any): void {
 			toast({
 				title: 'Item saved',
 				description: `Item ID: ${itemId}`,
+				duration: 1500,
 			})
 		)
 		.catch(() =>
 			toast({
 				title: 'Error saving item',
 				description: `Item ID: ${itemId}`,
+				duration: 1500,
 			})
 		);
 }
