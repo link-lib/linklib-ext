@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 // import styles from '../../index.css?inline';
 import { Toaster } from '@/components/ui/toaster';
-import ImageDrop from '@/scripts/ImageDrop/ImageDrop';
+import ImageDrop from './ImageDrop/ImageDrop';
 import MenuToasts from '@/scripts/ImageDrop/MenuToasts';
 import '../index.css';
 

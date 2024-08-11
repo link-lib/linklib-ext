@@ -13,18 +13,7 @@ const HighlightsSidebar: React.FC<HighlightsSidebarProps> = ({
 
 	const toggleSidebar = () => setIsOpen(!isOpen);
 
-	if (!isOpen) {
-		return (
-			<Button
-				onClick={toggleSidebar}
-				className='fixed right-2 top-4 z-infinite'
-				variant='outline'
-				size='icon'
-			>
-				&#9776; {/* Hamburger icon */}
-			</Button>
-		);
-	}
+	return <></>;
 
 	return (
 		<div className='w-96 bg-background fixed right-0 top-0 h-full shadow-lg overflow-hidden z-infinite flex flex-col'>

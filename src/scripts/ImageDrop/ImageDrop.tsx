@@ -227,6 +227,7 @@ const ImageDrop = () => {
 					</HoverCard>
 
 					<Button onClick={handleSaveLink} variant='outline'>
+						{/* TODO: Fill heart if link is already saved */}
 						<Heart className='w-4 h-4' />
 					</Button>
 					<Button onClick={handleOpenDrawer} variant='outline'>
