@@ -6,6 +6,8 @@ import { Toaster } from '@/components/ui/toaster';
 import ImageDrop from './ImageDrop/ImageDrop';
 import MenuToasts from '@/scripts/ImageDrop/MenuToasts';
 import '../index.css';
+import { AuthModalProvider } from '@/backend/auth/context/AuthModalContext';
+import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -20,10 +22,14 @@ reactRoot.render(
 	<React.StrictMode>
 		<div className='linklib-ext bytebelli-internal'>
 			<html>
-				<HighlighterApp />
-				<ImageDrop />
-				<Toaster />
-				<MenuToasts />
+				<AuthModalProvider>
+					<HighlighterApp />
+					<ImageDrop />
+					<Toaster />
+					<MenuToasts />
+					<AuthModal />
+				</AuthModalProvider>
+				<div className='md:sticky md:block'></div>
 			</html>
 		</div>
 	</React.StrictMode>

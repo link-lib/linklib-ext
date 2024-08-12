@@ -1,3 +1,5 @@
+import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
 import iconImage from '@/assets/icon.png';
 import iconEating from '@/assets/iconEating.png';
 import { saveImage } from '@/backend/saveImage';
@@ -8,6 +10,7 @@ import {
 	HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { useToast } from '@/components/ui/use-toast';
+import { useContext } from 'react';
 import {
 	getArticleMetadata,
 	getLinkIcon,
@@ -21,6 +24,7 @@ const ImageDrop = () => {
 	const [isSelectingFile, setIsSelectingFile] = useState(false);
 	const [isIconUp, setIsIconUp] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const authModalContext = useContext(AuthModalContext);
 	const { toast } = useToast();
 
 	const handleDragEnter = (e: DragEvent) => {
@@ -128,21 +132,23 @@ const ImageDrop = () => {
 		const file = fileInputRef.current?.files?.[0];
 		if (file) {
 			console.log('Selected file:', file);
-			saveImage(file)
-				.then(() =>
-					toast({
-						title: 'Image uploaded',
-						description: `File: ${file.name}`,
-						duration: 1500,
-					})
-				)
-				.catch(() =>
-					toast({
-						title: 'Error uploading image',
-						description: `File: ${file.name}`,
-						duration: 1500,
-					})
-				);
+			useWithAuth(
+				() =>
+					saveImage(file)
+						.then(() =>
+							toast({
+								title: 'Image uploaded',
+								description: `File: ${file.name}`,
+							})
+						)
+						.catch(() =>
+							toast({
+								title: 'Error uploading image',
+								description: `File: ${file.name}`,
+							})
+						),
+				authModalContext
+			);
 		}
 		setIsSelectingFile(false);
 		setIsDragging(false); // Reset isDragging state

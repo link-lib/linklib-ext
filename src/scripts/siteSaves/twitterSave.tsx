@@ -1,8 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
+import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
+import {
+	AuthModalContext,
+	AuthModalProvider,
+} from '@/backend/auth/context/AuthModalContext';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -16,6 +23,7 @@ document.body.appendChild(root);
 
 const TwitterSave = () => {
 	const { toast } = useToast();
+	const authModalContext = useContext(AuthModalContext);
 
 	useEffect(() => {
 		const saveTweet = (event: MouseEvent) => {
@@ -29,16 +37,39 @@ const TwitterSave = () => {
 				const tweetLink =
 					(tweetLinkElement as HTMLAnchorElement)?.href || null;
 				if (tweetLink) {
-					// Send the tweet link to the background script
-					chrome.runtime.sendMessage({
-						action: 'saveTweet',
-						link: tweetLink,
-					});
-					toast({
-						title: 'Tweet saved',
-						description: tweetLink,
-						duration: 1500,
-					});
+					const tweetIdMatch = tweetLink.match(/status\/(\d+)/);
+					const tweetId = tweetIdMatch ? tweetIdMatch[1] : null;
+					if (tweetId) {
+						// Send the tweet link to the background script
+						chrome.runtime.sendMessage({
+							action: 'saveTweet',
+							link: tweetLink,
+						});
+
+						const saveTwitterPostHandler = useWithAuth(
+							() =>
+								saveSocialSiteItem({
+									type: 'TWITTER',
+									nativeid: tweetId,
+								})
+									.then(() =>
+										toast({
+											title: 'Tweet saved',
+											description: tweetLink,
+											duration: 1500,
+										})
+									)
+									.catch(() =>
+										toast({
+											title: 'Failed to save tweet',
+											description: tweetLink,
+										})
+									),
+							authModalContext
+						);
+
+						saveTwitterPostHandler();
+					}
 				}
 			} else if (target.closest('button[data-testid="removeBookmark"]')) {
 				const tweetElement = target.closest('article');
@@ -75,7 +106,10 @@ const TwitterSave = () => {
 
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<Toaster />
-		<TwitterSave />
+		<AuthModalProvider>
+			<Toaster />
+			<TwitterSave />
+			<AuthModal />
+		</AuthModalProvider>
 	</React.StrictMode>
 );

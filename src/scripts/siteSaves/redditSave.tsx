@@ -1,9 +1,16 @@
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import '../../index.css';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
+import {
+	AuthModalContext,
+	AuthModalContextType,
+	AuthModalProvider,
+} from '@/backend/auth/context/AuthModalContext';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {
@@ -25,7 +32,10 @@ function saveItem(itemId: string, toast: any): void {
 }
 
 // Function to inject "save to Linklib" button into Reddit posts
-function injectSaveButton(toast: any): void {
+function injectSaveButton(
+	toast: any,
+	authModalContext: AuthModalContextType | undefined
+): void {
 	// Get all post elements
 	const postElements =
 		document.querySelectorAll<HTMLDivElement>('.flat-list.buttons');
@@ -50,10 +60,14 @@ function injectSaveButton(toast: any): void {
 		const listItem = document.createElement('li');
 		listItem.appendChild(saveButton);
 
+		const saveRedditHandler = useWithAuth(() => {
+			saveItem(postHref, toast);
+		}, authModalContext);
+
 		// Add click event to call saveItem function with the item ID
 		saveButton.addEventListener('click', (e) => {
 			e.preventDefault();
-			saveItem(postHref, toast);
+			saveRedditHandler();
 		});
 
 		// Append the "save to Linklib" button to the post element
@@ -64,9 +78,10 @@ function injectSaveButton(toast: any): void {
 // React component to handle toast notifications
 const RedditToast = () => {
 	const { toast } = useToast();
+	const authModalContext = useContext(AuthModalContext);
 
 	useEffect(() => {
-		injectSaveButton(toast);
+		injectSaveButton(toast, authModalContext);
 	}, []);
 
 	return <div></div>;
@@ -81,7 +96,10 @@ document.body.appendChild(root);
 // Render the React component
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<Toaster />
-		<RedditToast />
+		<AuthModalProvider>
+			<Toaster />
+			<RedditToast />
+			<AuthModal />
+		</AuthModalProvider>
 	</React.StrictMode>
 );
