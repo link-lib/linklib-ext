@@ -1,7 +1,21 @@
-import { createClient, setLocalStorage } from '../../../utils/supabase/client';
+import { Session } from '@supabase/supabase-js';
+import {
+	createClient,
+	getLocalStorage,
+	removeLocalStorage,
+	setLocalStorage,
+} from '../../../utils/supabase/client';
 import { LoginFormSchema, SignupFormSchema } from './definitions';
 
 export async function logIn(formData: FormData) {
+	const currentSession = (await getLocalStorage('session')) as Session;
+	if (
+		currentSession &&
+		currentSession.expires_at &&
+		currentSession.expires_in >= 0
+	) {
+		return;
+	}
 	const validatedFields = LoginFormSchema.safeParse({
 		email: formData.get('email'),
 		password: formData.get('password'),
@@ -24,6 +38,14 @@ export async function logIn(formData: FormData) {
 }
 
 export const signUp = async (formData: FormData) => {
+	const currentSession = (await getLocalStorage('session')) as Session;
+	if (
+		currentSession &&
+		currentSession.expires_at &&
+		currentSession.expires_at >= 0
+	) {
+		return;
+	}
 	const validatedFields = SignupFormSchema.safeParse({
 		firstName: formData.get('firstName'),
 		email: formData.get('email'),
@@ -57,5 +79,6 @@ export const signUp = async (formData: FormData) => {
 
 export const signOut = async () => {
 	const supabase = createClient();
+	await removeLocalStorage('session');
 	await supabase.auth.signOut();
 };

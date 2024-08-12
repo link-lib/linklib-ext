@@ -58,10 +58,9 @@ function injectSaveButton(
 		const listItem = document.createElement('li');
 		listItem.appendChild(saveButton);
 
-		const saveRedditHandler = useWithAuth(
-			() => saveItem(postHref, toast),
-			authModalContext
-		);
+		const saveRedditHandler = useWithAuth(() => {
+			saveItem(postHref, toast);
+		}, authModalContext);
 
 		// Add click event to call saveItem function with the item ID
 		saveButton.addEventListener('click', (e) => {

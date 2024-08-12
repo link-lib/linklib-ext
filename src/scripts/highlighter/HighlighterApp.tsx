@@ -63,7 +63,7 @@ const HighlighterApp = () => {
 
 	const authModalContext = useContext(AuthModalContext);
 
-	const handleHighlight = useWithAuth(async () => {
+	const handleHighlight = useWithAuth(() => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);

@@ -24,7 +24,6 @@ export function useWithAuth(
 	}
 
 	return async function () {
-		console.log('in async function');
 		// Retrieve the current session stored in local storage.
 		const currentSession = (await getLocalStorage('session')) as Session;
 		// Check if the session exists, the user exists, and the session hasn't expired
@@ -32,24 +31,20 @@ export function useWithAuth(
 			!currentSession ||
 			!currentSession.expires_at ||
 			!currentSession?.user ||
-			currentSession.expires_at < Date.now()
+			currentSession.expires_in <= 0
 		) {
-			console.log('in branch 1');
 			// Check if we have another active Supabase session
 			const newSession = await getNewSession();
 			if (newSession) {
-				console.log('in branch 2');
 				// If we do, set it to local storage and kickoff the event
 				await setLocalStorage({ session: newSession });
 				handler();
 			} else {
-				console.log('in branch 3');
 				// If we don't, show log in modal
 				// TODO: once the user finishes logging in/signing up, we lose the handler promise that was sent in
 				authModalContext.setIsOpen(true);
 			}
 		} else {
-			console.log('in branch 4');
 			// We have a valid session saved, make sure it is set to supabase auth
 			const userSession = await supabase.auth.setSession({
 				refresh_token: currentSession.refresh_token,
@@ -57,11 +52,9 @@ export function useWithAuth(
 			});
 
 			if (userSession) {
-				console.log('in branch 5');
 				// if we were able to set it, complete the promise passed in
 				handler();
 			} else {
-				console.log('in branch 6');
 				// If not, open the login modal and try again
 				authModalContext.setIsOpen(true);
 			}
