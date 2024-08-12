@@ -56,6 +56,7 @@ const TwitterSave = () => {
 										toast({
 											title: 'Tweet saved',
 											description: tweetLink,
+											duration: 1500,
 										})
 									)
 									.catch(() =>
@@ -86,6 +87,7 @@ const TwitterSave = () => {
 					toast({
 						title: 'Tweet removed',
 						description: tweetLink,
+						duration: 1500,
 					});
 				}
 			}

@@ -13,6 +13,7 @@ import { saveHighlight } from '@/backend/saveHighlight';
 import { toast } from '@/components/ui/use-toast';
 import { useWithAuth } from '@/backend/auth/useWithAuth';
 import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
+import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
 
 const HighlighterApp = () => {
 	const initialHighlights: { [key: string]: HighlightData } = {};
@@ -162,7 +163,7 @@ const HighlighterApp = () => {
 					/>
 				);
 			})} */}
-			<div className='md:sticky lg:block md:tw-left-auto md:tw-bottom-5 md:tw-right-5 md:tw-pl-4'></div>
+			<HighlightSidebar highlights={{}} />
 		</>
 	);
 };

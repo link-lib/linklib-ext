@@ -56,7 +56,6 @@ const InstagramSave = () => {
 				const postLink =
 					(postLinkElement as HTMLAnchorElement)?.href || null;
 				if (postLink) {
-					console.log('found post link', postLink);
 					const handler = getSaveInstagramPostHandler(postLink);
 					handler();
 					chrome.runtime.sendMessage({
@@ -79,6 +78,7 @@ const InstagramSave = () => {
 					toast({
 						title: 'Post removed',
 						description: postLink,
+						duration: 1500,
 					});
 				}
 			}
