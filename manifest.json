@@ -5,7 +5,7 @@
   "version": "1.0",
   "action": {
     "default_popup": "index.html",
-    "default_icon": "hello_extensions.png"
+    "default_icon": "icon48.png"
   },
   "content_scripts": [
     {
@@ -38,10 +38,20 @@
     "service_worker": "src/scripts/ImageDrop/backgroundScript.ts",
     "scripts": ["src/scripts/siteSaves/backgroundScript.ts"]
   },
-  "permissions": ["contextMenus", "storage", "tabs", "sidePanel"],
+  "permissions": ["contextMenus", "commands"],
+  "commands": {
+    "toggle-icon-position": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+4",
+        "mac": "Command+Shift+4"
+      },
+      "description": "Toggle icon position"
+    }
+  },
   "icons": {
-    "16": "hello_extensions.png",
-    "48": "hello_extensions.png",
-    "128": "hello_extensions.png"
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
 }
