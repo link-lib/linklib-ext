@@ -46,7 +46,7 @@
 	.bytebelli-internal * {
 		font-family: 'Inter', sans-serif;
 		font-size: var(--rem) !important;
-		color: var(--primary);
+		/* color: hsl(var(--primary)); */
 	}
 
 	.dark {
