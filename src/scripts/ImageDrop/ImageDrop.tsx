@@ -3,10 +3,11 @@ import iconEating from '@/assets/iconEating.png';
 import { saveImage } from '@/backend/saveImage';
 import { Button } from '@/components/ui/button';
 import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from '@/components/ui/hover-card';
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
 import {
 	getArticleMetadata,
@@ -211,28 +212,59 @@ const ImageDrop = () => {
 				</div>
 			) : isHovered || isSelectingFile ? (
 				<div className='bg-popover p-2 rounded-lg flex items-center gap-2'>
-					<HoverCard>
-						<HoverCardTrigger>
-							<Button
-								onClick={handleButtonClick}
-								variant='outline'
-							>
-								<ImageUp className='w-4 h-4' />
-							</Button>
-						</HoverCardTrigger>
-						<HoverCardContent>
-							Drag and drop any image directly on bytey to save to
-							ByteBelli!
-						</HoverCardContent>
-					</HoverCard>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
+									onClick={handleButtonClick}
+									variant='outline'
+								>
+									<ImageUp className='w-4 h-4' />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									Drag and drop any image directly on bytey to
+									save to ByteBelli!
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
 
-					<Button onClick={handleSaveLink} variant='outline'>
-						{/* TODO: Fill heart if link is already saved */}
-						<Heart className='w-4 h-4' />
-					</Button>
-					<Button onClick={handleOpenDrawer} variant='outline'>
-						<ArrowLeftFromLine className='w-4 h-4' />
-					</Button>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
+									onClick={handleSaveLink}
+									variant='outline'
+								>
+									{/* TODO: Fill heart if link is already saved */}
+									<Heart className='w-4 h-4' />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Click to save the link to this site!</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
+									onClick={handleOpenDrawer}
+									variant='outline'
+									disabled
+								>
+									<ArrowLeftFromLine className='w-4 h-4' />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>See all highlights on this page!</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+
 					<form onSubmit={handleFileChange} className='hidden'>
 						<input type='file' ref={fileInputRef} />
 						<input type='submit' role='button' />

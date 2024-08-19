@@ -26,7 +26,6 @@ const InstagramSave = () => {
 					postElement?.querySelector('a[href*="/p/"]');
 				const postLink =
 					(postLinkElement as HTMLAnchorElement)?.href || null;
-				debugger;
 				if (postLink) {
 					saveSocialSiteItem({
 						type: 'INSTAGRAM',
