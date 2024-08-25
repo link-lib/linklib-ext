@@ -38,7 +38,7 @@
     "service_worker": "src/scripts/ImageDrop/backgroundScript.ts",
     "scripts": ["src/scripts/siteSaves/backgroundScript.ts"]
   },
-  "permissions": ["contextMenus", "commands"],
+  "permissions": ["contextMenus", "commands", "storage"],
   "commands": {
     "toggle-icon-position": {
       "suggested_key": {
