@@ -11,7 +11,7 @@ import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
-root.className = 'linklib-ext';
+root.className = 'linklib-ext bytebelli-internal';
 root.style.fontSize = '16px';
 
 document.body.appendChild(root);
@@ -21,7 +21,7 @@ const reactRoot = ReactDOM.createRoot(root);
 reactRoot.render(
 	<React.StrictMode>
 		<div className='linklib-ext bytebelli-internal'>
-			<html>
+			<html id='linklib-html'>
 				<AuthModalProvider>
 					<HighlighterApp />
 					<ImageDrop />
