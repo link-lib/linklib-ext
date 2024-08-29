@@ -1,9 +1,16 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { AuthModalContext } from '../context/AuthModalContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { logIn, signUp } from '../actions';
 import { useToast } from '@/components/ui/use-toast';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogFooter,
+} from '@/components/ui/dialog';
 
 export const AuthModal = () => {
 	const { isOpen, setIsOpen } = useContext(AuthModalContext) ?? {
@@ -62,68 +69,54 @@ export const AuthModal = () => {
 	};
 
 	return (
-		isOpen && (
-			<div
-				style={{
-					height: '300px',
-					top: '150px',
-					position: 'fixed',
-					boxShadow: '0px 12px 48px rgba(29, 5, 64, 0.32)',
-					left: '50%',
-				}}
-				className='-translate-x-1/2 -translate-y-1/2 rounded-md border-none bg-secondary flex flex-col justify-between p-4 align-middle items-center z-1000 '
-			>
-				<div className='w-full flex flex-row justify-end'>
-					<button
-						onClick={() => setIsOpen(false)}
-						className=' text-white cursor-pointer'
-					>
-						X
-					</button>
-				</div>
-				<p className='text-primary mb-4'>
-					Please log in or sign up to continue.
-				</p>
-				{isSignUp && (
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogContent className='w-[500px] heehee'>
+				<DialogHeader>
+					<DialogTitle>{isSignUp ? 'Sign Up' : 'Log In'}</DialogTitle>
+				</DialogHeader>
+				<div className='grid gap-4 py-4'>
+					{isSignUp && (
+						<Input
+							type='text'
+							value={firstName}
+							onChange={(e) => setFirstName(e.target.value)}
+							placeholder='First Name'
+							className='w-full'
+						/>
+					)}
 					<Input
 						type='text'
-						value={firstName}
-						onChange={(e) => setFirstName(e.target.value)}
-						placeholder='First Name'
-						className='w-full mb-4 text-primary'
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						placeholder='Email'
+						className='w-full'
 					/>
-				)}
-				<Input
-					type='text'
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-					placeholder='Email'
-					className='w-full mb-4 text-primary'
-				/>
-				<Input
-					type='password'
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					placeholder='Password'
-					className='w-full mb-4 text-primary'
-				/>
-				<Button
-					variant={'ghost'}
-					onClick={isSignUp ? handleSignUp : handleLogin}
-					className='w-full text-white py-2 rounded-md'
-				>
-					{isSignUp ? 'Sign Up' : 'Log In'}
-				</Button>
-
+					<Input
+						type='password'
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						placeholder='Password'
+						className='w-full'
+					/>
+				</div>
+				<DialogFooter>
+					<Button
+						variant='default'
+						onClick={isSignUp ? handleSignUp : handleLogin}
+						className='w-full'
+					>
+						{isSignUp ? 'Sign Up' : 'Log In'}
+					</Button>
+				</DialogFooter>
 				<p
 					onClick={() => setIsSignUp(!isSignUp)}
-					className=' text-white cursor-pointer hover:underline text-xs'
+					className='text-sm text-center cursor-pointer hover:underline mt-4'
 				>
 					{isSignUp
 						? 'Already have an account?'
 						: "Don't have an account?"}
 				</p>
-			</div>
-		)
+			</DialogContent>
+		</Dialog>
 	);
 };
