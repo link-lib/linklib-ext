@@ -1,5 +1,4 @@
 import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
 import iconImage from '@/assets/icon.png';
 import iconEating from '@/assets/iconEating.png';
 import { saveImage } from '@/backend/saveImage';
@@ -18,6 +17,11 @@ import {
 } from '@/scripts/ImageDrop/saveWebsite';
 import { ArrowLeftFromLine, Heart, ImageUp } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
+import { EnterIcon, ExitIcon } from '@radix-ui/react-icons';
+import { removeLocalStorage } from '../../../utils/supabase/client';
+import { signOut } from '@/backend/auth/actions';
+import { getValidSession } from '@/backend/auth/authUtils';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -85,6 +89,41 @@ const ImageDrop = () => {
 			}
 		}
 	};
+
+	const [userAuthenticated, setUserAuthenticated] = useState(false);
+
+	const handleSignOut = async () => {
+		try {
+			await signOut();
+			setUserAuthenticated(false);
+			toast({
+				title: 'Successfully signed out.',
+				description: "We'll see you again soon!",
+				action: (
+					<Button onClick={() => authModalContext?.setIsOpen(true)}>
+						Sign In
+					</Button>
+				),
+			});
+		} catch {
+			toast({
+				title: 'Failed to sign out',
+				description: 'Try again later',
+			});
+		}
+	};
+
+	useEffect(() => {
+		const checkAuthStatus = async () => {
+			const authStatus = await getValidSession();
+			setUserAuthenticated(!!authStatus);
+			if (!authStatus) {
+				await removeLocalStorage('session');
+			}
+		};
+
+		checkAuthStatus();
+	}, [isHovered, isSelectingFile]);
 
 	useEffect(() => {
 		window.addEventListener('dragenter', handleDragEnter, false);
@@ -267,6 +306,35 @@ const ImageDrop = () => {
 							</TooltipTrigger>
 							<TooltipContent>
 								<p>See all highlights on this page!</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
+									onClick={
+										userAuthenticated
+											? handleSignOut
+											: () =>
+													authModalContext?.setIsOpen(
+														true
+													)
+									}
+									variant='outline'
+								>
+									{userAuthenticated ? (
+										<ExitIcon className='w-4 h-4' />
+									) : (
+										<EnterIcon className='w-4 h-4' />
+									)}
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									{userAuthenticated ? 'Sign out' : 'Sign In'}
+								</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>
