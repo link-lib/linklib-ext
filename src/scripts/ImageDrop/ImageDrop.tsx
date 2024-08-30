@@ -1,4 +1,3 @@
-import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
 import iconImage from '@/assets/icon.png';
 import iconEating from '@/assets/iconEating.png';
 import { saveImage } from '@/backend/saveImage';
@@ -22,6 +21,7 @@ import { removeLocalStorage } from '../../../utils/supabase/client';
 import { signOut } from '@/backend/auth/actions';
 import { getValidSession } from '@/backend/auth/authUtils';
 import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { AuthModalContext } from '../auth/context/AuthModalContext';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -151,7 +151,7 @@ const ImageDrop = () => {
 			window.removeEventListener('keydown', handleKeyDown);
 			chrome.runtime.onMessage.removeListener(handleMessage);
 		};
-	}, []);
+	}, [handleDrop]);
 
 	const handleMouseEnter = () => {
 		setIsHovered(true);

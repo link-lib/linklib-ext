@@ -4,12 +4,12 @@ import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
 import {
 	AuthModalContext,
 	AuthModalProvider,
-} from '@/backend/auth/context/AuthModalContext';
-import { AuthModal } from '@/backend/auth/components/AuthModal';
+} from '../auth/context/AuthModalContext';
+import { AuthModal } from '@/scripts/auth/components/AuthModal';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
 
 const root = document.createElement('div');
 root.id = 'crx-root';

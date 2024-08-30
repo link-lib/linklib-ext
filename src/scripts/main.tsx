@@ -6,8 +6,8 @@ import { Toaster } from '@/components/ui/toaster';
 import ImageDrop from './ImageDrop/ImageDrop';
 import MenuToasts from '@/scripts/ImageDrop/MenuToasts';
 import '../index.css';
-import { AuthModalProvider } from '@/backend/auth/context/AuthModalContext';
-import { AuthModal } from '@/backend/auth/components/AuthModal';
+import { AuthModal } from '@/scripts/auth/components/AuthModal';
+import { AuthModalProvider } from './auth/context/AuthModalContext';
 
 const root = document.createElement('div');
 root.id = 'crx-root';

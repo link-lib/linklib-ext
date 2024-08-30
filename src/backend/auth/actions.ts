@@ -82,3 +82,20 @@ export const signOut = async () => {
 	await removeLocalStorage('session');
 	await supabase.auth.signOut();
 };
+
+export const signInWithGoogle = async () => {
+	return new Promise((resolve, reject) => {
+		chrome.runtime.sendMessage(
+			{ action: 'signInWithGoogle' },
+			(response) => {
+				if (response.success) {
+					console.log('successful');
+					resolve(response.session);
+				} else {
+					console.log('failure');
+					reject(new Error(response.error));
+				}
+			}
+		);
+	});
+};

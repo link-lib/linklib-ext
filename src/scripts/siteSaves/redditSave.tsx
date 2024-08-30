@@ -8,9 +8,9 @@ import {
 	AuthModalContext,
 	AuthModalContextType,
 	AuthModalProvider,
-} from '@/backend/auth/context/AuthModalContext';
+} from '../auth/context/AuthModalContext';
+import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { useWithAuth } from '@/backend/auth/useWithAuth';
-import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {

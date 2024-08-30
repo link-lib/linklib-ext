@@ -7,9 +7,9 @@ import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
 import {
 	AuthModalContext,
 	AuthModalProvider,
-} from '@/backend/auth/context/AuthModalContext';
+} from '../auth/context/AuthModalContext';
+import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { useWithAuth } from '@/backend/auth/useWithAuth';
-import { AuthModal } from '@/backend/auth/components/AuthModal';
 
 const root = document.createElement('div');
 root.id = 'crx-root';

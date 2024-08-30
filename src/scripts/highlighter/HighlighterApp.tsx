@@ -11,9 +11,9 @@ import {
 } from '@/scripts/highlighter/utils/markerUtils';
 import { saveHighlight } from '@/backend/saveHighlight';
 import { toast } from '@/components/ui/use-toast';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
-import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
+import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { AuthModalContext } from '../auth/context/AuthModalContext';
 
 const HighlighterApp = () => {
 	const initialHighlights: { [key: string]: HighlightData } = {};
