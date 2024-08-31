@@ -2,7 +2,7 @@ import { createClient, setLocalStorage } from '../../../utils/supabase/client';
 import { getValidSession } from './authUtils';
 import { AuthModalContextType } from '../../scripts/auth/context/AuthModalContext';
 
-export function useWithAuth(
+export function withAuth(
 	handler: () => void,
 	authModalContext: AuthModalContextType | undefined
 ) {

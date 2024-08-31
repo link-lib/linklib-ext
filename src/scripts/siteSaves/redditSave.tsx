@@ -10,7 +10,7 @@ import {
 	AuthModalProvider,
 } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { withAuth } from '@/backend/auth/withAuth';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {
@@ -60,7 +60,7 @@ function injectSaveButton(
 		const listItem = document.createElement('li');
 		listItem.appendChild(saveButton);
 
-		const saveRedditHandler = useWithAuth(() => {
+		const saveRedditHandler = withAuth(() => {
 			saveItem(postHref, toast);
 		}, authModalContext);
 
@@ -76,13 +76,13 @@ function injectSaveButton(
 }
 
 // React component to handle toast notifications
-const RedditToast = () => {
+export const RedditToast = () => {
 	const { toast } = useToast();
 	const authModalContext = useContext(AuthModalContext);
 
 	useEffect(() => {
 		injectSaveButton(toast, authModalContext);
-	}, []);
+	}, [authModalContext, toast]);
 
 	return <div></div>;
 };
