@@ -12,8 +12,8 @@ import {
 import { saveHighlight } from '@/backend/saveHighlight';
 import { toast } from '@/components/ui/use-toast';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { withAuth } from '@/backend/auth/withAuth';
 
 const HighlighterApp = () => {
 	const initialHighlights: { [key: string]: HighlightData } = {};
@@ -64,18 +64,19 @@ const HighlighterApp = () => {
 
 	const authModalContext = useContext(AuthModalContext);
 
-	const handleHighlight = useWithAuth(() => {
+	const handleHighlight = withAuth(() => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
 				saveHighlight(highlightData)
-					.then(() =>
+					.then(() => {
 						setHighlights({
 							...highlights,
 							[highlightData.uuid]: highlightData,
-						})
-					)
+						});
+						toast({ title: 'Successfully saved highlight.' });
+					})
 					.catch(() => toast({ title: 'Error saving highlight' }));
 			}
 			window.getSelection()?.empty();

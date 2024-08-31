@@ -9,7 +9,7 @@ import {
 	AuthModalProvider,
 } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { withAuth } from '@/backend/auth/withAuth';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -21,7 +21,7 @@ document.body.appendChild(root);
 // const renderIn = document.createElement('div');
 // shadow.appendChild(renderIn);
 
-const TwitterSave = () => {
+export const TwitterSave = () => {
 	const { toast } = useToast();
 	const authModalContext = useContext(AuthModalContext);
 
@@ -46,7 +46,7 @@ const TwitterSave = () => {
 							link: tweetLink,
 						});
 
-						const saveTwitterPostHandler = useWithAuth(
+						const saveTwitterPostHandler = withAuth(
 							() =>
 								saveSocialSiteItem({
 									type: 'TWITTER',
@@ -99,7 +99,7 @@ const TwitterSave = () => {
 		return () => {
 			document.removeEventListener('click', saveTweet, true);
 		};
-	}, []);
+	}, [authModalContext, toast]);
 
 	return <div></div>;
 };

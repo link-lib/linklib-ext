@@ -20,7 +20,7 @@ import { EnterIcon, ExitIcon } from '@radix-ui/react-icons';
 import { removeLocalStorage } from '../../../utils/supabase/client';
 import { signOut } from '@/backend/auth/actions';
 import { getValidSession } from '@/backend/auth/authUtils';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { withAuth } from '@/backend/auth/withAuth';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
 
 const ImageDrop = () => {
@@ -49,46 +49,54 @@ const ImageDrop = () => {
 		}
 	};
 
-	const handleDrop = (e: DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setIsDragging(false);
+	useEffect(() => {
+		const handleDrop = (e: DragEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			setIsDragging(false);
 
-		if (e.dataTransfer?.files[0]) {
-			const file = e.dataTransfer.files[0];
-			console.log('is a file');
-			const dT = new DataTransfer();
-			dT.items.add(file);
-			saveImage(dT.files[0])
-				.then(() =>
+			if (e.dataTransfer?.files[0]) {
+				const file = e.dataTransfer.files[0];
+				console.log('is a file');
+				const dT = new DataTransfer();
+				dT.items.add(file);
+				saveImage(dT.files[0])
+					.then(() =>
+						toast({
+							title: 'Image saved',
+							description: `File: ${file.name}`,
+							duration: 1500,
+						})
+					)
+					.catch(() =>
+						toast({
+							title: 'Failed to save image',
+							description: `File: ${file.name}`,
+							duration: 1500,
+						})
+					);
+			} else {
+				// Try dataTransfer url second
+				const dataTransferUrl = e.dataTransfer?.getData('url');
+				if (dataTransferUrl) {
+					console.log('is a url');
+					console.log(dataTransferUrl);
+					// TODO (backend) save link of image
 					toast({
-						title: 'Image saved',
-						description: `File: ${file.name}`,
+						title: 'Image URL saved',
+						description: dataTransferUrl,
 						duration: 1500,
-					})
-				)
-				.catch(() =>
-					toast({
-						title: 'Failed to save image',
-						description: `File: ${file.name}`,
-						duration: 1500,
-					})
-				);
-		} else {
-			// Try dataTransfer url second
-			const dataTransferUrl = e.dataTransfer?.getData('url');
-			if (dataTransferUrl) {
-				console.log('is a url');
-				console.log(dataTransferUrl);
-				// TODO (backend) save link of image
-				toast({
-					title: 'Image URL saved',
-					description: dataTransferUrl,
-					duration: 1500,
-				});
+					});
+				}
 			}
-		}
-	};
+		};
+
+		window.addEventListener('drop', handleDrop, false);
+
+		return () => {
+			window.removeEventListener('drop', handleDrop);
+		};
+	}, [toast]);
 
 	const [userAuthenticated, setUserAuthenticated] = useState(false);
 
@@ -128,7 +136,6 @@ const ImageDrop = () => {
 	useEffect(() => {
 		window.addEventListener('dragenter', handleDragEnter, false);
 		window.addEventListener('dragleave', handleDragLeave, false);
-		window.addEventListener('drop', handleDrop, false);
 
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.ctrlKey && e.shiftKey && e.key === '4') {
@@ -147,11 +154,10 @@ const ImageDrop = () => {
 		return () => {
 			window.removeEventListener('dragenter', handleDragEnter);
 			window.removeEventListener('dragleave', handleDragLeave);
-			window.removeEventListener('drop', handleDrop);
 			window.removeEventListener('keydown', handleKeyDown);
 			chrome.runtime.onMessage.removeListener(handleMessage);
 		};
-	}, [handleDrop]);
+	}, []);
 
 	const handleMouseEnter = () => {
 		setIsHovered(true);
@@ -172,7 +178,7 @@ const ImageDrop = () => {
 		const file = fileInputRef.current?.files?.[0];
 		if (file) {
 			console.log('Selected file:', file);
-			useWithAuth(
+			withAuth(
 				() =>
 					saveImage(file)
 						.then(() =>

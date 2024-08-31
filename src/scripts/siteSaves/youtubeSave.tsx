@@ -10,7 +10,7 @@ import {
 	AuthModalProvider,
 } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
+import { withAuth } from '@/backend/auth/withAuth';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {
@@ -170,7 +170,7 @@ function injectSaveButton(
 		const videoId = new URLSearchParams(window.location.search).get('v');
 
 		if (videoId) {
-			const saveYoutubeHandler = useWithAuth(
+			const saveYoutubeHandler = withAuth(
 				() => saveItem(videoId, toast),
 				authModalContext
 			);
@@ -207,7 +207,7 @@ function observeMenu(
 }
 
 // React component to handle toast notifications
-const YouTubeToast = () => {
+export const YouTubeToast = () => {
 	const { toast } = useToast();
 	const authModalContext = useContext(AuthModalContext);
 
