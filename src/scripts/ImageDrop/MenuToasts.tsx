@@ -1,8 +1,8 @@
-import { AuthModalContext } from '@/backend/auth/context/AuthModalContext';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
 import { saveLink } from '@/backend/saveLink';
 import { useToast } from '@/components/ui/use-toast';
 import { useContext, useEffect } from 'react';
+import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { withAuth } from '@/backend/auth/withAuth';
 
 const MenuToasts = () => {
 	const { toast } = useToast();
@@ -27,7 +27,7 @@ const MenuToasts = () => {
 			if (request.type === 'saveLink') {
 				console.log('Link saved');
 				console.log(request);
-				useWithAuth(
+				withAuth(
 					() =>
 						saveLink(request.linkUrl)
 							.then(() =>
@@ -61,7 +61,7 @@ const MenuToasts = () => {
 				});
 			}
 		});
-	}, [toast]);
+	}, [toast, authModalContext]);
 
 	return <div></div>;
 };

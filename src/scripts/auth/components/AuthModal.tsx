@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { AuthModalContext } from '../../../scripts/auth/context/AuthModalContext';
+import { AuthModalContext } from '../context/AuthModalContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { logIn, signInWithGoogle, signUp } from '../actions';
+import { logIn, signInWithGoogle, signUp } from '../../../backend/auth/actions';
 import { useToast } from '@/components/ui/use-toast';
 import {
 	Dialog,

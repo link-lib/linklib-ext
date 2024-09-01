@@ -8,9 +8,9 @@ import {
 	AuthModalContext,
 	AuthModalContextType,
 	AuthModalProvider,
-} from '@/backend/auth/context/AuthModalContext';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
-import { AuthModal } from '@/backend/auth/components/AuthModal';
+} from '../auth/context/AuthModalContext';
+import { AuthModal } from '@/scripts/auth/components/AuthModal';
+import { withAuth } from '@/backend/auth/withAuth';
 
 // Function to be called when "save" is clicked
 function saveItem(itemId: string, toast: any): void {
@@ -68,7 +68,7 @@ function injectSaveLink(
 		saveLink.className = 'linklib-save';
 
 		// Add click event to call saveItem function with the item ID
-		const saveHNPostHandler = useWithAuth(
+		const saveHNPostHandler = withAuth(
 			() => saveItem(itemId, toast),
 			AuthModalContext
 		);
@@ -84,13 +84,13 @@ function injectSaveLink(
 }
 
 // React component to handle toast notifications
-const HNToast = () => {
+export const HNToast = () => {
 	const { toast } = useToast();
 	const authModalContext = useContext(AuthModalContext);
 
 	useEffect(() => {
 		injectSaveLink(toast, authModalContext);
-	}, [toast, authModalContext?.setIsOpen]);
+	}, [toast, authModalContext]);
 
 	return <div></div>;
 };

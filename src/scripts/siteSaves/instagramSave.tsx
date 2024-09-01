@@ -1,15 +1,15 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
-import { useWithAuth } from '@/backend/auth/useWithAuth';
 import {
 	AuthModalContext,
 	AuthModalProvider,
-} from '@/backend/auth/context/AuthModalContext';
-import { AuthModal } from '@/backend/auth/components/AuthModal';
+} from '../auth/context/AuthModalContext';
+import { AuthModal } from '@/scripts/auth/components/AuthModal';
+import { withAuth } from '@/backend/auth/withAuth';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -17,31 +17,34 @@ root.className = 'linklib-ext';
 
 document.body.appendChild(root);
 
-const InstagramSave = () => {
+export const InstagramSave = () => {
 	const { toast } = useToast();
 
 	const authModalContext = useContext(AuthModalContext);
-	const getSaveInstagramPostHandler = (postLink: string) =>
-		useWithAuth(
-			() =>
-				saveSocialSiteItem({
-					type: 'INSTAGRAM',
-					link: postLink,
-				})
-					.then(() =>
-						toast({
-							title: 'Post saved',
-							description: postLink,
-						})
-					)
-					.catch(() =>
-						toast({
-							title: 'Error saving post',
-							description: postLink,
-						})
-					),
-			authModalContext
-		);
+	const getSaveInstagramPostHandler = useCallback(
+		(postLink: string) =>
+			withAuth(
+				() =>
+					saveSocialSiteItem({
+						type: 'INSTAGRAM',
+						link: postLink,
+					})
+						.then(() =>
+							toast({
+								title: 'Post saved',
+								description: postLink,
+							})
+						)
+						.catch(() =>
+							toast({
+								title: 'Error saving post',
+								description: postLink,
+							})
+						),
+				authModalContext
+			),
+		[toast, authModalContext]
+	);
 
 	useEffect(() => {
 		const savePost = (event: MouseEvent) => {
@@ -90,7 +93,7 @@ const InstagramSave = () => {
 		return () => {
 			document.removeEventListener('click', savePost, true);
 		};
-	}, []);
+	}, [getSaveInstagramPostHandler, toast]);
 
 	return <div></div>;
 };
