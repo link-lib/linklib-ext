@@ -1,9 +1,5 @@
-import {
-	createClient,
-	getLocalStorage,
-	setLocalStorage,
-} from '../../../utils/supabase/client';
-import { Session } from '@supabase/supabase-js';
+import { createClient, setLocalStorage } from '../../../utils/supabase/client';
+import { getValidSession } from './authUtils';
 import { AuthModalContextType } from './context/AuthModalContext';
 
 export function useWithAuth(
@@ -24,15 +20,9 @@ export function useWithAuth(
 	}
 
 	return async function () {
-		// Retrieve the current session stored in local storage.
-		const currentSession = (await getLocalStorage('session')) as Session;
-		// Check if the session exists, the user exists, and the session hasn't expired
-		if (
-			!currentSession ||
-			!currentSession.expires_at ||
-			!currentSession?.user ||
-			currentSession.expires_in <= 0
-		) {
+		const currentSession = await getValidSession();
+
+		if (!currentSession) {
 			// Check if we have another active Supabase session
 			const newSession = await getNewSession();
 			if (newSession) {
@@ -51,7 +41,7 @@ export function useWithAuth(
 				access_token: currentSession.access_token,
 			});
 
-			if (userSession) {
+			if (userSession.data.session) {
 				// if we were able to set it, complete the promise passed in
 				handler();
 			} else {

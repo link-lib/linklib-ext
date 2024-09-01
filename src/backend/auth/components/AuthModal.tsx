@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthModalContext } from '../context/AuthModalContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,13 @@ export const AuthModal = () => {
 	const [firstName, setFirstName] = useState('');
 	const [isSignUp, setIsSignUp] = useState(false);
 	const { toast } = useToast();
+
+	useEffect(() => {
+		setEmail('');
+		setPassword('');
+		setFirstName('');
+		setIsSignUp(false);
+	}, [isOpen]);
 
 	const handleLogin = async () => {
 		const formData = new FormData();
@@ -72,7 +79,9 @@ export const AuthModal = () => {
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogContent className='w-[500px] heehee'>
 				<DialogHeader>
-					<DialogTitle>{isSignUp ? 'Sign Up' : 'Log In'}</DialogTitle>
+					<DialogTitle className='text-primary'>
+						{isSignUp ? 'Sign Up' : 'Log In'}
+					</DialogTitle>
 				</DialogHeader>
 				<div className='grid gap-4 py-4'>
 					{isSignUp && (
@@ -81,7 +90,7 @@ export const AuthModal = () => {
 							value={firstName}
 							onChange={(e) => setFirstName(e.target.value)}
 							placeholder='First Name'
-							className='w-full'
+							className='w-full text-primary'
 						/>
 					)}
 					<Input
@@ -89,14 +98,14 @@ export const AuthModal = () => {
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						placeholder='Email'
-						className='w-full'
+						className='w-full text-primary'
 					/>
 					<Input
 						type='password'
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 						placeholder='Password'
-						className='w-full'
+						className='w-full text-primary'
 					/>
 				</div>
 				<DialogFooter>
@@ -110,7 +119,7 @@ export const AuthModal = () => {
 				</DialogFooter>
 				<p
 					onClick={() => setIsSignUp(!isSignUp)}
-					className='text-sm text-center cursor-pointer hover:underline mt-4'
+					className='text-sm text-center cursor-pointer hover:underline mt-4 text-primary'
 				>
 					{isSignUp
 						? 'Already have an account?'
