@@ -4,6 +4,10 @@ import {
 	HighlightData,
 	highlightColours,
 } from '@/scripts/highlighter/types/HighlightData';
+import {
+	getArticleMetadata,
+	getLinkIcon,
+} from '@/scripts/ImageDrop/saveWebsite';
 
 function getSelectionWithNewlines(selection: Selection): string {
 	if (selection.rangeCount === 0) return '';
@@ -50,6 +54,7 @@ export const extractHighlightData = (
 
 	const firstRange = selection.getRangeAt(0);
 	const lastRange = selection.getRangeAt(selection.rangeCount - 1);
+	const { author, publishDate } = getArticleMetadata();
 
 	if (
 		lastRange.endContainer.nodeType === Node.ELEMENT_NODE &&
@@ -76,7 +81,6 @@ export const extractHighlightData = (
 		}
 		lastRange.setEnd(
 			walker.currentNode,
-			// @ts-expect-error because we checked that this is a text node above
 			walker.currentNode.textContent?.length
 		);
 	}
@@ -85,8 +89,6 @@ export const extractHighlightData = (
 
 	const highlightData: HighlightData = {
 		uuid: uuid(),
-		url: window.location.href,
-		pageTitle: document.title,
 		matching: {
 			body: body,
 			textPosition: {
@@ -119,6 +121,13 @@ export const extractHighlightData = (
 					'forward'
 				),
 			},
+		},
+		siteMetadata: {
+			url: window.location.href,
+			title: document.title,
+			favicon: getLinkIcon(),
+			author: author,
+			publishDate: publishDate,
 		},
 		rating: 0,
 		color: highlightColours.YELLOW,

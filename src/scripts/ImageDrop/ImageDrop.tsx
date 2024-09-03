@@ -267,6 +267,35 @@ const ImageDrop = () => {
 						<Tooltip>
 							<TooltipTrigger>
 								<Button
+									onClick={
+										userAuthenticated
+											? handleSignOut
+											: () =>
+													authModalContext?.setIsOpen(
+														true
+													)
+									}
+									variant='outline'
+								>
+									{userAuthenticated ? (
+										<ExitIcon className='w-4 h-4' />
+									) : (
+										<EnterIcon className='w-4 h-4' />
+									)}
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									{userAuthenticated ? 'Sign out' : 'Sign In'}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
 									onClick={handleButtonClick}
 									variant='outline'
 								>
@@ -312,35 +341,6 @@ const ImageDrop = () => {
 							</TooltipTrigger>
 							<TooltipContent>
 								<p>See all highlights on this page!</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
-
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger>
-								<Button
-									onClick={
-										userAuthenticated
-											? handleSignOut
-											: () =>
-													authModalContext?.setIsOpen(
-														true
-													)
-									}
-									variant='outline'
-								>
-									{userAuthenticated ? (
-										<ExitIcon className='w-4 h-4' />
-									) : (
-										<EnterIcon className='w-4 h-4' />
-									)}
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>
-									{userAuthenticated ? 'Sign out' : 'Sign In'}
-								</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>

@@ -1,8 +1,6 @@
 export type HighlightData = {
 	// Population Info
 	uuid: string;
-	url: string;
-	pageTitle: string;
 	matching: {
 		body: string;
 		rangeSelector: {
@@ -22,6 +20,13 @@ export type HighlightData = {
 			start: number;
 			end: number;
 		};
+	};
+	siteMetadata: {
+		url: string;
+		title?: string;
+		favicon?: string;
+		author?: string;
+		publishDate?: string;
 	};
 
 	// Custom

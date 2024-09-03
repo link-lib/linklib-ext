@@ -15,7 +15,7 @@ export async function saveHighlight(highlightData: HighlightData) {
 		throw new Error('Session parsing error');
 	}
 	const bodyText = highlightData.matching.body;
-	const pageUrl = highlightData.url;
+	const pageUrl = highlightData.siteMetadata.url;
 
 	const { data: insertData, error } = await supabase
 		.from('contentitem')
