@@ -14,39 +14,51 @@ export function withAuth<T extends (...args: any[]) => any>(
 		);
 	}
 
-	async function getNewSession() {
-		const { data: session } = await supabase.auth.getSession();
-		return session.session;
+	async function refreshSession(refreshToken: string) {
+		const { data, error } = await supabase.auth.refreshSession({
+			refresh_token: refreshToken,
+		});
+		if (error) {
+			console.error('Error refreshing session:', error);
+			return null;
+		}
+		return data.session;
 	}
 
 	return async function (this: any, ...args: Parameters<T>) {
-		const currentSession = await getValidSession();
+		let currentSession = await getValidSession();
 
 		if (!currentSession) {
-			// Check if we have another active Supabase session
-			const newSession = await getNewSession();
-			if (newSession) {
-				// If we do, set it to local storage and kickoff the event
-				await setLocalStorage({ session: newSession });
-				return handler.apply(this, args);
-			} else {
-				// If we don't, show log in modal
-				// TODO: once the user finishes logging in/signing up, we lose the handler promise that was sent in
-				authModalContext.setIsOpen(true);
+			// Try to refresh the session
+			const storedSession = await supabase.auth.getSession();
+			if (storedSession.data.session?.refresh_token) {
+				currentSession = await refreshSession(
+					storedSession.data.session.refresh_token
+				);
+				if (currentSession) {
+					await setLocalStorage({ session: currentSession });
+					return handler.apply(this, args);
+				}
 			}
-		} else {
-			// We have a valid session saved, make sure it is set to supabase auth
+		}
+
+		if (currentSession) {
+			// We have a valid session, make sure it is set to supabase auth
 			const userSession = await supabase.auth.setSession({
 				refresh_token: currentSession.refresh_token,
 				access_token: currentSession.access_token,
 			});
 
 			if (userSession.data.session) {
+				// Successfully got the session, complete the handler
 				return handler.apply(this, args);
 			} else {
-				// If not, open the login modal and try again
+				// Session setting failed, open the login modal
 				authModalContext.setIsOpen(true);
 			}
+		} else {
+			// No valid session, show login modal
+			authModalContext.setIsOpen(true);
 		}
 	};
 }
