@@ -25,21 +25,20 @@ export const StarRating = ({
 	};
 
 	const handleClick = (index: number, isHalf: boolean) => {
-		console.log('click', index, isHalf);
-		setRating(isHalf ? index + 0.5 : index);
-		onRating(isHalf ? index + 0.5 : index);
+		const newRating = isHalf ? index - 0.5 : index;
+		setRating(newRating);
+		onRating(newRating);
 	};
 
 	const renderStars = () => {
 		const stars = [];
-		for (let i = 0; i < 5; i++) {
+		for (let i = 1; i <= 5; i++) {
 			if (hoveredIndex !== null) {
 				if (i < hoveredIndex || (i === hoveredIndex && !hoveredHalf)) {
 					stars.push(
-						<button>
+						<button key={i}>
 							<Star
 								className='w-4 h-4 cursor-pointer'
-								key={i}
 								fill='yellow'
 								strokeWidth={1}
 								onMouseMove={(e) =>
@@ -62,10 +61,9 @@ export const StarRating = ({
 					);
 				} else if (i === hoveredIndex && hoveredHalf) {
 					stars.push(
-						<button>
+						<button key={i}>
 							<StarHalf
 								className='w-4 h-4 cursor-pointer'
-								key={i}
 								fill='yellow'
 								strokeWidth={1}
 								onMouseMove={(e) =>
@@ -88,10 +86,9 @@ export const StarRating = ({
 					);
 				} else {
 					stars.push(
-						<button>
+						<button key={i}>
 							<Star
 								className='w-4 h-4 cursor-pointer'
-								key={i}
 								strokeWidth={1}
 								onMouseMove={(e) =>
 									handleMouseEnter(
@@ -114,14 +111,13 @@ export const StarRating = ({
 				}
 			} else {
 				if (
-					i < Math.floor(rating) ||
-					(i === Math.floor(rating) && rating % 1 === 0)
+					i <= Math.floor(rating) ||
+					(i === Math.ceil(rating) && rating % 1 === 0)
 				) {
 					stars.push(
-						<button>
+						<button key={i}>
 							<Star
 								className='w-4 h-4 cursor-pointer'
-								key={i}
 								fill='yellow'
 								strokeWidth={1}
 								onMouseMove={(e) =>
@@ -142,12 +138,11 @@ export const StarRating = ({
 							/>
 						</button>
 					);
-				} else if (i === Math.floor(rating) && rating % 1 !== 0) {
+				} else if (i === Math.ceil(rating) && rating % 1 !== 0) {
 					stars.push(
-						<button>
+						<button key={i}>
 							<StarHalf
 								className='w-4 h-4 cursor-pointer'
-								key={i}
 								fill='yellow'
 								strokeWidth={1}
 								onMouseMove={(e) =>
@@ -170,10 +165,9 @@ export const StarRating = ({
 					);
 				} else {
 					stars.push(
-						<button>
+						<button key={i}>
 							<Star
 								className='w-4 h-4 cursor-pointer'
-								key={i}
 								strokeWidth={1}
 								onMouseMove={(e) =>
 									handleMouseEnter(

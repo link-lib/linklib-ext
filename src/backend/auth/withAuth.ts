@@ -2,8 +2,8 @@ import { createClient, setLocalStorage } from '../../../utils/supabase/client';
 import { getValidSession } from './authUtils';
 import { AuthModalContextType } from '../../scripts/auth/context/AuthModalContext';
 
-export function withAuth(
-	handler: () => void,
+export function withAuth<T extends (...args: any[]) => any>(
+	handler: T,
 	authModalContext: AuthModalContextType | undefined
 ) {
 	const supabase = createClient();
@@ -19,7 +19,7 @@ export function withAuth(
 		return session.session;
 	}
 
-	return async function () {
+	return async function (this: any, ...args: Parameters<T>) {
 		const currentSession = await getValidSession();
 
 		if (!currentSession) {
@@ -28,7 +28,7 @@ export function withAuth(
 			if (newSession) {
 				// If we do, set it to local storage and kickoff the event
 				await setLocalStorage({ session: newSession });
-				handler();
+				return handler.apply(this, args);
 			} else {
 				// If we don't, show log in modal
 				// TODO: once the user finishes logging in/signing up, we lose the handler promise that was sent in
@@ -42,8 +42,7 @@ export function withAuth(
 			});
 
 			if (userSession.data.session) {
-				// if we were able to set it, complete the promise passed in
-				handler();
+				return handler.apply(this, args);
 			} else {
 				// If not, open the login modal and try again
 				authModalContext.setIsOpen(true);
