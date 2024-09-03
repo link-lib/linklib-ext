@@ -14,6 +14,7 @@ import { toast } from '@/components/ui/use-toast';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
 import { withAuth } from '@/backend/auth/withAuth';
+import { deleteHighlight } from '@/backend/deleteHighlight';
 
 const HighlighterApp = () => {
 	const initialHighlights: { [key: string]: HighlightData } = {};
@@ -144,14 +145,27 @@ const HighlighterApp = () => {
 		}
 	}, authModalContext);
 
-	const handleDeleteHighlight = (uuid: string) => {
-		// for every container of this uuid, call unwrap on the container
+	const handleDeleteHighlight = withAuth((uuid: string) => {
+		const highlight = highlights[uuid];
+
 		setHighlights((prevHighlights) => {
 			const newHighlights = { ...prevHighlights };
 			delete newHighlights[uuid];
 			return newHighlights;
 		});
-	};
+
+		deleteHighlight(uuid)
+			.then(() => {
+				toast({ title: 'Successfully deleted highlight.' });
+			})
+			.catch(() => {
+				toast({ title: 'Error deleting highlight' });
+				setHighlights((prevHighlights) => ({
+					...prevHighlights,
+					[uuid]: highlight,
+				}));
+			});
+	}, authModalContext);
 
 	const handleClose = () => {
 		window.getSelection()?.empty();
