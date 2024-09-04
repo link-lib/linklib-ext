@@ -1,7 +1,7 @@
 import { createClient, getLocalStorage } from '@/utils/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 
-export async function deleteHighlight(highlightId: string) {
+export async function getHighlights(pageUrl: string) {
 	const supabase = createClient();
 
 	let user: User | undefined = undefined;
@@ -14,18 +14,17 @@ export async function deleteHighlight(highlightId: string) {
 		throw new Error('Session parsing error');
 	}
 
-	const { data, error } = await supabase
+	const { data: highlights, error } = await supabase
 		.from('contentitem')
-		.delete()
-		.eq('id', highlightId)
-		.eq('user_id', user.id);
+		.select('*')
+		.eq('user_id', user.id)
+		.eq('link', pageUrl)
+		.eq('type', 'QUOTE');
 
 	if (error) {
-		console.log('Error deleting highlight.', error);
+		console.log('Error fetching highlights.', error);
 		throw error;
-	} else {
-		console.log('Successfully deleted highlight.', data);
 	}
 
-	return data;
+	return highlights;
 }

@@ -4,7 +4,7 @@
 // ---------------------------------------------
 
 import { Session, User } from '@supabase/supabase-js';
-import { createClient, getLocalStorage } from '../../utils/supabase/client';
+import { createClient, getLocalStorage } from '@/utils/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 
 type InstagramContent = {

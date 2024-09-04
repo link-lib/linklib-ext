@@ -4,7 +4,7 @@ import {
 	getLocalStorage,
 	removeLocalStorage,
 	setLocalStorage,
-} from '../../../utils/supabase/client';
+} from '@/utils/supabase/client';
 import { LoginFormSchema, SignupFormSchema } from './definitions';
 
 export async function logIn(formData: FormData) {

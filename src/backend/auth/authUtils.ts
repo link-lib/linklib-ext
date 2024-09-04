@@ -1,5 +1,5 @@
 import { Session } from '@supabase/supabase-js';
-import { getLocalStorage } from '../../../utils/supabase/client';
+import { getLocalStorage } from '@/utils/supabase/client';
 
 export async function getValidSession(): Promise<Session | null> {
 	const currentSession = (await getLocalStorage('session')) as Session;

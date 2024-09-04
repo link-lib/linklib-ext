@@ -1,5 +1,5 @@
 import { Session, User } from '@supabase/supabase-js';
-import { createClient, getLocalStorage } from '../../utils/supabase/client';
+import { createClient, getLocalStorage } from '@/utils/supabase/client';
 import { uploadFile } from './uploadFile';
 
 export async function uploadImage(file: File) {

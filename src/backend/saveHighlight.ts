@@ -1,6 +1,6 @@
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { Session, User } from '@supabase/supabase-js';
-import { createClient, getLocalStorage } from '../../utils/supabase/client';
+import { createClient, getLocalStorage } from '@/utils/supabase/client';
 
 export async function saveHighlight(highlightData: HighlightData) {
 	const supabase = createClient();
@@ -20,11 +20,11 @@ export async function saveHighlight(highlightData: HighlightData) {
 	const { data: insertData, error } = await supabase
 		.from('contentitem')
 		.insert({
-			type: 'QUOTE',
-			value: bodyText,
-			highlight_data: JSON.stringify(highlightData),
-			link: pageUrl,
 			id: highlightData.uuid,
+			type: 'QUOTE',
+			highlight_data: JSON.stringify(highlightData),
+			value: bodyText,
+			link: pageUrl,
 			user_id: user.id,
 		});
 	if (error) {
