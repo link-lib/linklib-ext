@@ -17,7 +17,7 @@ import {
 import { ArrowLeftFromLine, Heart, ImageUp } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import { EnterIcon, ExitIcon } from '@radix-ui/react-icons';
-import { removeLocalStorage } from '../../../utils/supabase/client';
+import { removeLocalStorage } from '@/utils/supabase/client';
 import { signOut } from '@/backend/auth/actions';
 import { getValidSession } from '@/backend/auth/authUtils';
 import { withAuth } from '@/backend/auth/withAuth';
@@ -267,6 +267,35 @@ const ImageDrop = () => {
 						<Tooltip>
 							<TooltipTrigger>
 								<Button
+									onClick={
+										userAuthenticated
+											? handleSignOut
+											: () =>
+													authModalContext?.setIsOpen(
+														true
+													)
+									}
+									variant='outline'
+								>
+									{userAuthenticated ? (
+										<ExitIcon className='w-4 h-4' />
+									) : (
+										<EnterIcon className='w-4 h-4' />
+									)}
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									{userAuthenticated ? 'Sign out' : 'Sign In'}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
 									onClick={handleButtonClick}
 									variant='outline'
 								>
@@ -312,35 +341,6 @@ const ImageDrop = () => {
 							</TooltipTrigger>
 							<TooltipContent>
 								<p>See all highlights on this page!</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
-
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger>
-								<Button
-									onClick={
-										userAuthenticated
-											? handleSignOut
-											: () =>
-													authModalContext?.setIsOpen(
-														true
-													)
-									}
-									variant='outline'
-								>
-									{userAuthenticated ? (
-										<ExitIcon className='w-4 h-4' />
-									) : (
-										<EnterIcon className='w-4 h-4' />
-									)}
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>
-									{userAuthenticated ? 'Sign out' : 'Sign In'}
-								</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>

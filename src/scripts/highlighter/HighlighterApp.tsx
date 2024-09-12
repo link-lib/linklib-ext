@@ -15,18 +15,53 @@ import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
 import { withAuth } from '@/backend/auth/withAuth';
 import { deleteHighlight } from '@/backend/deleteHighlight';
+import { getHighlights } from '@/backend/getHighlights';
 
 const HighlighterApp = () => {
-	const initialHighlights: { [key: string]: HighlightData } = {};
 	const [highlights, setHighlights] = useState<{
 		[key: string]: HighlightData;
-	}>(initialHighlights);
+	}>({});
 
 	const [openNoteUuid, setOpenNoteUuid] = useState<string | null>(null);
 
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
 	>({ display: 'none' });
+
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchHighlights = async () => {
+			try {
+				const pageUrl = window.location.href;
+
+				const fetchedHighlights = await getHighlights(pageUrl);
+
+				const highlightsObject = fetchedHighlights.reduce(
+					(acc, highlight) => {
+						if (highlight.highlight_data) {
+							const highlightData = JSON.parse(
+								// @ts-expect-error highlight_data is a string
+								highlight.highlight_data
+							) as HighlightData;
+							acc[highlightData.uuid] = highlightData;
+						}
+						return acc;
+					},
+					{} as { [key: string]: HighlightData }
+				);
+
+				setHighlights(highlightsObject);
+			} catch (error) {
+				console.error('Failed to fetch highlights:', error);
+				// Optionally, you can set an error state here to show an error message to the user
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchHighlights();
+	}, []);
 
 	useEffect(() => {
 		document.addEventListener('click', () => {
@@ -147,7 +182,6 @@ const HighlighterApp = () => {
 
 	const handleDeleteHighlight = withAuth((uuid: string) => {
 		const highlight = highlights[uuid];
-
 		setHighlights((prevHighlights) => {
 			const newHighlights = { ...prevHighlights };
 			delete newHighlights[uuid];
@@ -171,9 +205,9 @@ const HighlighterApp = () => {
 		window.getSelection()?.empty();
 	};
 
-	useEffect(() => {
-		console.log(highlights);
-	}, [highlights]);
+	if (isLoading) {
+		return <div>Loading highlights...</div>; // Or any loading indicator you prefer
+	}
 
 	return (
 		<>
@@ -193,24 +227,7 @@ const HighlighterApp = () => {
 					notesOpen={openNoteUuid === uuid}
 				/>
 			))}
-			{/* {Object.entries(highlightContainers).map(([uuid, containers]) => {
-				const firstContainer = containers[0];
-				const highlightElement = firstContainer.highlightContainer;
-				const rect = highlightElement.getBoundingClientRect();
-				const top = rect.top + window.scrollY;
-
-				if (!highlights[uuid].note) return null;
-
-				return (
-					<Comment
-						key={uuid}
-						uuid={uuid}
-						note={highlights[uuid].note}
-						top={top}
-					/>
-				);
-			})} */}
-			<HighlightSidebar highlights={{}} />
+			<HighlightSidebar highlights={highlights} />
 		</>
 	);
 };

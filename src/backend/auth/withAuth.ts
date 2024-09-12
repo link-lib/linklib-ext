@@ -1,4 +1,4 @@
-import { createClient, setLocalStorage } from '../../../utils/supabase/client';
+import { createClient, setLocalStorage } from '@/utils/supabase/client';
 import { getValidSession } from './authUtils';
 import { AuthModalContextType } from '../../scripts/auth/context/AuthModalContext';
 

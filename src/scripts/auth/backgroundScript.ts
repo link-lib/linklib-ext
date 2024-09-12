@@ -1,7 +1,4 @@
-import {
-	createServerClient,
-	setLocalStorage,
-} from '../../../utils/supabase/client';
+import { createServerClient, setLocalStorage } from '@/utils/supabase/client';
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.action === 'signInWithGoogle') {
