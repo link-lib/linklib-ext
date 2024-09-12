@@ -94,7 +94,7 @@ export const extendHighlight = (
 			...existing.matching,
 			body: mergedBody,
 			textPosition: { start, end },
-				rangeSelector: {
+			rangeSelector: {
 				startOffset: Math.min(
 					existing.matching.rangeSelector.startOffset,
 					newHighlight.matching.rangeSelector.startOffset

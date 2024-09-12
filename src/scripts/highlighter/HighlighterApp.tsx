@@ -1,21 +1,17 @@
 import { useContext, useEffect, useState } from 'react';
 
+import { withAuth } from '@/backend/auth/withAuth';
+import { deleteHighlight } from '@/backend/deleteHighlight';
+import { getHighlights } from '@/backend/getHighlights';
+import { saveHighlight } from '@/backend/saveHighlight';
+import { toast } from '@/components/ui/use-toast';
 import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
 import { Highlight } from '@/scripts/highlighter/components/Highlight';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
-import {
-	MarkerPosition,
-	getMarkerPosition,
-	getSelectedText,
-} from '@/scripts/highlighter/utils/markerUtils';
-import { saveHighlight } from '@/backend/saveHighlight';
-import { toast } from '@/components/ui/use-toast';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
+import TurndownService from 'turndown';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
-import { withAuth } from '@/backend/auth/withAuth';
-import { deleteHighlight } from '@/backend/deleteHighlight';
-import { getHighlights } from '@/backend/getHighlights';
 
 const HighlighterApp = () => {
 	const [highlights, setHighlights] = useState<{
@@ -23,10 +19,6 @@ const HighlighterApp = () => {
 	}>({});
 
 	const [openNoteUuid, setOpenNoteUuid] = useState<string | null>(null);
-
-	const [markerPosition, setMarkerPosition] = useState<
-		MarkerPosition | { display: 'none' }
-	>({ display: 'none' });
 
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -61,34 +53,6 @@ const HighlighterApp = () => {
 		};
 
 		fetchHighlights();
-	}, []);
-
-	useEffect(() => {
-		document.addEventListener('click', () => {
-			if (getSelectedText().length > 0) {
-				setMarkerPosition(getMarkerPosition());
-			}
-		});
-
-		document.addEventListener('selectionchange', () => {
-			if (getSelectedText().length === 0) {
-				setMarkerPosition({ display: 'none' });
-			}
-		});
-
-		return () => {
-			document.removeEventListener('click', () => {
-				if (getSelectedText().length > 0) {
-					setMarkerPosition(getMarkerPosition());
-				}
-			});
-
-			document.removeEventListener('selectionchange', () => {
-				if (getSelectedText().length === 0) {
-					setMarkerPosition({ display: 'none' });
-				}
-			});
-		};
 	}, []);
 
 	const handleEditHighlight = (highlightData: HighlightData) => {
@@ -205,18 +169,36 @@ const HighlighterApp = () => {
 		window.getSelection()?.empty();
 	};
 
+	const [articleContent, setArticleContent] = useState(null);
+
+	const handleParseArticle = () => {
+		const turndownService = new TurndownService();
+
+		const markdown = turndownService.turndown(document.body.innerHTML);
+		setArticleContent(markdown);
+	};
+
 	if (isLoading) {
 		return <div>Loading highlights...</div>; // Or any loading indicator you prefer
 	}
 
 	return (
 		<>
+			<div className='linklib-ext '>
+				<div className='bytebelli-internal bg-background space-y-2 flex-col flex'>
+					{/* {articleContent && <div>{articleContent.excerpt}</div>} */}
+					{/* {articleContent && <div>{articleContent.title}</div>} */}
+					{/* {articleContent && <div>{articleContent.byline}</div>} */}
+					{/* {articleContent && <div>{articleContent.siteName}</div>} */}
+				</div>
+				{articleContent && <div>{articleContent.textContent}</div>}
+			</div>
 			<ActionBar
-				markerPosition={markerPosition}
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 				handleClose={handleClose}
 				handleRate={handleRate}
+				handleParseArticle={handleParseArticle}
 			/>
 			{Object.entries(highlights).map(([uuid, highlightData]) => (
 				<Highlight

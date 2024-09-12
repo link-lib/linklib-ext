@@ -14,7 +14,7 @@ import {
 	getArticleMetadata,
 	getLinkIcon,
 } from '@/scripts/ImageDrop/saveWebsite';
-import { ArrowLeftFromLine, Heart, ImageUp } from 'lucide-react';
+import { ArrowLeftFromLine, FileText, Heart, ImageUp } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import { EnterIcon, ExitIcon } from '@radix-ui/react-icons';
 import { removeLocalStorage } from '@/utils/supabase/client';
@@ -22,6 +22,9 @@ import { signOut } from '@/backend/auth/actions';
 import { getValidSession } from '@/backend/auth/authUtils';
 import { withAuth } from '@/backend/auth/withAuth';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { saveWebsiteContent } from '@/backend/saveWebsiteContent';
+import { Readability } from '@mozilla/readability';
+import TurndownService from 'turndown';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -243,6 +246,49 @@ const ImageDrop = () => {
 
 	const handleOpenDrawer = () => {};
 
+	const saveContent = async () => {
+		try {
+			const turndownService = new TurndownService();
+			const markdown = turndownService.turndown(document.body);
+
+			const { author, publishDate } = getArticleMetadata();
+
+			if (markdown) {
+				// Uncomment and adjust this when you're ready to save the content
+				await saveWebsiteContent({
+					content: markdown,
+					link: window.location.href,
+					siteMetadata: {
+						url: window.location.href,
+						title: document.title,
+						favicon: getLinkIcon(),
+						author: author,
+						publishDate: publishDate,
+					},
+				});
+
+				toast({
+					title: 'Article saved',
+					description:
+						'The article content has been saved to your account.',
+				});
+			} else {
+				toast({
+					title: 'No content found',
+					description: 'Unable to parse the article content.',
+					variant: 'destructive',
+				});
+			}
+		} catch (error) {
+			console.error('Error saving article:', error);
+			toast({
+				title: 'Error',
+				description: 'Failed to save the article content.',
+				variant: 'destructive',
+			});
+		}
+	};
+
 	return (
 		<div
 			id='dropContainer'
@@ -324,6 +370,19 @@ const ImageDrop = () => {
 							</TooltipTrigger>
 							<TooltipContent>
 								<p>Click to save the link to this site!</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button onClick={saveContent} variant='outline'>
+									<FileText className='w-4 h-4' />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>See all highlights on this page!</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>

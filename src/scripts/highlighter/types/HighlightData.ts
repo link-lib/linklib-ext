@@ -1,3 +1,11 @@
+export type SiteMetadata = {
+	url: string;
+	title?: string;
+	favicon?: string;
+	author?: string;
+	publishDate?: string;
+};
+
 export type HighlightData = {
 	// Population Info
 	uuid: string;
@@ -21,14 +29,7 @@ export type HighlightData = {
 			end: number;
 		};
 	};
-	siteMetadata: {
-		url: string;
-		title?: string;
-		favicon?: string;
-		author?: string;
-		publishDate?: string;
-	};
-
+	siteMetadata: SiteMetadata;
 	// Custom
 	rating: number;
 	color: highlightColours;

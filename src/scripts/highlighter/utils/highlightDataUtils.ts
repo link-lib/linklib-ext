@@ -42,9 +42,6 @@ function getSelectionWithNewlines(selection: Selection): string {
 	return body;
 }
 
-('/html[1]/body[1]/div[7]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[2]/div[1]/p[5]/text()[2]');
-('/html[1]/body[1]/div[7]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[2]/div[1]/p[6]/strong[1]/text()[1]');
-
 export const extractHighlightData = (
 	selection: Selection
 ): HighlightData | null => {
@@ -86,6 +83,10 @@ export const extractHighlightData = (
 	}
 
 	const body = getSelectionWithNewlines(selection);
+	const pageTitle = document.title;
+
+	const highlightWords = extractWords(body);
+	const pageTitleWords = extractWords(pageTitle);
 
 	const highlightData: HighlightData = {
 		uuid: uuid(),
@@ -132,14 +133,22 @@ export const extractHighlightData = (
 		rating: 0,
 		color: highlightColours.YELLOW,
 		note: '',
-		highlightWords: [],
-		pageTitleWords: [],
+		highlightWords: highlightWords,
+		pageTitleWords: pageTitleWords,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
 
 	return highlightData;
 };
+
+// Helper function to extract words from a string
+function extractWords(text: string): string[] {
+	return text
+		.toLowerCase()
+		.split(/\s+/)
+		.filter((word) => word.length > 0); // Remove empty strings
+}
 
 export const generateXPathForElement = (element: Node): string => {
 	if (
