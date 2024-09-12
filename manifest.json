@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Linklib",
-  "description": "Extension for Linklib",
-  "version": "1.0",
+  "name": "ByteBelli",
+  "description": "Extension for ByteBelli web app (bytebelli.com) to save and annotate content from websites natively.",
+  "version": "0.0.0.1",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArjvcTUONM6Lo6RisOAk+hY75jv1eD5+runjkwknhiKpaR2gPc8OELRPg3mKPtLTaP10v9ns4O5zQwgHztVTwgKYrWRZZPUKcWjLXTmwlCsVwcotpTV+u+n89Kb6qbFvGGYlf6IakP5IjldcThZkLj3WMzNqmFz9U+pyguMlCStYpYipXLzgwzRCgUc/fzMqYGXfQEGXbERgU37OmfssPtAm2+600hFIyhLsFTGm+Jz7OOkbSLD+BXXQ5YfW5ysY91NYPQCuU5iDgYGpbG7GJ8XhQt1SayZ02vLFBB+ukLZ+fm+NAc2BTnUWMhnY94og9XYmrGUg9zN7A5n7Fzf4e1wIDAQAB",
   "action": {
     "default_popup": "index.html",
