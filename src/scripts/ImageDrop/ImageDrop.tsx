@@ -246,8 +246,6 @@ const ImageDrop = () => {
 			// Check if the website content already exists
 			const existingItem = await getWebsiteContent(currentUrl);
 
-			debugger;
-
 			if (existingItem) {
 				toast({
 					title: 'Already saved',
@@ -269,13 +267,13 @@ const ImageDrop = () => {
 					),
 				});
 			} else {
-				debugger;
 				await saveWebsiteContent({
 					content: null,
 					link: currentUrl,
 					siteMetadata: {
 						url: currentUrl,
 						favicon: getLinkIcon(),
+						title: document.title,
 					},
 				});
 

@@ -33,7 +33,6 @@ export async function getWebsiteContent(
 		.eq('link', url)
 		.single();
 
-	debugger;
 	if (error) {
 		if (error.code === 'PGRST116') {
 			// No matching record found
