@@ -2,24 +2,22 @@ import { RatingsBar } from '@/scripts/highlighter/components/ActionBar/RatingsBa
 import { TagsAction } from '@/scripts/highlighter/components/ActionBar/TagsAction';
 import {
 	MarkerPosition,
-	getSelectedText,
 	getMarkerPosition,
+	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
-import { FileText, Highlighter, PenBoxIcon, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Highlighter, PenBoxIcon, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const ActionBar = ({
 	handleHighlight,
 	handleAddNote,
 	handleClose,
 	handleRate,
-	handleParseArticle,
 }: {
 	handleHighlight: () => void;
 	handleAddNote: () => void;
 	handleClose: () => void;
 	handleRate: (rating: number) => void;
-	handleParseArticle: () => void;
 }) => {
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
@@ -72,12 +70,6 @@ const ActionBar = ({
 			</button>
 			<RatingsBar onRate={handleRate} />
 			<TagsAction />
-			<button
-				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-				onClick={handleParseArticle}
-			>
-				<FileText className='w-full h-full' />
-			</button>
 			<button
 				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
 				onClick={handleClose}

@@ -3,7 +3,7 @@ import { createClient, getLocalStorage } from '@/utils/supabase/client';
 import { SiteMetadata } from '@/scripts/highlighter/types/HighlightData';
 
 interface WebsiteContentData {
-	content: string;
+	content: string | null;
 	link: string;
 	siteMetadata: SiteMetadata;
 }

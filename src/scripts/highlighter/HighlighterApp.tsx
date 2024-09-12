@@ -10,7 +10,6 @@ import { Highlight } from '@/scripts/highlighter/components/Highlight';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
-import TurndownService from 'turndown';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
 
 const HighlighterApp = () => {
@@ -169,36 +168,17 @@ const HighlighterApp = () => {
 		window.getSelection()?.empty();
 	};
 
-	const [articleContent, setArticleContent] = useState(null);
-
-	const handleParseArticle = () => {
-		const turndownService = new TurndownService();
-
-		const markdown = turndownService.turndown(document.body.innerHTML);
-		setArticleContent(markdown);
-	};
-
 	if (isLoading) {
 		return <div>Loading highlights...</div>; // Or any loading indicator you prefer
 	}
 
 	return (
 		<>
-			<div className='linklib-ext '>
-				<div className='bytebelli-internal bg-background space-y-2 flex-col flex'>
-					{/* {articleContent && <div>{articleContent.excerpt}</div>} */}
-					{/* {articleContent && <div>{articleContent.title}</div>} */}
-					{/* {articleContent && <div>{articleContent.byline}</div>} */}
-					{/* {articleContent && <div>{articleContent.siteName}</div>} */}
-				</div>
-				{articleContent && <div>{articleContent.textContent}</div>}
-			</div>
 			<ActionBar
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 				handleClose={handleClose}
 				handleRate={handleRate}
-				handleParseArticle={handleParseArticle}
 			/>
 			{Object.entries(highlights).map(([uuid, highlightData]) => (
 				<Highlight
