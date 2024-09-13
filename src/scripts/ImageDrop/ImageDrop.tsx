@@ -1,6 +1,11 @@
 import iconImage from '@/assets/icon.png';
 import iconEating from '@/assets/iconEating.png';
+import { signOut } from '@/backend/auth/actions';
+import { getValidSession } from '@/backend/auth/authUtils';
+import { withAuth } from '@/backend/auth/withAuth';
 import { saveImage } from '@/backend/saveImage';
+import { getWebsiteContent } from '@/backend/websiteContent/getWebsiteContent';
+import { saveWebsiteContent } from '@/backend/websiteContent/saveWebsiteContent';
 import { Button } from '@/components/ui/button';
 import {
 	Tooltip,
@@ -9,18 +14,20 @@ import {
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
-import { useContext } from 'react';
 import {
 	getArticleMetadata,
 	getLinkIcon,
 } from '@/scripts/ImageDrop/saveWebsite';
-import { ArrowLeftFromLine, Heart, ImageUp } from 'lucide-react';
-import { FormEventHandler, useEffect, useRef, useState } from 'react';
-import { EnterIcon, ExitIcon } from '@radix-ui/react-icons';
 import { removeLocalStorage } from '@/utils/supabase/client';
-import { signOut } from '@/backend/auth/actions';
-import { getValidSession } from '@/backend/auth/authUtils';
-import { withAuth } from '@/backend/auth/withAuth';
+import { EnterIcon, ExitIcon } from '@radix-ui/react-icons';
+import { ArrowLeftFromLine, FileText, Heart, ImageUp } from 'lucide-react';
+import {
+	FormEventHandler,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
 
 const ImageDrop = () => {
@@ -223,17 +230,6 @@ const ImageDrop = () => {
 			savedDate,
 		});
 
-		// const obj = {
-		// 	url,
-		// 	title,
-		// 	favicon,
-		// 	author,
-		// 	publishDate,
-		// 	savedDate,
-		// };
-		// TODO: Implement your logic to save this data
-		// saveLink({ url, title, favicon, author, publishDate });
-
 		toast({
 			title: 'Link saved',
 			description: title,
@@ -242,6 +238,60 @@ const ImageDrop = () => {
 	};
 
 	const handleOpenDrawer = () => {};
+
+	const saveContent = async () => {
+		const currentUrl = window.location.href;
+
+		try {
+			// Check if the website content already exists
+			const existingItem = await getWebsiteContent(currentUrl);
+
+			if (existingItem) {
+				toast({
+					title: 'Already saved',
+					description: 'This website content has already been saved.',
+					action: (
+						<Button
+							variant='outline'
+							size='sm'
+							onClick={() => {
+								// Open the saved content in a new tab
+								window.open(
+									`https://bytebelli.com/reader/${existingItem.id}`,
+									'_blank'
+								);
+							}}
+						>
+							View saved content
+						</Button>
+					),
+				});
+			} else {
+				await saveWebsiteContent({
+					content: null,
+					link: currentUrl,
+					siteMetadata: {
+						url: currentUrl,
+						favicon: getLinkIcon(),
+						title: document.title,
+					},
+				});
+
+				toast({
+					title: 'Article saved',
+					description:
+						'The article content has been saved to your account.',
+				});
+			}
+		} catch (error) {
+			console.error('Error saving article:', error);
+			toast({
+				title: 'Error',
+				description: 'Failed to save the article content.',
+				variant: 'destructive',
+			});
+		}
+	};
 
 	return (
 		<div
@@ -324,6 +374,19 @@ const ImageDrop = () => {
 							</TooltipTrigger>
 							<TooltipContent>
 								<p>Click to save the link to this site!</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button onClick={saveContent} variant='outline'>
+									<FileText className='w-4 h-4' />
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>See all highlights on this page!</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>

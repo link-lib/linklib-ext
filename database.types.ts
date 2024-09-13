@@ -9,6 +9,35 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bugs: {
+        Row: {
+          created_at: string
+          description: string
+          id: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bugs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contentitem: {
         Row: {
           createdat: string | null
@@ -17,6 +46,7 @@ export type Database = {
           id: string
           link: string | null
           nativeid: string | null
+          note: string | null
           path: string | null
           type: Database["public"]["Enums"]["content_type"]
           user_id: string | null
@@ -29,6 +59,7 @@ export type Database = {
           id: string
           link?: string | null
           nativeid?: string | null
+          note?: string | null
           path?: string | null
           type: Database["public"]["Enums"]["content_type"]
           user_id?: string | null
@@ -41,6 +72,7 @@ export type Database = {
           id?: string
           link?: string | null
           nativeid?: string | null
+          note?: string | null
           path?: string | null
           type?: Database["public"]["Enums"]["content_type"]
           user_id?: string | null
@@ -78,10 +110,85 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "contentitemtag_itemid_fkey"
+            columns: ["itemid"]
+            isOneToOne: false
+            referencedRelation: "public_content_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contentitemtag_tagid_fkey"
+            columns: ["tagid"]
+            isOneToOne: false
+            referencedRelation: "public_tags"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contentitemtag_tagid_fkey"
             columns: ["tagid"]
             isOneToOne: false
             referencedRelation: "tag"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      errors: {
+        Row: {
+          action: string | null
+          created_at: string
+          error: string | null
+          id: number
+          user_id: string | null
+        }
+        Insert: {
+          action?: string | null
+          created_at?: string
+          error?: string | null
+          id?: number
+          user_id?: string | null
+        }
+        Update: {
+          action?: string | null
+          created_at?: string
+          error?: string | null
+          id?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "errors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -116,23 +223,35 @@ export type Database = {
       list: {
         Row: {
           createdat: string | null
+          description: string | null
           icon: string | null
           id: string
+          is_public: boolean
           name: string | null
+          slug: string
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
           createdat?: string | null
+          description?: string | null
           icon?: string | null
           id: string
+          is_public?: boolean
           name?: string | null
+          slug: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           createdat?: string | null
+          description?: string | null
           icon?: string | null
           id?: string
+          is_public?: boolean
           name?: string | null
+          slug?: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -170,7 +289,60 @@ export type Database = {
             foreignKeyName: "list_tag_tag_id_fkey"
             columns: ["tag_id"]
             isOneToOne: false
+            referencedRelation: "public_tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "list_tag_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
             referencedRelation: "tag"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notes: {
+        Row: {
+          created_at: string
+          id: number
+          item_id: string | null
+          user_id: string
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          item_id?: string | null
+          user_id: string
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          item_id?: string | null
+          user_id?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "contentitem"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "public_content_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -204,9 +376,76 @@ export type Database = {
           },
         ]
       }
+      website_content: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: number
+          link: string | null
+          siteMetadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: number
+          link?: string | null
+          siteMetadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: number
+          link?: string | null
+          siteMetadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website-content_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      hypopg_hidden_indexes: {
+        Row: {
+          am_name: unknown | null
+          index_name: unknown | null
+          indexrelid: unknown | null
+          is_hypo: boolean | null
+          schema_name: unknown | null
+          table_name: unknown | null
+        }
+        Relationships: []
+      }
+      hypopg_list_indexes: {
+        Row: {
+          am_name: unknown | null
+          index_name: string | null
+          indexrelid: unknown | null
+          schema_name: unknown | null
+          table_name: unknown | null
+        }
+        Relationships: []
+      }
+      public_content_items: {
+        Row: {
+          id: string | null
+        }
+        Relationships: []
+      }
+      public_tags: {
+        Row: {
+          id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_list_for_tags_sql: {
@@ -217,6 +456,77 @@ export type Database = {
           id: string
           name: string
           icon: string
+        }[]
+      }
+      hypopg: {
+        Args: Record<PropertyKey, never>
+        Returns: Record<string, unknown>[]
+      }
+      hypopg_create_index: {
+        Args: {
+          sql_order: string
+        }
+        Returns: Record<string, unknown>[]
+      }
+      hypopg_drop_index: {
+        Args: {
+          indexid: unknown
+        }
+        Returns: boolean
+      }
+      hypopg_get_indexdef: {
+        Args: {
+          indexid: unknown
+        }
+        Returns: string
+      }
+      hypopg_hidden_indexes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          indexid: unknown
+        }[]
+      }
+      hypopg_hide_index: {
+        Args: {
+          indexid: unknown
+        }
+        Returns: boolean
+      }
+      hypopg_relation_size: {
+        Args: {
+          indexid: unknown
+        }
+        Returns: number
+      }
+      hypopg_reset: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      hypopg_reset_index: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      hypopg_unhide_all_indexes: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      hypopg_unhide_index: {
+        Args: {
+          indexid: unknown
+        }
+        Returns: boolean
+      }
+      index_advisor: {
+        Args: {
+          query: string
+        }
+        Returns: {
+          startup_cost_before: Json
+          startup_cost_after: Json
+          total_cost_before: Json
+          total_cost_after: Json
+          index_statements: string[]
+          errors: string[]
         }[]
       }
     }
@@ -232,6 +542,8 @@ export type Database = {
         | "LINK"
         | "HN"
         | "REDDIT"
+        | "PINTEREST"
+        | "LOOM"
     }
     CompositeTypes: {
       [_ in never]: never
