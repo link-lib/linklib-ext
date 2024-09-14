@@ -1,12 +1,16 @@
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { createRangesByElement } from '@/scripts/highlighter/utils/createHighlight/createRangeByElement';
 
-import { createHighlightElementTextBased } from '@/scripts/highlighter/utils/createHighlight/createRangeFromTextSearch';
+import {
+	createHighlightElementTextArrayBased,
+	createHighlightElementTextBased,
+} from '@/scripts/highlighter/utils/createHighlight/createRangeFromTextSearch';
 import { createRangeUsingWindowFind } from '@/scripts/highlighter/utils/createHighlight/createRangeUsingWindowFind';
 import { createHighlightFromRange } from '@/scripts/highlighter/utils/createHighlight/utils/splitRanges';
 import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createHighlight/createRangesClaude';
 
 export const createElementFallbackOrder = [
+	'text-array-based',
 	'text-based',
 	'text-window-find',
 	'range-based',
@@ -15,6 +19,7 @@ export const createElementFallbackOrder = [
 ];
 
 export const createHighlight = {
+	'text-array-based': createHighlightElementTextArrayBased,
 	'text-based': createHighlightElementTextBased,
 	'text-window-find': createRangeUsingWindowFind,
 	'range-based': createHighlightFromRange,

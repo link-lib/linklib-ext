@@ -64,6 +64,7 @@ export const Highlight = ({
 		for (const strategy of createElementFallbackOrder) {
 			let ranges: Range[] = [];
 			try {
+				debugger;
 				ranges =
 					createHighlight[strategy as keyof typeof createHighlight](
 						highlightData
@@ -86,6 +87,7 @@ export const Highlight = ({
 				const containers = ranges.map((range) => {
 					const container = document.createElement('span');
 					container.className = 'linklib-ext';
+					// container.textContent = 'heehee';
 					const content = range.extractContents();
 					range.startContainer.parentNode?.normalize();
 					range.insertNode(container);

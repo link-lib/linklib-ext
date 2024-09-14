@@ -27,6 +27,7 @@ const NotesModal = ({
 	useEffect(() => {
 		if (shouldFocusInput && inputRef.current) {
 			inputRef.current.focus();
+			inputRef.current.setSelectionRange(note.length, note.length);
 			onInputFocused();
 		}
 	}, [shouldFocusInput, onInputFocused]);
