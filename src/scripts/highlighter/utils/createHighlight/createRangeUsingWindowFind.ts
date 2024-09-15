@@ -49,7 +49,6 @@ export const createRangeUsingWindowFind = (
 					}
 					remainingLength -= nodeLength;
 				}
-				// @ts-expect-error because we checked that this is a text node above
 				currentNode = getNextTextNode(currentNode);
 				if (currentNode) {
 					endNode = currentNode;

@@ -26,9 +26,10 @@ export async function logIn(formData: FormData) {
 	}
 
 	const supabase = createClient();
-	const { data, error } = await supabase.auth.signInWithPassword(
-		validatedFields.data
-	);
+	const { data, error } = await supabase.auth.signInWithPassword({
+		email: validatedFields.data.email!,
+		password: validatedFields.data.password,
+	});
 
 	if (error) {
 		throw new Error('Error in logging in');

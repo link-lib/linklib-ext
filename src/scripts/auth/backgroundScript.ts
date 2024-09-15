@@ -1,6 +1,6 @@
 import { createServerClient, setLocalStorage } from '@/utils/supabase/client';
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 	if (message.action === 'signInWithGoogle') {
 		signInWithGoogle().then(sendResponse);
 		return true; // Indicates that the response is asynchronous
