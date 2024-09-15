@@ -8,6 +8,7 @@ import MenuToasts from '@/scripts/ImageDrop/MenuToasts';
 import '../index.css';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { AuthModalProvider } from './auth/context/AuthModalContext';
+import { SWRConfig } from 'swr';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -23,11 +24,13 @@ reactRoot.render(
 		<div className='linklib-ext bytebelli-internal'>
 			<html id='linklib-html'>
 				<AuthModalProvider>
-					<HighlighterApp />
-					<ImageDrop />
-					<Toaster />
-					<MenuToasts />
-					<AuthModal />
+					<SWRConfig>
+						<HighlighterApp />
+						<ImageDrop />
+						<Toaster />
+						<MenuToasts />
+						<AuthModal />
+					</SWRConfig>
 				</AuthModalProvider>
 				<div className='md:sticky md:block'></div>
 			</html>

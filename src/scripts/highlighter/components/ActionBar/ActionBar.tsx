@@ -1,3 +1,4 @@
+import { Tag } from '@/backend/tags/getTags';
 import { RatingsBar } from '@/scripts/highlighter/components/ActionBar/RatingsBar';
 import { TagsAction } from '@/scripts/highlighter/components/ActionBar/TagsAction';
 import {
@@ -13,11 +14,13 @@ const ActionBar = ({
 	handleAddNote,
 	handleClose,
 	handleRate,
+	handleHighlightAndTag,
 }: {
 	handleHighlight: () => void;
 	handleAddNote: () => void;
 	handleClose: () => void;
 	handleRate: (rating: number) => void;
+	handleHighlightAndTag: (tag: Tag) => void;
 }) => {
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
@@ -69,7 +72,7 @@ const ActionBar = ({
 				<PenBoxIcon className='w-full h-full' />
 			</button>
 			<RatingsBar onRate={handleRate} />
-			<TagsAction />
+			<TagsAction onTagSelect={handleHighlightAndTag} />
 			<button
 				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
 				onClick={handleClose}
