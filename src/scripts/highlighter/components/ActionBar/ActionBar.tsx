@@ -6,8 +6,9 @@ import {
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
-import { Highlighter, PenBoxIcon, X } from 'lucide-react';
+import { Highlighter, PenBoxIcon, X, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useSWRConfig } from 'swr';
 
 const ActionBar = ({
 	handleHighlight,
@@ -25,6 +26,15 @@ const ActionBar = ({
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
 	>({ display: 'none' });
+
+	const { cache } = useSWRConfig();
+	const { data: tags = [] } = (cache.get('getTags') || {}) as {
+		data?: Tag[];
+	};
+
+	const watchLaterTag = tags.find(
+		(tag) => tag.name.toLowerCase() === 'watch later'
+	);
 
 	useEffect(() => {
 		document.addEventListener('click', () => {
@@ -54,6 +64,10 @@ const ActionBar = ({
 		};
 	}, []);
 
+	if (!markerPosition || !getSelectedText()) {
+		return null;
+	}
+
 	return (
 		<div
 			className='fixed bg-popover text-slate-400 ll-gap-3 gap-2 w-fit justify-center items-center flex-row rounded-md border p-2 text-sm z-infinite'
@@ -73,6 +87,14 @@ const ActionBar = ({
 			</button>
 			<RatingsBar onRate={handleRate} />
 			<TagsAction onTagSelect={handleHighlightAndTag} />
+			{watchLaterTag && (
+				<button
+					className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+					onClick={() => handleHighlightAndTag(watchLaterTag)}
+				>
+					<Clock className='w-full h-full' />
+				</button>
+			)}
 			<button
 				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
 				onClick={handleClose}
