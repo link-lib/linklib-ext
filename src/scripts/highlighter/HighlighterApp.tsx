@@ -157,12 +157,10 @@ const HighlighterApp = () => {
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
-				highlightData.tags = [tag.id];
 				setHighlights({
 					...highlights,
 					[highlightData.uuid]: highlightData,
 				});
-				debugger;
 				saveHighlight(highlightData)
 					.then(() => {
 						// After successfully saving the highlight, add the tag
@@ -172,8 +170,9 @@ const HighlighterApp = () => {
 						});
 					})
 					.then(() => {
+						const tagIcon = tag.icon ? `${tag.icon} ` : '';
 						toast({
-							title: 'Successfully saved highlight with tag.',
+							title: `Successfully saved highlight to ${tagIcon}${tag.name}`,
 						});
 					})
 					.catch((error) => {
