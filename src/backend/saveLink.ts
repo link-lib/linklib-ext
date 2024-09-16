@@ -1,10 +1,18 @@
-import { Session, User } from '@supabase/supabase-js';
 import { createClient, getLocalStorage } from '@/utils/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function saveLink(link: string) {
+interface LinkData {
+	url: string;
+	title: string;
+	favicon: string;
+	author: string;
+	publishDate: string;
+	savedDate: string;
+}
+
+export async function saveLink(linkData: LinkData) {
 	const supabase = createClient();
-	const randomId = uuidv4();
 
 	let user: User | undefined = undefined;
 
@@ -16,18 +24,25 @@ export async function saveLink(link: string) {
 		throw new Error('Session parsing error');
 	}
 
+	if (!user) {
+		throw new Error('User not authenticated');
+	}
+
 	const { data: insertData, error } = await supabase
 		.from('contentitem')
 		.insert({
-			user_id: user.id,
-			link,
+			id: uuidv4(),
 			type: 'LINK',
-			id: randomId,
+			highlight_data: JSON.stringify(linkData),
+			link: linkData.url,
+			user_id: user.id,
 		});
+
 	if (error) {
-		console.log('Error saving content item.', error);
-	} else {
-		console.log('Successfully saved content item.', insertData);
+		console.error('Error saving link:', error);
+		throw error;
 	}
+
+	console.log('Successfully saved link:', insertData);
 	return insertData;
 }
