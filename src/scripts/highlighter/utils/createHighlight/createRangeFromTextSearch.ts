@@ -59,7 +59,6 @@ const findTextPosition = (highlightData: HighlightData) => {
 				1; /* 1 for the white space we add*/
 
 			// extra characters - suffix length = characters from the end of the body
-			// @ts-expect-error because we checked that this is a text node above
 			endOffset = currentNode.textContent.length - extraCharacters;
 
 			// WARNING: There could be chance the entire suffix isn't in this node?
@@ -76,18 +75,14 @@ const findTextPosition = (highlightData: HighlightData) => {
 						highlightData.matching.surroundingText.prefix.length;
 
 					// In case the suffix is in a previous textnode
-					// @ts-expect-error because we checked that this is a text node above
 					while (startOffset >= backtrackNode.textContent.length) {
 						startOffset =
-							// @ts-expect-error because we checked that this is a text node above
 							startOffset - backtrackNode.textContent.length;
-						// @ts-expect-error because we checked that this is a text node above
 						backtrackNode = walker.nextNode();
 					}
 					startNode = backtrackNode;
 					break;
 				}
-				// @ts-expect-error because we checked that this is a text node above
 				backtrackNode = walker.previousNode();
 				if (backtrackNode.textContent === '\n') {
 					backtrackText =
