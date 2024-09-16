@@ -11,6 +11,9 @@ import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
+import useSWR from 'swr';
+import { Tag, getTags } from '@/backend/tags/getTags';
+import { addTagToContentItem } from '@/backend/tags/addTagtoContentItem';
 
 const HighlighterApp = () => {
 	const [highlights, setHighlights] = useState<{
@@ -20,6 +23,12 @@ const HighlighterApp = () => {
 	const [openNoteUuid, setOpenNoteUuid] = useState<string | null>(null);
 
 	const [isLoading, setIsLoading] = useState(true);
+
+	useSWR<Tag[]>('getTags', getTags, {
+		revalidateOnFocus: false,
+		revalidateOnReconnect: false,
+		revalidateIfStale: false,
+	});
 
 	useEffect(() => {
 		const fetchHighlights = async () => {
@@ -143,6 +152,47 @@ const HighlighterApp = () => {
 		}
 	}, authModalContext);
 
+	const handleHighlightAndTag = withAuth((tag: Tag) => {
+		const userSelection = window.getSelection();
+		if (userSelection) {
+			const highlightData = extractHighlightData(userSelection);
+			if (highlightData) {
+				highlightData.tags = [tag.id];
+				setHighlights({
+					...highlights,
+					[highlightData.uuid]: highlightData,
+				});
+				debugger;
+				saveHighlight(highlightData)
+					.then(() => {
+						// After successfully saving the highlight, add the tag
+						return addTagToContentItem({
+							itemId: highlightData.uuid,
+							tagId: tag.id,
+						});
+					})
+					.then(() => {
+						toast({
+							title: 'Successfully saved highlight with tag.',
+						});
+					})
+					.catch((error) => {
+						console.error(
+							'Error saving highlight or adding tag:',
+							error
+						);
+						toast({ title: 'Error saving highlight with tag' });
+						setHighlights((prevHighlights) => {
+							const newHighlights = { ...prevHighlights };
+							delete newHighlights[highlightData.uuid];
+							return newHighlights;
+						});
+					});
+			}
+			window.getSelection()?.empty();
+		}
+	}, authModalContext);
+
 	const handleDeleteHighlight = withAuth((uuid: string) => {
 		const highlight = highlights[uuid];
 		setHighlights((prevHighlights) => {
@@ -179,6 +229,7 @@ const HighlighterApp = () => {
 				handleAddNote={handleAddNote}
 				handleClose={handleClose}
 				handleRate={handleRate}
+				handleHighlightAndTag={handleHighlightAndTag}
 			/>
 			{Object.entries(highlights).map(([uuid, highlightData]) => (
 				<Highlight
