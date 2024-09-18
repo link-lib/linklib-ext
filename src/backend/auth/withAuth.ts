@@ -22,6 +22,9 @@ export function withAuth<T extends (...args: any[]) => any>(
 		}
 
 		if (currentSession) {
+			// I shouldn't have to do this
+			// I stored the session locally, so should access through context but for some reason its not registered in supabase
+			// why????
 			await supabase.auth.setSession({
 				access_token: currentSession.access_token,
 				refresh_token: currentSession.refresh_token,
