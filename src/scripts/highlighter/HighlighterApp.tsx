@@ -10,7 +10,7 @@ import { Highlight } from '@/scripts/highlighter/components/Highlight';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
-import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { AuthContext } from '../auth/context/AuthModalContext';
 import useSWR from 'swr';
 import { Tag, getTags } from '@/backend/tags/getTags';
 import { addTagToContentItem } from '@/backend/tags/addTagtoContentItem';
@@ -70,7 +70,7 @@ const HighlighterApp = () => {
 		}));
 	};
 
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 
 	const handleHighlight = withAuth(() => {
 		const userSelection = window.getSelection();

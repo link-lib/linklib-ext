@@ -5,9 +5,9 @@ import ReactDOM from 'react-dom/client';
 import '../../index.css';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
 import {
-	AuthModalContext,
-	AuthModalContextType,
-	AuthModalProvider,
+	AuthContext,
+	AuthContextType,
+	AuthProvider,
 } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { withAuth } from '@/backend/auth/withAuth';
@@ -35,7 +35,7 @@ function saveItem(itemId: string, toast: any): void {
 // Function to inject "save" link into subtext menu
 function injectSaveLink(
 	toast: any,
-	AuthModalContext: AuthModalContextType | undefined
+	AuthModalContext: AuthContextType | undefined
 ): void {
 	// Get all subline elements
 	const sublineElements =
@@ -86,7 +86,7 @@ function injectSaveLink(
 // React component to handle toast notifications
 export const HNToast = () => {
 	const { toast } = useToast();
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 
 	useEffect(() => {
 		injectSaveLink(toast, authModalContext);
@@ -104,10 +104,10 @@ document.body.appendChild(root);
 // Render the React component
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<AuthModalProvider>
+		<AuthProvider>
 			<Toaster />
 			<HNToast />
 			<AuthModal />
-		</AuthModalProvider>
+		</AuthProvider>
 	</React.StrictMode>
 );

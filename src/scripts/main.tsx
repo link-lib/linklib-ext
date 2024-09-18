@@ -7,7 +7,7 @@ import ImageDrop from './ImageDrop/ImageDrop';
 import MenuToasts from '@/scripts/ImageDrop/MenuToasts';
 import '../index.css';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
-import { AuthModalProvider } from './auth/context/AuthModalContext';
+import { AuthProvider } from './auth/context/AuthModalContext';
 import { SWRConfig } from 'swr';
 
 const root = document.createElement('div');
@@ -23,7 +23,7 @@ reactRoot.render(
 	<React.StrictMode>
 		<div className='linklib-ext bytebelli-internal'>
 			<html id='linklib-html'>
-				<AuthModalProvider>
+				<AuthProvider>
 					<SWRConfig>
 						<HighlighterApp />
 						<ImageDrop />
@@ -31,7 +31,7 @@ reactRoot.render(
 						<MenuToasts />
 						<AuthModal />
 					</SWRConfig>
-				</AuthModalProvider>
+				</AuthProvider>
 				<div className='md:sticky md:block'></div>
 			</html>
 		</div>

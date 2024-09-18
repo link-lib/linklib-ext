@@ -10,8 +10,8 @@ export async function saveHighlight(highlightData: HighlightData) {
 	try {
 		const currentSession = (await getLocalStorage('session')) as Session;
 		user = currentSession.user;
-	} catch {
-		console.error('Invalid session stored.');
+	} catch (e) {
+		console.error('Invalid session stored.', e);
 		throw new Error('Session parsing error');
 	}
 	const bodyText = highlightData.matching.body;
@@ -29,6 +29,7 @@ export async function saveHighlight(highlightData: HighlightData) {
 		});
 	if (error) {
 		console.log('Error saving highlight.', error);
+		throw new Error('error saving highlight');
 	} else {
 		console.log('Successfully saved highlight.', insertData);
 	}

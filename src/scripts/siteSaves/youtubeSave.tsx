@@ -5,9 +5,9 @@ import ReactDOM from 'react-dom/client';
 import '../../index.css';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
 import {
-	AuthModalContext,
-	AuthModalContextType,
-	AuthModalProvider,
+	AuthContext,
+	AuthContextType,
+	AuthProvider,
 } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { withAuth } from '@/backend/auth/withAuth';
@@ -88,7 +88,7 @@ function createSvgIcon(): SVGSVGElement {
 // Function to inject "save to Linklib" button into YouTube menu
 function injectSaveButton(
 	toast: any,
-	authModalContext: AuthModalContextType | undefined
+	authModalContext: AuthContextType | undefined
 ): void {
 	// Get the menu element
 	const menu = document.querySelector<HTMLDivElement>(
@@ -187,7 +187,7 @@ function injectSaveButton(
 // Function to observe changes in the DOM and inject the button when the menu is available
 function observeMenu(
 	toast: any,
-	authModalContext: AuthModalContextType | undefined
+	authModalContext: AuthContextType | undefined
 ): void {
 	const observer = new MutationObserver(() => {
 		const fold = document.querySelector<HTMLDivElement>('#above-the-fold');
@@ -209,7 +209,7 @@ function observeMenu(
 // React component to handle toast notifications
 export const YouTubeToast = () => {
 	const { toast } = useToast();
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 
 	useEffect(() => {
 		observeMenu(toast, authModalContext);
@@ -227,10 +227,10 @@ document.body.appendChild(root);
 // Render the React component
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<AuthModalProvider>
+		<AuthProvider>
 			<Toaster />
 			<YouTubeToast />
 			<AuthModal />
-		</AuthModalProvider>
+		</AuthProvider>
 	</React.StrictMode>
 );

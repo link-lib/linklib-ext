@@ -5,9 +5,9 @@ import ReactDOM from 'react-dom/client';
 import '../../index.css';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
 import {
-	AuthModalContext,
-	AuthModalContextType,
-	AuthModalProvider,
+	AuthContext,
+	AuthContextType,
+	AuthProvider,
 } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { withAuth } from '@/backend/auth/withAuth';
@@ -34,7 +34,7 @@ function saveItem(itemId: string, toast: any): void {
 // Function to inject "save to Linklib" button into Reddit posts
 function injectSaveButton(
 	toast: any,
-	authModalContext: AuthModalContextType | undefined
+	authModalContext: AuthContextType | undefined
 ): void {
 	// Get all post elements
 	const postElements =
@@ -78,7 +78,7 @@ function injectSaveButton(
 // React component to handle toast notifications
 export const RedditToast = () => {
 	const { toast } = useToast();
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 
 	useEffect(() => {
 		injectSaveButton(toast, authModalContext);
@@ -96,10 +96,10 @@ document.body.appendChild(root);
 // Render the React component
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<AuthModalProvider>
+		<AuthProvider>
 			<Toaster />
 			<RedditToast />
 			<AuthModal />
-		</AuthModalProvider>
+		</AuthProvider>
 	</React.StrictMode>
 );
