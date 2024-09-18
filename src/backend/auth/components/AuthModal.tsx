@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { AuthModalContext } from '../../../scripts/auth/context/AuthModalContext';
+import { AuthContext } from '../../../scripts/auth/context/AuthModalContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { logIn, signInWithGoogle, signUp } from '../actions';
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 
 export const AuthModal = () => {
-	const { isOpen, setIsOpen } = useContext(AuthModalContext) ?? {
+	const { isOpen, setIsOpen } = useContext(AuthContext) ?? {
 		isOpen: false,
 		setIsOpen: () => null,
 	};

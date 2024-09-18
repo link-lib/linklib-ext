@@ -3,11 +3,11 @@
   "name": "ByteBelli",
   "description": "Extension for ByteBelli web app (bytebelli.com) to save and annotate content from websites natively.",
   "version": "0.0.0.1",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlrTE+VRT6LZ2rWG8nbv2jqmO9YJKig0IySGgjtuqgaBe0vLOCchvKbA2TtYj02A/umsW9990LVUzE1bUrer2OEMLGqzwK2piC7xFBO6edQM3TQj26LQ1SgjLnjLGKCw8bLFnipeLHgJZiAU/jUeHUNLvp6om1cb7CDj1JwPwzsPxneods/NEHydgLgQmeE8r6UXsBrWdOFvu8ZJTHkoQACVkGz0pMBF11fzxKRF6Sm2aIIF5MAHMreJnjDhJq80tNzQsLGOJ+JorYF4r9oAy8SfabiVRYuChrXNUjTw7HB8hjVRuAEotyDDFYrPFqEJT9ILhOK/t7qfsMP5q14tRNwIDAQAB",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icon48.png"
   },
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAubiOz5Ejyuw7obZtpQ8wc9ZZWVnLz81geAmu+MtgTmKOCPO2v7LZ5QyvLRUQ6e6YDzJuLWk6Drc9eZk+IRcbUUBPniJSYz0RizKCUJbMo6UU55L+pVjVUkChAwMnSzZUHmQyU3NpTJofbACyxa12Lsc1lLuVa/W4HtKCKByp7CubZZg4zpIs9R7Y9txPbqryYF9O/WYGqyRrcUhO0nRBtCJRX1ZQs+h7ZJkS62vPnPe2gHzmNXkQv4MoHNOU2I1SKmdoSiSMfedXvUZJf7Tjw6DIucH77e7TErgNkqmgu+1i9R62u15DH7mO3rU7eucKTssu7MhDQQ/F/XJmMtbOpwIDAQAB",
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
