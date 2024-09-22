@@ -8,8 +8,10 @@ import {
 import { createRangeUsingWindowFind } from '@/scripts/highlighter/utils/createHighlight/createRangeUsingWindowFind';
 import { createHighlightFromRange } from '@/scripts/highlighter/utils/createHighlight/utils/splitRanges';
 import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createHighlight/createRangesClaude';
+import { createHighlightElementTextArrayBasedDeterministic } from '@/scripts/highlighter/utils/createHighlight/createRangeo1';
 
 export const createElementFallbackOrder = [
+	'text-array-based-o1',
 	'text-array-based',
 	'text-based',
 	'text-window-find',
@@ -19,6 +21,7 @@ export const createElementFallbackOrder = [
 ];
 
 export const createHighlight = {
+	'text-array-based-o1': createHighlightElementTextArrayBasedDeterministic,
 	'text-array-based': createHighlightElementTextArrayBased,
 	'text-based': createHighlightElementTextBased,
 	'text-window-find': createRangeUsingWindowFind,

@@ -158,7 +158,7 @@ export const Highlight = ({
 						<PopoverTrigger asChild>
 							<span
 								highlight-id={`highlight-${highlightData.uuid}`}
-								className='bg-yellow-400 cursor-pointer highlight'
+								className='bg-yellow-400 cursor-pointer bytebelli-highlight'
 								onClick={(e) => {
 									e.preventDefault();
 									e.stopPropagation();

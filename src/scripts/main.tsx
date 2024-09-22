@@ -8,6 +8,7 @@ import MenuToasts from '@/scripts/ImageDrop/MenuToasts';
 import '../index.css';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { AuthModalProvider } from './auth/context/AuthModalContext';
+import { SWRConfig } from 'swr';
 
 const root = document.createElement('div');
 root.id = 'crx-root';
@@ -19,20 +20,22 @@ document.body.appendChild(root);
 const reactRoot = ReactDOM.createRoot(root);
 
 reactRoot.render(
-	<React.StrictMode>
-		<div className='linklib-ext bytebelli-internal'>
-			<html id='linklib-html'>
-				<AuthModalProvider>
+	// <React.StrictMode>
+	<div className='linklib-ext bytebelli-internal'>
+		<html id='linklib-html'>
+			<AuthModalProvider>
+				<SWRConfig>
 					<HighlighterApp />
 					<ImageDrop />
 					<Toaster />
 					<MenuToasts />
 					<AuthModal />
-				</AuthModalProvider>
-				<div className='md:sticky md:block'></div>
-			</html>
-		</div>
-	</React.StrictMode>
+				</SWRConfig>
+			</AuthModalProvider>
+			<div className='md:sticky md:block'></div>
+		</html>
+	</div>
+	// </React.StrictMode>
 );
 
 export { reactRoot };
