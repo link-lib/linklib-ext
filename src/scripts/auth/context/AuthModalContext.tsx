@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import {
-	createServerClient,
+	createClient,
 	removeLocalStorage,
 	setLocalStorage,
 } from '@/utils/supabase/client';
@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
 
-	const supabase = createServerClient();
+	const supabase = createClient();
 
 	useEffect(() => {
 		// Get initial session
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 		// Listen for auth changes
 		const {
 			data: { subscription },
-		} = supabase.auth.onAuthStateChange((event, session) => {
+		} = supabase.auth.onAuthStateChange(async (event, session) => {
 			console.log(`Supabase auth event: ${event}`);
 			setSession(session);
 			setUser(session?.user ?? null);
@@ -47,8 +47,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 			switch (event) {
 				case 'SIGNED_IN':
 					// Handle sign in (e.g., store user info in localStorage)
-					setLocalStorage({ user: session.user });
-					setLocalStorage({ session: session });
+					await setLocalStorage({ user: session.user });
+					await setLocalStorage({ session: session });
 
 					setUser(session.user);
 					setSession(session);
@@ -56,8 +56,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 					break;
 				case 'SIGNED_OUT':
 					// Handle sign out (e.g., clear user info from localStorage)
-					removeLocalStorage('user');
-					removeLocalStorage('session');
+					await removeLocalStorage('user');
+					await removeLocalStorage('session');
 					setUser(null);
 					setSession(null);
 					setAccessToken(null);
@@ -66,8 +66,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 					// There is a background process that keeps track of when the session should be refreshed so we will always receive valid tokens by listening to this event.
 					// The frequency of this event is related to the JWT expiry limit configured on the project, currently 1 hour.
 					setAccessToken(session.access_token);
-					setLocalStorage({ session: session });
-					setLocalStorage({ user: session.user });
+					await setLocalStorage({ session: session });
+					await setLocalStorage({ user: session.user });
 					setSession(session);
 					setUser(session.user);
 

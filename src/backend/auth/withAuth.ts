@@ -1,4 +1,3 @@
-import { getValidSession } from './authUtils';
 import { AuthContextType } from '../../scripts/auth/context/AuthModalContext';
 import { createClient, setLocalStorage } from '@/utils/supabase/client';
 
@@ -14,12 +13,7 @@ export function withAuth<T extends (...args: any[]) => any>(
 	}
 
 	return async function (this: any, ...args: Parameters<T>) {
-		let currentSession = await getValidSession();
-
-		if (!currentSession) {
-			currentSession = authModalContext.session;
-			await setLocalStorage({ session: JSON.stringify(currentSession) });
-		}
+		const currentSession = authModalContext.session;
 
 		if (currentSession) {
 			// I shouldn't have to do this
@@ -29,6 +23,8 @@ export function withAuth<T extends (...args: any[]) => any>(
 				access_token: currentSession.access_token,
 				refresh_token: currentSession.refresh_token,
 			});
+			// I also shouldn't have to do this
+			await setLocalStorage({ session: currentSession });
 			return handler.apply(this, args);
 		} else {
 			// No valid session, show login modal
