@@ -65,6 +65,12 @@ const HighlighterApp = () => {
 
 	const handleHighlight = withAuth(() => {
 		const userSelection = window.getSelection();
+		const selectionString = userSelection.toString().trim();
+		if (selectionString === '') {
+			window.getSelection()?.empty();
+			return;
+		}
+
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
@@ -91,6 +97,12 @@ const HighlighterApp = () => {
 
 	const handleAddNote = withAuth(() => {
 		const userSelection = window.getSelection();
+		const selectionString = userSelection.toString().trim();
+		if (selectionString === '') {
+			window.getSelection()?.empty();
+			return;
+		}
+
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
@@ -118,6 +130,12 @@ const HighlighterApp = () => {
 
 	const handleRate = withAuth((rating: number) => {
 		const userSelection = window.getSelection();
+		const selectionString = userSelection.toString().trim();
+		if (selectionString === '') {
+			window.getSelection()?.empty();
+			return;
+		}
+
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {

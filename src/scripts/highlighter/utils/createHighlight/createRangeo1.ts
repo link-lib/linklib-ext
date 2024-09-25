@@ -64,14 +64,36 @@ const findTextPositionDeterministic = (
 	let startOffset = 0;
 	let endOffset = 0;
 
+	/**
+	 * Searches for a sequence of words within accumulatedWords between startIndex and endIndex.
+	 * Allows partial matches for the first and last words in the sequence.
+	 *
+	 * @param words - The sequence of words to search for.
+	 * @param startIndex - The starting index in accumulatedWords to begin the search.
+	 * @param endIndex - The ending index in accumulatedWords to end the search.
+	 * @param instance - The occurrence number to find (default is 1 for the first instance).
+	 * @returns The starting index of the specified instance if found; otherwise, -1.
+	 */
 	const findWordSequence = (
 		words: string[],
 		startIndex: number,
-		endIndex: number
+		endIndex: number,
+		instance: number = 1
 	): number => {
 		if (words.length === 0) return startIndex;
 
-		for (let i = startIndex; i <= endIndex - words.length + 1; i++) {
+		let matchCount = 0; // Counter for the number of matches found
+
+		// i + words.length - 1 = accumulatedWords.length - 1
+		for (
+			let i = Math.max(startIndex, 0);
+			i <=
+			Math.min(
+				endIndex - words.length + 1,
+				accumulatedWords.length - words.length
+			);
+			i++
+		) {
 			let match = true;
 
 			for (let j = 0; j < words.length; j++) {
@@ -99,17 +121,21 @@ const findTextPositionDeterministic = (
 			}
 
 			if (match) {
-				return i;
+				matchCount++;
+				if (matchCount === instance) {
+					return i; // Return the starting index of the desired instance
+				}
 			}
 		}
-		return -1;
+
+		return -1; // Desired instance not found
 	};
 
 	while (currentNode) {
-		const textContent = currentNode.textContent?.trim() || '';
-		const words = textContent.split(/\s+/);
+		const textContent = currentNode.textContent || '';
+		const words = textContent.trim().split(/\s+/);
 		let charPointer = 0;
-		currentIndex = accumulatedWords.length;
+		// currentIndex = accumulatedWords.length;
 
 		words.forEach((word) => {
 			const wordStart = textContent.indexOf(word, charPointer);
@@ -123,113 +149,142 @@ const findTextPositionDeterministic = (
 			charPointer = wordEnd + 1; // +1 for the space
 		});
 
-		const highlightIndex = findWordSequence(
-			highlightWords,
-			currentIndex,
-			accumulatedWords.length - 1
-		);
-
-		if (highlightIndex !== -1) {
-			let prefixIndex = highlightIndex;
-			let suffixIndex = highlightIndex + highlightWords.length;
-
-			// Handle prefix words
-			if (prefixWords.length > 0) {
-				const potentialPrefixIndex = findWordSequence(
-					prefixWords,
-					Math.max(0, highlightIndex - prefixWords.length - 1),
-					highlightIndex
+		if (prefixWords.length === 0) {
+			for (let i = 1; i < words.length; i++) {
+				const highlightIndex = findWordSequence(
+					highlightWords,
+					currentIndex,
+					accumulatedWords.length - 1,
+					i
 				);
-				if (potentialPrefixIndex !== -1) {
-					prefixIndex = potentialPrefixIndex;
-				}
-			}
 
-			// Handle suffix words
-			if (suffixWords.length > 0) {
-				const potentialSuffixIndex = findWordSequence(
+				if (highlightIndex === -1) {
+					currentIndex =
+						accumulatedWords.length - highlightWords.length - 1;
+					break;
+				}
+
+				const suffixIndex = findWordSequence(
 					suffixWords,
-					suffixIndex - 1,
+					highlightIndex + highlightWords.length - 1,
 					Math.min(
-						accumulatedWords.length,
-						suffixIndex + suffixWords.length
+						highlightIndex +
+							highlightWords.length +
+							suffixWords.length +
+							1,
+						accumulatedWords.length - 1
 					)
 				);
-				if (potentialSuffixIndex !== -1) {
-					suffixIndex = potentialSuffixIndex + suffixWords.length;
+
+				if (suffixIndex === -1) {
+					continue;
 				}
+
+				const startWord = accumulatedWords[highlightIndex];
+				startNode = startWord.node;
+				startOffset = startWord.charStart;
+				// calculate partial word highlights
+				if (startWord.word.toLowerCase() !== highlightWords[0]) {
+					startOffset +=
+						startWord.word.length - highlightWords[0].length;
+				}
+
+				const endWord =
+					accumulatedWords[
+						highlightIndex + highlightWords.length - 1
+					];
+				endNode = endWord.node;
+				endOffset = endWord.charEnd;
+
+				// calculate partial word highlights
+				if (
+					endWord.word.toLowerCase() !==
+					highlightWords[highlightWords.length - 1]
+				) {
+					endOffset -=
+						endWord.word.length -
+						highlightWords[highlightWords.length - 1].length;
+				}
+
+				return { startNode, startOffset, endNode, endOffset };
 			}
+		} else {
+			// the number of occurenc
+			for (let i = 1; i < words.length; i++) {
+				const prefixIndex = findWordSequence(
+					prefixWords,
+					Math.min(
+						currentIndex,
+						accumulatedWords.length -
+							words.length -
+							prefixWords.length
+					),
+					accumulatedWords.length - 1,
+					i
+				);
 
-			// Calculate startNode and startOffset
-			// Calculate startNode and startOffset
-			const startWord = accumulatedWords[prefixIndex];
-			startNode = startWord.node;
-			// startOffset = calculateAdjustedOffsets(
-			// 	startWord,
-			// 	highlightWords[0],
-			// 	true
-			// );
-			startOffset = startWord.charStart;
+				if (prefixIndex === -1) {
+					currentIndex =
+						accumulatedWords.length - prefixWords.length - 1;
+					break;
+				}
 
-			// Calculate endNode and endOffset
-			const endWord = accumulatedWords[suffixIndex - 1];
-			endNode = endWord.node;
-			// endOffset =
-			// 	calculateAdjustedOffsets(
-			// 		endWord,
-			// 		highlightWords[highlightWords.length - 1],
-			// 		false
-			// 	) + 1;
-			endOffset = endWord.charEnd;
+				const highlightIndex = findWordSequence(
+					highlightWords,
+					Math.max(prefixIndex + prefixWords.length - 1, 0),
+					prefixIndex + prefixWords.length + highlightWords.length + 1
+				);
 
-			break;
+				if (highlightIndex === -1) {
+					if (prefixWords.length === 0) break;
+					continue;
+				}
+
+				const suffixIndex = findWordSequence(
+					suffixWords,
+					highlightIndex + highlightWords.length - 1,
+					Math.min(
+						highlightIndex +
+							highlightWords.length +
+							suffixWords.length +
+							1,
+						accumulatedWords.length - 1
+					)
+				);
+
+				if (suffixIndex === -1) {
+					continue;
+				}
+
+				const startWord = accumulatedWords[highlightIndex];
+				startNode = startWord.node;
+				// startOffset = calculateAdjustedOffsets(
+				// 	startWord,
+				// 	highlightWords[0],
+				// 	true
+				// );
+				startOffset = startWord.charStart;
+
+				// Calculate endNode and endOffset
+				const endWord =
+					accumulatedWords[
+						highlightIndex + highlightWords.length - 1
+					];
+				endNode = endWord.node;
+				// endOffset =
+				// 	calculateAdjustedOffsets(
+				// 		endWord,
+				// 		highlightWords[highlightWords.length - 1],
+				// 		false
+				// 	) + 1;
+				endOffset = endWord.charEnd;
+
+				return { startNode, startOffset, endNode, endOffset };
+			}
 		}
 
 		currentNode = walker.nextNode();
 	}
 
 	return { startNode, startOffset, endNode, endOffset };
-};
-
-const calculateAdjustedOffsets = (
-	wordPosition: WordPosition,
-	searchWord: string,
-	isStart: boolean
-): number => {
-	const accumulatedWord = wordPosition.word;
-	const normalizedAccumulated = accumulatedWord.toLowerCase();
-	const normalizedSearch = searchWord.toLowerCase();
-
-	if (isStart) {
-		if (normalizedAccumulated.startsWith(normalizedSearch)) {
-			// Exact match or search word is a prefix of accumulated word
-			return wordPosition.charStart;
-		} else if (normalizedSearch.startsWith(normalizedAccumulated)) {
-			// Highlight starts inside the accumulated word
-			return wordPosition.charStart + normalizedAccumulated.length;
-		} else {
-			// Partial match somewhere inside the word
-			const index = normalizedAccumulated.indexOf(normalizedSearch);
-			if (index !== -1) {
-				return wordPosition.charStart + index;
-			}
-		}
-	} else {
-		if (normalizedAccumulated.startsWith(normalizedSearch)) {
-			// Highlight ends inside the accumulated word
-			return wordPosition.charStart + normalizedSearch.length;
-		} else if (normalizedSearch.startsWith(normalizedAccumulated)) {
-			// Exact match or search word is a suffix of accumulated word
-			return wordPosition.charEnd;
-		} else {
-			// Partial match somewhere inside the word
-			const index = normalizedAccumulated.indexOf(normalizedSearch);
-			if (index !== -1) {
-				return wordPosition.charStart + index + normalizedSearch.length;
-			}
-		}
-	}
-
-	// Default fallback
-	return isStart ? wordPosition.charStart : wordPosition.charEnd;
 };
