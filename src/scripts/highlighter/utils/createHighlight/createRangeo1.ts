@@ -258,26 +258,35 @@ const findTextPositionDeterministic = (
 
 				const startWord = accumulatedWords[highlightIndex];
 				startNode = startWord.node;
-				// startOffset = calculateAdjustedOffsets(
-				// 	startWord,
-				// 	highlightWords[0],
-				// 	true
-				// );
 				startOffset = startWord.charStart;
 
-				// Calculate endNode and endOffset
+				// calculate partial word highlights
+				if (startWord.word.toLowerCase() !== highlightWords[0]) {
+					startOffset +=
+						startWord.word.length - highlightWords[0].length;
+				}
+
 				const endWord =
 					accumulatedWords[
 						highlightIndex + highlightWords.length - 1
 					];
 				endNode = endWord.node;
-				// endOffset =
-				// 	calculateAdjustedOffsets(
-				// 		endWord,
-				// 		highlightWords[highlightWords.length - 1],
-				// 		false
-				// 	) + 1;
 				endOffset = endWord.charEnd;
+
+				// calculate partial word highlights
+				if (
+					endWord.word.toLowerCase() !==
+					highlightWords[highlightWords.length - 1]
+				) {
+					endOffset -=
+						endWord.word.length -
+						highlightWords[highlightWords.length - 1].length;
+				}
+
+				if (startWord === endWord) {
+					startOffset = startWord.charStart;
+					endOffset = endWord.charEnd;
+				}
 
 				return { startNode, startOffset, endNode, endOffset };
 			}
