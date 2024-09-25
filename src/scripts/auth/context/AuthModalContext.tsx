@@ -1,10 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import {
-	createClient,
-	removeLocalStorage,
-	setLocalStorage,
-} from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 
 export interface AuthContextType {
 	session: Session | null;
@@ -12,6 +8,7 @@ export interface AuthContextType {
 	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
 	accessToken: string | null;
+	setSession: (session: Session | null) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -38,26 +35,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 		// Listen for auth changes
 		const {
 			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (event, session) => {
+		} = supabase.auth.onAuthStateChange((event, session) => {
 			console.log(`Supabase auth event: ${event}`);
 			setSession(session);
 			setUser(session?.user ?? null);
 
 			// Handle different auth events
 			switch (event) {
+				case 'INITIAL_SESSION':
 				case 'SIGNED_IN':
 					// Handle sign in (e.g., store user info in localStorage)
-					await setLocalStorage({ user: session.user });
-					await setLocalStorage({ session: session });
-
 					setUser(session.user);
 					setSession(session);
 
 					break;
 				case 'SIGNED_OUT':
 					// Handle sign out (e.g., clear user info from localStorage)
-					await removeLocalStorage('user');
-					await removeLocalStorage('session');
 					setUser(null);
 					setSession(null);
 					setAccessToken(null);
@@ -66,8 +59,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 					// There is a background process that keeps track of when the session should be refreshed so we will always receive valid tokens by listening to this event.
 					// The frequency of this event is related to the JWT expiry limit configured on the project, currently 1 hour.
 					setAccessToken(session.access_token);
-					await setLocalStorage({ session: session });
-					await setLocalStorage({ user: session.user });
 					setSession(session);
 					setUser(session.user);
 
@@ -83,7 +74,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
 	return (
 		<AuthContext.Provider
-			value={{ session, user, isOpen, setIsOpen, accessToken }}
+			value={{
+				session,
+				user,
+				isOpen,
+				setIsOpen,
+				accessToken,
+				setSession,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>

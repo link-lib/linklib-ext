@@ -81,11 +81,6 @@ export const TwitterSave = () => {
 						action: 'saveTweet',
 						link: tweetLink,
 					});
-					toast({
-						title: 'Tweet removed',
-						description: tweetLink,
-						duration: 1500,
-					});
 				}
 			}
 		};

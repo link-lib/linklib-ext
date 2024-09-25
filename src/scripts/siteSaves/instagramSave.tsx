@@ -58,10 +58,6 @@ export const InstagramSave = () => {
 				if (postLink) {
 					const handler = getSaveInstagramPostHandler(postLink);
 					handler();
-					chrome.runtime.sendMessage({
-						action: 'savePost',
-						link: postLink,
-					});
 				}
 			} else if (unsaveButton) {
 				const postElement = unsaveButton.closest('article');
@@ -70,16 +66,7 @@ export const InstagramSave = () => {
 				const postLink =
 					(postLinkElement as HTMLAnchorElement)?.href || null;
 				if (postLink) {
-					// Send the post link to the background script
-					chrome.runtime.sendMessage({
-						action: 'removePost',
-						link: postLink,
-					});
-					toast({
-						title: 'Post removed',
-						description: postLink,
-						duration: 1500,
-					});
+					// unimplemented
 				}
 			}
 		};
