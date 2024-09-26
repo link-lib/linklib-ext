@@ -3,8 +3,8 @@
 // LinkedIn, TikTok, Twitter
 // ---------------------------------------------
 
-import { Session, User } from '@supabase/supabase-js';
-import { createClient, getLocalStorage } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 
 type InstagramContent = {
@@ -53,24 +53,26 @@ type ContentItem =
 
 export async function saveSocialSiteItem(item: ContentItem) {
 	const supabase = createClient();
-	let user: User | undefined = undefined;
+	let userData: User | undefined = undefined;
 
 	try {
-		const currentSession = (await getLocalStorage('session')) as Session;
-		user = currentSession.user;
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		userData = user;
 	} catch {
 		console.error('Invalid session stored.');
 		throw new Error('Session parsing error');
 	}
 
-	if (!user) {
+	if (!userData) {
 		console.error('User not authenticated or error fetching user:');
 		throw new Error('User authentication error');
 	}
 
 	const payload: any = {
 		type: item.type,
-		user_id: user.id,
+		user_id: userData.id,
 		id: uuidv4(),
 	};
 

@@ -1,12 +1,12 @@
 import { saveLink } from '@/backend/saveLink';
 import { useToast } from '@/components/ui/use-toast';
 import { useContext, useEffect } from 'react';
-import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { AuthContext } from '../auth/context/AuthModalContext';
 import { withAuth } from '@/backend/auth/withAuth';
 
 const MenuToasts = () => {
 	const { toast } = useToast();
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 
 	useEffect(() => {
 		chrome.runtime.onMessage.addListener((request) => {

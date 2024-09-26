@@ -1,5 +1,8 @@
-import { createBrowserClient } from '@supabase/ssr';
-import { createClient as createServerClientSupabase } from '@supabase/supabase-js';
+import {
+	SupabaseClientOptions,
+	SupportedStorage,
+	createClient as c,
+} from '@supabase/supabase-js';
 import { Database } from 'database.types';
 
 // To fetch items from storage
@@ -14,7 +17,7 @@ export const removeLocalStorage = async (key: string): Promise<void> =>
 export const setLocalStorage = async (dataObject: any): Promise<void> =>
 	await chrome.storage.local.set(dataObject);
 
-const storageAdapter = {
+const storageAdapter: SupportedStorage = {
 	getItem: async (name: string) => {
 		return await getLocalStorage(name);
 	},
@@ -28,24 +31,22 @@ const storageAdapter = {
 	},
 };
 
-const options = {
+const options: SupabaseClientOptions<
+	'public' extends keyof Database ? 'public' : string & keyof Database
+> = {
 	auth: {
 		debug: true,
 		persistSession: true,
 		storage: storageAdapter,
+		detectSessionInUrl: true,
+		autoRefreshToken: true,
+		flowType: 'pkce',
 	},
 };
+const clientClient = c<Database>(
+	chrome.runtime.getManifest().env.NEXT_PUBLIC_SUPABASE_URL,
+	chrome.runtime.getManifest().env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+	options
+);
 
-export const createClient = () =>
-	createBrowserClient<Database>(
-		chrome.runtime.getManifest().env.NEXT_PUBLIC_SUPABASE_URL,
-		chrome.runtime.getManifest().env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-		options
-	);
-
-export const createServerClient = () =>
-	createServerClientSupabase<Database>(
-		chrome.runtime.getManifest().env.NEXT_PUBLIC_SUPABASE_URL,
-		chrome.runtime.getManifest().env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-		options
-	);
+export const createClient = () => clientClient;

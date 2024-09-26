@@ -4,10 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
-import {
-	AuthModalContext,
-	AuthModalProvider,
-} from '../auth/context/AuthModalContext';
+import { AuthContext, AuthProvider } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { withAuth } from '@/backend/auth/withAuth';
 
@@ -23,7 +20,7 @@ document.body.appendChild(root);
 
 export const TwitterSave = () => {
 	const { toast } = useToast();
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 
 	useEffect(() => {
 		const saveTweet = (event: MouseEvent) => {
@@ -84,11 +81,6 @@ export const TwitterSave = () => {
 						action: 'saveTweet',
 						link: tweetLink,
 					});
-					toast({
-						title: 'Tweet removed',
-						description: tweetLink,
-						duration: 1500,
-					});
 				}
 			}
 		};
@@ -106,10 +98,10 @@ export const TwitterSave = () => {
 
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<AuthModalProvider>
+		<AuthProvider>
 			<Toaster />
 			<TwitterSave />
 			<AuthModal />
-		</AuthModalProvider>
+		</AuthProvider>
 	</React.StrictMode>
 );

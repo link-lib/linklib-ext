@@ -1,4 +1,4 @@
-import { createServerClient, setLocalStorage } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 	if (message.action === 'signInWithGoogle') {
@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 });
 
 async function signInWithGoogle() {
-	const supabase = createServerClient();
+	const supabase = createClient();
 	const manifest = chrome.runtime.getManifest();
 
 	if (!manifest || !manifest.oauth2 || !manifest.oauth2.scopes) {
@@ -57,8 +57,6 @@ async function signInWithGoogle() {
 							error: 'Error signing in with Google',
 						});
 					}
-
-					await setLocalStorage({ session: data.session });
 					resolve({ success: true, session: data.session });
 				}
 			}
