@@ -64,7 +64,6 @@ export const Highlight = ({
 		for (const strategy of createElementFallbackOrder) {
 			let ranges: Range[] = [];
 			try {
-			debugger;
 				ranges =
 					createHighlight[strategy as keyof typeof createHighlight](
 						highlightData
