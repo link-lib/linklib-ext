@@ -72,84 +72,72 @@ const HighlighterApp = () => {
 
 	const authModalContext = useContext(AuthContext);
 
-	const handleHighlight = withAuth(() => {
+	/**
+	 * Main function to handle processing of highlights with optional modifiers and callbacks.
+	 * @param modifier Optional function to modify highlightData before saving.
+	 * @param additionalActions Optional function to perform additional actions after setting highlightData.
+	 */
+	const processHighlight = async (
+		modifier?: (highlightData: HighlightData) => void,
+		additionalActions?: (highlightData: HighlightData) => void
+	) => {
 		const userSelection = window.getSelection();
+		const selectionString = userSelection?.toString().trim();
+
+		if (!selectionString) {
+			userSelection?.empty();
+			return;
+		}
+
 		if (userSelection) {
 			const highlightData = extractHighlightData(userSelection);
 			if (highlightData) {
-				setHighlights({
-					...highlights,
+				// Apply modifier if provided
+				if (modifier) {
+					modifier(highlightData);
+				}
+
+				setHighlights((prevHighlights) => ({
+					...prevHighlights,
 					[highlightData.uuid]: highlightData,
-				});
-				saveHighlight(highlightData)
-					.then(() => {
-						toast({ title: 'Successfully saved highlight.' });
-					})
-					.catch(() => {
-						toast({ title: 'Error saving highlight' });
-						setHighlights((prevHighlights) => {
-							const newHighlights = { ...prevHighlights };
-							delete newHighlights[highlightData.uuid];
-							return newHighlights;
-						});
+				}));
+
+				// Perform additional actions if provided
+				if (additionalActions) {
+					additionalActions(highlightData);
+				}
+
+				try {
+					await saveHighlight(highlightData);
+					toast({ title: 'Successfully saved highlight.' });
+				} catch (error) {
+					toast({ title: 'Error saving highlight' });
+					setHighlights((prevHighlights) => {
+						const newHighlights = { ...prevHighlights };
+						delete newHighlights[highlightData.uuid];
+						return newHighlights;
 					});
+				} finally {
+					userSelection.empty();
+				}
 			}
-			window.getSelection()?.empty();
 		}
+	};
+
+	const handleHighlight = withAuth(() => {
+		processHighlight();
 	}, authModalContext);
 
 	const handleAddNote = withAuth(() => {
-		const userSelection = window.getSelection();
-		if (userSelection) {
-			const highlightData = extractHighlightData(userSelection);
-			if (highlightData) {
-				setHighlights({
-					...highlights,
-					[highlightData.uuid]: highlightData,
-				});
-				setOpenNoteUuid(highlightData.uuid);
-				saveHighlight(highlightData)
-					.then(() => {
-						toast({ title: 'Successfully saved highlight.' });
-					})
-					.catch(() => {
-						toast({ title: 'Error saving highlight' });
-						setHighlights((prevHighlights) => {
-							const newHighlights = { ...prevHighlights };
-							delete newHighlights[highlightData.uuid];
-							return newHighlights;
-						});
-					});
-			}
-			window.getSelection()?.empty();
-		}
+		processHighlight((highlightData) => {
+			setOpenNoteUuid(highlightData.uuid);
+		});
 	}, authModalContext);
 
 	const handleRate = withAuth((rating: number) => {
-		const userSelection = window.getSelection();
-		if (userSelection) {
-			const highlightData = extractHighlightData(userSelection);
-			if (highlightData) {
-				highlightData.rating = rating;
-				setHighlights({
-					...highlights,
-					[highlightData.uuid]: highlightData,
-				});
-				saveHighlight(highlightData)
-					.then(() => {
-						toast({ title: 'Successfully saved highlight.' });
-					})
-					.catch(() => {
-						toast({ title: 'Error saving highlight' });
-						setHighlights((prevHighlights) => {
-							const newHighlights = { ...prevHighlights };
-							delete newHighlights[highlightData.uuid];
-							return newHighlights;
-						});
-					});
-			}
-			window.getSelection()?.empty();
-		}
+		processHighlight((highlightData) => {
+			highlightData.rating = rating;
+		}, undefined);
 	}, authModalContext);
 
 	const handleHighlightAndTag = withAuth((tag: Tag) => {

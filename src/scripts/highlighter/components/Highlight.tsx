@@ -64,6 +64,7 @@ export const Highlight = ({
 		for (const strategy of createElementFallbackOrder) {
 			let ranges: Range[] = [];
 			try {
+			debugger;
 				ranges =
 					createHighlight[strategy as keyof typeof createHighlight](
 						highlightData
@@ -85,7 +86,8 @@ export const Highlight = ({
 
 				const containers = ranges.map((range) => {
 					const container = document.createElement('span');
-					container.className = 'linklib-ext';
+					container.className = `linklib-ext highlight-${strategy}`;
+					// container.textContent = 'heehee';
 					const content = range.extractContents();
 					range.startContainer.parentNode?.normalize();
 					range.insertNode(container);
@@ -156,7 +158,7 @@ export const Highlight = ({
 						<PopoverTrigger asChild>
 							<span
 								highlight-id={`highlight-${highlightData.uuid}`}
-								className='bg-yellow-400 cursor-pointer highlight'
+								className='bg-yellow-400 cursor-pointer bytebelli-highlight'
 								onClick={(e) => {
 									e.preventDefault();
 									e.stopPropagation();

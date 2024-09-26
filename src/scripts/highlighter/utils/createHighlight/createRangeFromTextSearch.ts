@@ -3,6 +3,173 @@ import { isInlineElement } from '@/scripts/highlighter/utils/createHighlight/uti
 import { createHighlightFromRange } from '@/scripts/highlighter/utils/createHighlight/utils/splitRanges';
 import { generateXPathForElement } from '@/scripts/highlighter/utils/highlightDataUtils';
 
+const findTextPositionNoWhitespace = (highlightData: HighlightData) => {
+	const doc = document;
+	const highlightWords = highlightData.highlightWords;
+	const prefixWords = highlightData.matching.surroundingText.prefix.trim()
+		? highlightData.matching.surroundingText.prefix.trim().split(/\s+/)
+		: [];
+	const suffixWords = highlightData.matching.surroundingText.suffix.trim()
+		? highlightData.matching.surroundingText.suffix.trim().split(/\s+/)
+		: [];
+
+	const walker = document.createTreeWalker(
+		doc.body,
+		NodeFilter.SHOW_TEXT,
+		null
+	);
+
+	let currentNode = walker.nextNode();
+	const accumulatedWords: string[] = [];
+	let startNode: Node | null = null;
+	let endNode: Node | null = null;
+	let startOffset = 0;
+	let endOffset = 0;
+	let currentIndex = 0;
+
+	const findWordSequence = (
+		words: string[],
+		startIndex: number,
+		endIndex: number
+	) => {
+		if (words.length === 0) return startIndex;
+
+		for (let i = startIndex; i <= endIndex - words.length + 1; i++) {
+			if (
+				words.every((word, j) =>
+					accumulatedWords[i + j]
+						.toLowerCase()
+						.includes(word.toLowerCase())
+				)
+			) {
+				return words[0].toLowerCase() !==
+					accumulatedWords[i].toLowerCase()
+					? i - 1
+					: i;
+			}
+		}
+		return -1;
+	};
+
+	while (currentNode) {
+		const nodeWords = currentNode.textContent?.trim().split(/\s+/) || [];
+		accumulatedWords.push(...nodeWords);
+
+		// Increment currentIndex by the number of words in the current node
+		currentIndex += nodeWords.length;
+
+		const highlightIndex = findWordSequence(
+			highlightWords,
+			0,
+			accumulatedWords.length - 1
+		);
+
+		if (highlightIndex !== -1) {
+			let prefixIndex = highlightIndex;
+			let suffixIndex = highlightIndex + highlightWords.length;
+
+			// Check for prefix if it exists
+			if (prefixWords.length > 0) {
+				const potentialPrefixIndex = findWordSequence(
+					prefixWords,
+					Math.max(0, highlightIndex - prefixWords.length - 1),
+					highlightIndex
+				);
+				if (potentialPrefixIndex !== -1) {
+					prefixIndex = potentialPrefixIndex;
+				}
+			}
+
+			// Check for suffix if it exists
+			if (suffixWords.length > 0) {
+				const potentialSuffixIndex = findWordSequence(
+					suffixWords,
+					suffixIndex - 1,
+					Math.min(
+						accumulatedWords.length,
+						suffixIndex + suffixWords.length
+					)
+				);
+				if (potentialSuffixIndex !== -1) {
+					suffixIndex = potentialSuffixIndex + suffixWords.length;
+				}
+			}
+
+			// We've found the sequence, now find the nodes and offsets
+			let node = walker.currentNode;
+			currentIndex -= nodeWords.length;
+
+			// Find start node and offset
+			while (node && currentIndex <= prefixIndex) {
+				startNode = node;
+				const nodeWords = node.textContent?.trim().split(/\s+/) || [];
+				if (currentIndex + nodeWords.length > prefixIndex) {
+					const partialText =
+						node.textContent?.substring(
+							0,
+							node.textContent.indexOf(
+								accumulatedWords[prefixIndex]
+							)
+						) || '';
+					startOffset = partialText.length;
+					break;
+				}
+				currentIndex -= nodeWords.length;
+				node = walker.previousNode();
+			}
+
+			// Find end node and offset
+			node = startNode;
+			while (node && currentIndex < suffixIndex) {
+				endNode = node;
+				const nodeWords = node.textContent?.trim().split(/\s+/) || [];
+				if (currentIndex + nodeWords.length >= suffixIndex) {
+					const lastWordIndex = suffixIndex - currentIndex - 1;
+					const partialText =
+						node.textContent?.substring(
+							0,
+							node.textContent.indexOf(nodeWords[lastWordIndex]) +
+								nodeWords[lastWordIndex].length
+						) || '';
+					endOffset = partialText.length;
+					break;
+				}
+				currentIndex += nodeWords.length;
+				node = walker.nextNode();
+			}
+
+			break;
+		}
+
+		currentNode = walker.nextNode();
+	}
+
+	return { startNode, startOffset, endNode, endOffset };
+};
+
+export const createHighlightElementTextArrayBased = (
+	highlightData: HighlightData
+) => {
+	const { startNode, startOffset, endNode, endOffset } =
+		findTextPositionNoWhitespace(highlightData);
+
+	if (startNode && endNode) {
+		// Update the highlightData with the current start and end containers
+		highlightData.matching.rangeSelector.startContainer =
+			generateXPathForElement(startNode);
+		highlightData.matching.rangeSelector.endContainer =
+			generateXPathForElement(endNode);
+		highlightData.matching.rangeSelector.startOffset = startOffset;
+		highlightData.matching.rangeSelector.endOffset = endOffset;
+
+		// Use the range-based method to create the highlight
+		const containers = createHighlightFromRange(highlightData);
+
+		return containers;
+	}
+	return [];
+};
+
 const findTextPosition = (highlightData: HighlightData) => {
 	const doc = document;
 	const searchText =

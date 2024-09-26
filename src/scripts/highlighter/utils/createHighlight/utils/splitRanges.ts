@@ -1,5 +1,6 @@
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 
+// This craetes a highlight from range based on the character length of the highlight text
 export const createHighlightFromRange = (highlightData: HighlightData) => {
 	const doc = document; // Adjust if working within iframes or other contexts
 	const startNode = document.evaluate(
@@ -87,6 +88,87 @@ export const createHighlightFromRange = (highlightData: HighlightData) => {
 			}
 
 			startOffset = 0;
+
+			range.setEnd(currentNode, endOffset);
+
+			currentNode = walker.nextNode();
+			const string = range.toString();
+
+			if (string.trim() === '') continue;
+
+			ranges.push(range);
+		}
+	}
+
+	return ranges;
+};
+
+// This craetes a highlight from range based solely on the end and start offsets passed in
+export const createHighlightFromRangePure = (highlightData: HighlightData) => {
+	const doc = document; // Adjust if working within iframes or other contexts
+	const startNode = document.evaluate(
+		highlightData.matching.rangeSelector.startContainer,
+		doc,
+		null,
+		XPathResult.FIRST_ORDERED_NODE_TYPE,
+		null
+	).singleNodeValue;
+	const endNode = document.evaluate(
+		highlightData.matching.rangeSelector.endContainer,
+		doc,
+		null,
+		XPathResult.FIRST_ORDERED_NODE_TYPE,
+		null
+	).singleNodeValue;
+
+	const ranges = [];
+
+	if (startNode && endNode) {
+		// Create a TreeWalker to iterate text nodes between startNode and endNode
+		const walker = document.createTreeWalker(
+			doc.body,
+			NodeFilter.SHOW_TEXT,
+			{
+				acceptNode: function (node) {
+					if (node.nodeType === Node.TEXT_NODE) {
+						if (node.nodeValue) {
+							return NodeFilter.FILTER_ACCEPT;
+						}
+					}
+					return NodeFilter.FILTER_REJECT;
+				},
+			}
+		);
+
+		walker.currentNode = startNode; // Start the walker at the startNode
+		let currentNode: Node | null = walker.currentNode;
+
+		if (currentNode.nodeType !== Node.TEXT_NODE) {
+			currentNode = walker.nextNode();
+		}
+
+		let startOffset = highlightData.matching.rangeSelector.startOffset;
+
+		while (currentNode) {
+			const range = new Range();
+
+			range.setStart(currentNode, startOffset);
+			// @ts-expect-error because we checked that this is a text node above
+			const endOffset = currentNode.length;
+			startOffset = 0;
+
+			// If we're at the end node, stop highlighting after this loop.
+			if (
+				currentNode === endNode ||
+				currentNode.parentElement === endNode
+			) {
+				range.setEnd(
+					currentNode,
+					highlightData.matching.rangeSelector.endOffset
+				);
+				ranges.push(range);
+				break;
+			}
 
 			range.setEnd(currentNode, endOffset);
 

@@ -1,20 +1,28 @@
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { createRangesByElement } from '@/scripts/highlighter/utils/createHighlight/createRangeByElement';
 
-import { createHighlightElementTextBased } from '@/scripts/highlighter/utils/createHighlight/createRangeFromTextSearch';
+import {
+	createHighlightElementTextArrayBased,
+	createHighlightElementTextBased,
+} from '@/scripts/highlighter/utils/createHighlight/createRangeFromTextSearch';
 import { createRangeUsingWindowFind } from '@/scripts/highlighter/utils/createHighlight/createRangeUsingWindowFind';
 import { createHighlightFromRange } from '@/scripts/highlighter/utils/createHighlight/utils/splitRanges';
 import { createHighlightElementClaudeBased } from '@/scripts/highlighter/utils/createHighlight/createRangesClaude';
+import { createHighlightElementTextArrayBasedDeterministic } from '@/scripts/highlighter/utils/createHighlight/createRangeo1';
 
 export const createElementFallbackOrder = [
+	'text-array-based-o1',
 	'text-based',
 	'text-window-find',
 	'range-based',
+	'text-array-based',
 	'element-range',
 	'claude-3.5-restore',
 ];
 
 export const createHighlight = {
+	'text-array-based-o1': createHighlightElementTextArrayBasedDeterministic,
+	'text-array-based': createHighlightElementTextArrayBased,
 	'text-based': createHighlightElementTextBased,
 	'text-window-find': createRangeUsingWindowFind,
 	'range-based': createHighlightFromRange,
