@@ -38,7 +38,13 @@
   "background": {
     "service_worker": "src/scripts/backgroundScript.ts"
   },
-  "permissions": ["contextMenus", "commands", "storage", "identity"],
+  "permissions": [
+    "contextMenus",
+    "commands",
+    "storage",
+    "identity",
+    "activeTab"
+  ],
   "oauth2": {
     "client_id": "24061352908-5eog00ac2cpk2b3qk3t9u6kn32orco8q.apps.googleusercontent.com",
     "scopes": ["openid", "email", "profile"]
