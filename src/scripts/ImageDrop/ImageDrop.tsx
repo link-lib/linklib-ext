@@ -29,6 +29,7 @@ import {
 	useState,
 } from 'react';
 import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { saveLink } from '@/backend/saveLink';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -207,34 +208,39 @@ const ImageDrop = () => {
 		setIsDragging(false); // Reset isDragging state
 	};
 
-	const handleSaveLink = () => {
-		// Get the current page URL
-		const url = window.location.href;
+	const handleSaveLink = async () => {
+		try {
+			const url = window.location.href;
+			const title = document.title;
+			const favicon = getLinkIcon();
 
-		// Get the page title
-		const title = document.title;
+			const { author, publishDate } = getArticleMetadata();
+			const savedDate = new Date().toISOString();
 
-		// Get the favicon URL
-		const favicon = getLinkIcon();
+			const linkData = {
+				url,
+				title,
+				favicon,
+				author,
+				publishDate,
+				savedDate,
+			};
 
-		// Get the author and publish date
-		const { author, publishDate } = getArticleMetadata();
-		const savedDate = new Date().toString();
-		// Log the collected data (replace with your save logic)
-		console.log('Saving link:', {
-			url,
-			title,
-			favicon,
-			author,
-			publishDate,
-			savedDate,
-		});
+			await saveLink(linkData);
 
-		toast({
-			title: 'Link saved',
-			description: title,
-			duration: 1500,
-		});
+			toast({
+				title: 'Link saved',
+				description: title,
+				duration: 1500,
+			});
+		} catch (error) {
+			console.error('Error saving link:', error);
+			toast({
+				title: 'Error',
+				description: 'Failed to save the link. Please try again.',
+				duration: 3000,
+			});
+		}
 	};
 
 	const handleOpenDrawer = () => {};
@@ -386,7 +392,7 @@ const ImageDrop = () => {
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent>
-								<p>See all highlights on this page!</p>
+								<p>Save a cleaned article!</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>
