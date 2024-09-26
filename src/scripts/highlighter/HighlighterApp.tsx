@@ -158,9 +158,14 @@ const HighlighterApp = () => {
 						});
 					})
 					.then(() => {
-						const tagIcon = tag.icon ? `${tag.icon} ` : '';
+						let selectedEmoji = null;
+						try {
+							selectedEmoji = JSON.parse(tag.icon).emoji;
+						} catch {
+							selectedEmoji = tag.icon;
+						}
 						toast({
-							title: `Successfully saved highlight to ${tagIcon}${tag.name}`,
+							title: `Successfully saved highlight to ${selectedEmoji}${tag.name}`,
 						});
 					})
 					.catch((error) => {
