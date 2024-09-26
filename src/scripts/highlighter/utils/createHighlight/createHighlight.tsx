@@ -12,10 +12,10 @@ import { createHighlightElementTextArrayBasedDeterministic } from '@/scripts/hig
 
 export const createElementFallbackOrder = [
 	'text-array-based-o1',
-	'text-array-based',
 	'text-based',
 	'text-window-find',
 	'range-based',
+	'text-array-based',
 	'element-range',
 	'claude-3.5-restore',
 ];

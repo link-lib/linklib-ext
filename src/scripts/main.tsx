@@ -20,22 +20,22 @@ document.body.appendChild(root);
 const reactRoot = ReactDOM.createRoot(root);
 
 reactRoot.render(
-	// <React.StrictMode>
-	<div className='linklib-ext bytebelli-internal'>
-		<html id='linklib-html'>
-			<AuthModalProvider>
-				<SWRConfig>
-					<HighlighterApp />
-					<ImageDrop />
-					<Toaster />
-					<MenuToasts />
-					<AuthModal />
-				</SWRConfig>
-			</AuthModalProvider>
-			<div className='md:sticky md:block'></div>
-		</html>
-	</div>
-	// </React.StrictMode>
+	<React.StrictMode>
+		<div className='linklib-ext bytebelli-internal'>
+			<html id='linklib-html'>
+				<AuthModalProvider>
+					<SWRConfig>
+						<HighlighterApp />
+						<ImageDrop />
+						<Toaster />
+						<MenuToasts />
+						<AuthModal />
+					</SWRConfig>
+				</AuthModalProvider>
+				<div className='md:sticky md:block'></div>
+			</html>
+		</div>
+	</React.StrictMode>
 );
 
 export { reactRoot };
