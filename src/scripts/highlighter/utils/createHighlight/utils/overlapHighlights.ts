@@ -1,4 +1,5 @@
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
+import { extractWords } from '@/scripts/highlighter/utils/highlightDataUtils';
 
 /**
  * Checks if two highlights overlap.
@@ -63,6 +64,8 @@ export const extendHighlight = (
 
 	return {
 		...existing,
+		note: existing.note + '\n' + newHighlight.note,
+		highlightWords: extractWords(mergedBody),
 		matching: {
 			...existing.matching,
 			body: mergedBody,

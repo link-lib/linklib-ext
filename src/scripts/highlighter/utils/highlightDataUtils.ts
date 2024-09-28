@@ -143,7 +143,7 @@ export const extractHighlightData = (
 };
 
 // Helper function to extract words from a string
-function extractWords(text: string): string[] {
+export function extractWords(text: string): string[] {
 	return text
 		.toLowerCase()
 		.split(/\s+/)
