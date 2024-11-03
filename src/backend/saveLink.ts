@@ -1,5 +1,5 @@
-import { createClient, getLocalStorage } from '@/utils/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 
 interface LinkData {
@@ -14,17 +14,19 @@ interface LinkData {
 export async function saveLink(linkData: LinkData) {
 	const supabase = createClient();
 
-	let user: User | undefined = undefined;
+	let userData: User | undefined = undefined;
 
 	try {
-		const currentSession = (await getLocalStorage('session')) as Session;
-		user = currentSession.user;
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		userData = user;
 	} catch {
 		console.error('Invalid session stored.');
 		throw new Error('Session parsing error');
 	}
 
-	if (!user) {
+	if (!userData) {
 		throw new Error('User not authenticated');
 	}
 
@@ -35,7 +37,7 @@ export async function saveLink(linkData: LinkData) {
 			type: 'LINK',
 			highlight_data: JSON.stringify(linkData),
 			link: linkData.url,
-			user_id: user.id,
+			user_id: userData.id,
 		});
 
 	if (error) {

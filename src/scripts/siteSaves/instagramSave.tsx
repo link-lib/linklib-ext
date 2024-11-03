@@ -4,10 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import '../../index.css';
 import { useToast } from '@/components/ui/use-toast';
 import { saveSocialSiteItem } from '@/backend/saveSocialSiteItem';
-import {
-	AuthModalContext,
-	AuthModalProvider,
-} from '../auth/context/AuthModalContext';
+import { AuthContext, AuthProvider } from '../auth/context/AuthModalContext';
 import { AuthModal } from '@/scripts/auth/components/AuthModal';
 import { withAuth } from '@/backend/auth/withAuth';
 
@@ -20,7 +17,7 @@ document.body.appendChild(root);
 export const InstagramSave = () => {
 	const { toast } = useToast();
 
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 	const getSaveInstagramPostHandler = useCallback(
 		(postLink: string) =>
 			withAuth(
@@ -61,10 +58,6 @@ export const InstagramSave = () => {
 				if (postLink) {
 					const handler = getSaveInstagramPostHandler(postLink);
 					handler();
-					chrome.runtime.sendMessage({
-						action: 'savePost',
-						link: postLink,
-					});
 				}
 			} else if (unsaveButton) {
 				const postElement = unsaveButton.closest('article');
@@ -73,16 +66,7 @@ export const InstagramSave = () => {
 				const postLink =
 					(postLinkElement as HTMLAnchorElement)?.href || null;
 				if (postLink) {
-					// Send the post link to the background script
-					chrome.runtime.sendMessage({
-						action: 'removePost',
-						link: postLink,
-					});
-					toast({
-						title: 'Post removed',
-						description: postLink,
-						duration: 1500,
-					});
+					// unimplemented
 				}
 			}
 		};
@@ -100,10 +84,10 @@ export const InstagramSave = () => {
 
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<AuthModalProvider>
+		<AuthProvider>
 			<Toaster />
 			<InstagramSave />
 			<AuthModal />
-		</AuthModalProvider>
+		</AuthProvider>
 	</React.StrictMode>
 );

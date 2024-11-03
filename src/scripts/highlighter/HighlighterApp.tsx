@@ -10,7 +10,7 @@ import { Highlight } from '@/scripts/highlighter/components/Highlight';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
-import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { AuthContext } from '../auth/context/AuthModalContext';
 import useSWR from 'swr';
 import { Tag, getTags } from '@/backend/tags/getTags';
 import { addTagToContentItem } from '@/backend/tags/addTagtoContentItem';
@@ -74,7 +74,7 @@ const HighlighterApp = () => {
 		}));
 	};
 
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 
 	/**
 	 * Main function to handle processing of highlights with optional modifiers and callbacks.
@@ -248,9 +248,14 @@ const HighlighterApp = () => {
 						});
 					})
 					.then(() => {
-						const tagIcon = tag.icon ? `${tag.icon} ` : '';
+						let selectedEmoji = null;
+						try {
+							selectedEmoji = JSON.parse(tag.icon).emoji;
+						} catch {
+							selectedEmoji = tag.icon;
+						}
 						toast({
-							title: `Successfully saved highlight to ${tagIcon}${tag.name}`,
+							title: `Successfully saved highlight to ${selectedEmoji}${tag.name}`,
 						});
 					})
 					.catch((error) => {

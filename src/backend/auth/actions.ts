@@ -1,21 +1,7 @@
-import { Session } from '@supabase/supabase-js';
-import {
-	createClient,
-	getLocalStorage,
-	removeLocalStorage,
-	setLocalStorage,
-} from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 import { LoginFormSchema, SignupFormSchema } from './definitions';
 
 export async function logIn(formData: FormData) {
-	const currentSession = (await getLocalStorage('session')) as Session;
-	if (
-		currentSession &&
-		currentSession.expires_at &&
-		currentSession.expires_in >= 0
-	) {
-		return;
-	}
 	const validatedFields = LoginFormSchema.safeParse({
 		email: formData.get('email'),
 		password: formData.get('password'),
@@ -26,7 +12,7 @@ export async function logIn(formData: FormData) {
 	}
 
 	const supabase = createClient();
-	const { data, error } = await supabase.auth.signInWithPassword({
+	const { error } = await supabase.auth.signInWithPassword({
 		email: validatedFields.data.email!,
 		password: validatedFields.data.password,
 	});
@@ -34,19 +20,9 @@ export async function logIn(formData: FormData) {
 	if (error) {
 		throw new Error('Error in logging in');
 	}
-
-	await setLocalStorage({ session: data.session });
 }
 
 export const signUp = async (formData: FormData) => {
-	const currentSession = (await getLocalStorage('session')) as Session;
-	if (
-		currentSession &&
-		currentSession.expires_at &&
-		currentSession.expires_at >= 0
-	) {
-		return;
-	}
 	const validatedFields = SignupFormSchema.safeParse({
 		firstName: formData.get('firstName'),
 		email: formData.get('email'),
@@ -80,7 +56,6 @@ export const signUp = async (formData: FormData) => {
 
 export const signOut = async () => {
 	const supabase = createClient();
-	await removeLocalStorage('session');
 	await supabase.auth.signOut();
 };
 

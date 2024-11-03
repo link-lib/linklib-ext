@@ -1,14 +1,16 @@
-import { createClient, getLocalStorage } from '@/utils/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 export async function getHighlights(pageUrl: string) {
 	const supabase = createClient();
 
-	let user: User | undefined = undefined;
+	let userData: User | undefined = undefined;
 
 	try {
-		const currentSession = (await getLocalStorage('session')) as Session;
-		user = currentSession.user;
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		userData = user;
 	} catch {
 		console.error('Invalid session stored.');
 		throw new Error('Session parsing error');
@@ -17,7 +19,7 @@ export async function getHighlights(pageUrl: string) {
 	const { data: highlights, error } = await supabase
 		.from('contentitem')
 		.select('*')
-		.eq('user_id', user.id)
+		.eq('user_id', userData.id)
 		.eq('link', pageUrl)
 		.eq('type', 'QUOTE');
 

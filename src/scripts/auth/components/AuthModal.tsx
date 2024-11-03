@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { AuthModalContext } from '../context/AuthModalContext';
+import { AuthContext } from '../context/AuthModalContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { logIn, signInWithGoogle, signUp } from '../../../backend/auth/actions';
@@ -10,9 +10,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
+import { Session } from '@supabase/supabase-js';
 
 export const AuthModal = () => {
-	const { isOpen, setIsOpen } = useContext(AuthModalContext) ?? {
+	const { isOpen, setIsOpen, setSession } = useContext(AuthContext) ?? {
 		isOpen: false,
 		setIsOpen: () => null,
 	};
@@ -76,9 +77,10 @@ export const AuthModal = () => {
 
 	const handleGoogleLogin = async () => {
 		signInWithGoogle()
-			.then(() => {
+			.then((response) => {
 				successToast();
 				setIsOpen(false);
+				setSession(response as Session); // Don't know why i have to do this, but for some reason only on Sign in With Google, the sign in auth event isn't firing until the tab is refocused
 			})
 			.catch(() => {
 				toast({

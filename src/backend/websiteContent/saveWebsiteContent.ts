@@ -1,5 +1,5 @@
-import { Session, User } from '@supabase/supabase-js';
-import { createClient, getLocalStorage } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/client';
 import { SiteMetadata } from '@/scripts/highlighter/types/HighlightData';
 
 interface WebsiteContentData {
@@ -13,11 +13,13 @@ export async function saveWebsiteContent(
 ) {
 	const supabase = createClient();
 
-	let user: User | undefined = undefined;
+	let userData: User | undefined = undefined;
 
 	try {
-		const currentSession = (await getLocalStorage('session')) as Session;
-		user = currentSession.user;
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		userData = user;
 	} catch {
 		console.error('Invalid session stored.');
 		throw new Error('Session parsing error');
@@ -28,7 +30,7 @@ export async function saveWebsiteContent(
 		.insert({
 			content: websiteContentData.content,
 			link: websiteContentData.link,
-			user_id: user.id,
+			user_id: userData.id,
 			siteMetadata: websiteContentData.siteMetadata,
 		});
 

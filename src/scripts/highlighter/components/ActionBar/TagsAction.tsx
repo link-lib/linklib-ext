@@ -41,39 +41,49 @@ export function TagsAction({
 						<CommandEmpty>No tags found.</CommandEmpty>
 						<CommandList>
 							<CommandGroup>
-								{tags.map((tag) => (
-									<CommandItem
-										key={tag.id}
-										value={tag.name}
-										onSelect={() => onTagSelect(tag)}
-									>
-										<span className='flex items-center text-xs'>
-											{tag.icon ? (
-												<span className='mr-2'>
-													{tag.icon}
+								{tags.map((tag) => {
+									let selectedEmoji = null;
+									try {
+										selectedEmoji = JSON.parse(
+											tag.icon
+										).emoji;
+									} catch {
+										selectedEmoji = tag.icon;
+									}
+									return (
+										<CommandItem
+											key={tag.id}
+											value={tag.name}
+											onSelect={() => onTagSelect(tag)}
+										>
+											<span className='flex items-center text-xs'>
+												{selectedEmoji ? (
+													<span className='mr-2'>
+														{selectedEmoji}
+													</span>
+												) : (
+													<img
+														src={chrome.runtime.getURL(
+															defaultIcon
+														)}
+														alt='Default tag icon'
+														width={16}
+														height={16}
+														className='mr-2'
+													/>
+												)}
+												<span className='truncate overflow-hidden text-xs text-ellipsis'>
+													{tag.name}
 												</span>
-											) : (
-												<img
-													src={chrome.runtime.getURL(
-														defaultIcon
-													)}
-													alt='Default tag icon'
-													width={16}
-													height={16}
-													className='mr-2'
-												/>
-											)}
-											<span className='truncate overflow-hidden text-xs text-ellipsis'>
-												{tag.name}
 											</span>
-										</span>
-										<CheckIcon
-											className={cn(
-												'ml-auto h-4 w-4 opacity-0'
-											)}
-										/>
-									</CommandItem>
-								))}
+											<CheckIcon
+												className={cn(
+													'ml-auto h-4 w-4 opacity-0'
+												)}
+											/>
+										</CommandItem>
+									);
+								})}
 							</CommandGroup>
 						</CommandList>
 					</Command>

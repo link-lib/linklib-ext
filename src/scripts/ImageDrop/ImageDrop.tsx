@@ -1,7 +1,6 @@
 import iconImage from '@/assets/icon.png';
 import iconEating from '@/assets/iconEating.png';
 import { signOut } from '@/backend/auth/actions';
-import { getValidSession } from '@/backend/auth/authUtils';
 import { withAuth } from '@/backend/auth/withAuth';
 import { saveImage } from '@/backend/saveImage';
 import { getWebsiteContent } from '@/backend/websiteContent/getWebsiteContent';
@@ -28,7 +27,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
-import { AuthModalContext } from '../auth/context/AuthModalContext';
+import { AuthContext } from '../auth/context/AuthModalContext';
 import { saveLink } from '@/backend/saveLink';
 
 const ImageDrop = () => {
@@ -37,7 +36,7 @@ const ImageDrop = () => {
 	const [isSelectingFile, setIsSelectingFile] = useState(false);
 	const [isIconUp, setIsIconUp] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const authModalContext = useContext(AuthModalContext);
+	const authModalContext = useContext(AuthContext);
 	const { toast } = useToast();
 
 	const handleDragEnter = (e: DragEvent) => {
@@ -131,7 +130,7 @@ const ImageDrop = () => {
 
 	useEffect(() => {
 		const checkAuthStatus = async () => {
-			const authStatus = await getValidSession();
+			const authStatus = authModalContext.session;
 			setUserAuthenticated(!!authStatus);
 			if (!authStatus) {
 				await removeLocalStorage('session');
@@ -139,7 +138,7 @@ const ImageDrop = () => {
 		};
 
 		checkAuthStatus();
-	}, [isHovered, isSelectingFile]);
+	}, [authModalContext.session, isHovered, isSelectingFile]);
 
 	useEffect(() => {
 		window.addEventListener('dragenter', handleDragEnter, false);
