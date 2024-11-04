@@ -251,7 +251,6 @@ const ImageDrop = () => {
 		try {
 			// Check if the website content already exists
 			const existingItem = await getWebsiteContent(currentUrl);
-
 			if (existingItem) {
 				toast({
 					title: 'Already saved',

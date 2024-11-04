@@ -8,7 +8,7 @@
 		"default_icon": "icon48.png"
 	},
 	"content_security_policy": {
-		"extension_pages": "script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval'; object-src 'self'"
+		"extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
 	},
 	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAubiOz5Ejyuw7obZtpQ8wc9ZZWVnLz81geAmu+MtgTmKOCPO2v7LZ5QyvLRUQ6e6YDzJuLWk6Drc9eZk+IRcbUUBPniJSYz0RizKCUJbMo6UU55L+pVjVUkChAwMnSzZUHmQyU3NpTJofbACyxa12Lsc1lLuVa/W4HtKCKByp7CubZZg4zpIs9R7Y9txPbqryYF9O/WYGqyRrcUhO0nRBtCJRX1ZQs+h7ZJkS62vPnPe2gHzmNXkQv4MoHNOU2I1SKmdoSiSMfedXvUZJf7Tjw6DIucH77e7TErgNkqmgu+1i9R62u15DH7mO3rU7eucKTssu7MhDQQ/F/XJmMtbOpwIDAQAB",
 	"content_scripts": [
