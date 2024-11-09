@@ -28,7 +28,7 @@ export const createReaction = async ({
 		throw new Error('Must provide either itemId or noteId, but not both.');
 	}
 
-	const { error } = await supabase
+	const { data, error } = await supabase
 		.from('reactions')
 		.insert({
 			emoji,
@@ -45,4 +45,6 @@ export const createReaction = async ({
 		}
 		throw new Error('Error in creating new reaction.');
 	}
+
+	return data[0];
 };

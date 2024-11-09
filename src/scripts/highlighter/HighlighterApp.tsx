@@ -50,10 +50,11 @@ const HighlighterApp: React.FC = () => {
 								highlight.highlight_data
 							) as HighlightData;
 
-							// Add notes to the highlight data
+							// Add notes and reactions to the highlight data
 							acc[highlightData.uuid] = {
 								...highlightData,
 								notes: highlight.notes || [],
+								reactions: highlight.reactions || [],
 							};
 						}
 						return acc;
