@@ -5,6 +5,7 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover';
 import useStateCallback from '@/lib/hooks/useStateCallback';
+import Comment from '@/scripts/highlighter/components/Comment/Comment';
 import NotesModal from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
@@ -173,6 +174,14 @@ export const Highlight = ({
 
 	return (
 		<>
+			{highlightContainers[0] &&
+				// highlightData.note &&
+				createPortal(
+					<div className=' relative inline'>
+						<Comment uuid={highlightData.uuid} note={'hiihi'} />
+					</div>,
+					highlightContainers[0].container
+				)}
 			{highlightContainers.map(({ container, content }, index) =>
 				createPortal(
 					<Popover
