@@ -1,3 +1,5 @@
+import { Note } from '@/utils/supabase/typeAliases';
+
 export type SiteMetadata = {
 	url: string;
 	title?: string;
@@ -33,7 +35,7 @@ export type HighlightData = {
 	// Custom
 	rating: number;
 	color: highlightColours;
-	note: string;
+	notes: Note[];
 
 	// Search
 	highlightWords: string[];

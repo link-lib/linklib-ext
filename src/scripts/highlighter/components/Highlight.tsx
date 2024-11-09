@@ -1,3 +1,4 @@
+import { updateNote } from '@/backend/notes/updateNote';
 import {
 	Popover,
 	PopoverContent,
@@ -11,6 +12,8 @@ import {
 	createElementFallbackOrder,
 	createHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/createHighlight';
+import { Note } from '@/utils/supabase/typeAliases';
+import { isEqual } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -53,7 +56,7 @@ export const Highlight = ({
 	notesOpen?: boolean;
 	onDelete: () => void;
 }) => {
-	const [note, setNote] = useState(highlightData.note);
+	const [notes, setNotes] = useState<Note[]>(highlightData.notes || []);
 	const [isPopoverOpen, setIsPopoverOpen] = useStateCallback(notesOpen);
 	const [rating, setRating] = useState(highlightData.rating);
 	const [highlightContainers, setHighlightContainers] = useState<
@@ -121,10 +124,33 @@ export const Highlight = ({
 	}, [notesOpen, setIsPopoverOpen]);
 
 	useEffect(() => {
-		if (note !== highlightData.note && !isPopoverOpen) {
-			setHighlightData({ ...highlightData, note });
+		if (!isEqual(notes, highlightData.notes) && !isPopoverOpen) {
+			setHighlightData({ ...highlightData, notes });
 		}
-	}, [isPopoverOpen, note, highlightData, setHighlightData]);
+	}, [isPopoverOpen, notes, highlightData, setHighlightData]);
+
+	const handleNoteChange = (noteId: number, newValue: string) => {
+		const updatedNotes = notes.map((note) =>
+			note.id === noteId ? { ...note, value: newValue } : note
+		);
+		setNotes(updatedNotes);
+	};
+
+	const handleModalClose = async () => {
+		try {
+			// Save all modified notes when modal closes
+			await Promise.all(
+				notes.map((note) =>
+					updateNote({
+						noteId: note.id,
+						noteValue: note.value || '',
+					})
+				)
+			);
+		} catch (error) {
+			console.error('Failed to update notes:', error);
+		}
+	};
 
 	const handleMouseEnter = () => {
 		const elements = document.querySelectorAll(
@@ -161,7 +187,13 @@ export const Highlight = ({
 					<Popover
 						key={index}
 						open={isPopoverOpen}
-						onOpenChange={setIsPopoverOpen}
+						onOpenChange={(open) => {
+							if (!open) {
+								// When popover is closing
+								handleModalClose();
+							}
+							setIsPopoverOpen(open);
+						}}
 					>
 						<PopoverTrigger asChild>
 							<span
@@ -183,11 +215,10 @@ export const Highlight = ({
 						{index === 0 && (
 							<PopoverContent className='w-[550px]'>
 								<NotesModal
-									note={note}
-									setNote={setNote}
-									onClose={() => {
-										setIsPopoverOpen(false);
-									}}
+									notes={notes}
+									setNotes={setNotes}
+									onNoteChange={handleNoteChange}
+									onClose={() => setIsPopoverOpen(false)}
 									rating={rating}
 									setRating={setRating}
 									onDelete={onDelete}
