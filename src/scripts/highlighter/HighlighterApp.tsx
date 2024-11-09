@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { withAuth } from '@/backend/auth/withAuth';
 import { deleteHighlight } from '@/backend/deleteHighlight';
@@ -18,8 +18,9 @@ import {
 	checkOverlap,
 	extendHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/utils/overlapHighlights';
+import { createNote } from '@/backend/notes/createNote';
 
-const HighlighterApp = () => {
+const HighlighterApp: React.FC = () => {
 	const [highlights, setHighlights] = useState<{
 		[key: string]: HighlightData;
 	}>({});
@@ -48,7 +49,12 @@ const HighlighterApp = () => {
 								// @ts-expect-error highlight_data is a string
 								highlight.highlight_data
 							) as HighlightData;
-							acc[highlightData.uuid] = highlightData;
+
+							// Add notes to the highlight data
+							acc[highlightData.uuid] = {
+								...highlightData,
+								notes: highlight.notes || [],
+							};
 						}
 						return acc;
 					},
@@ -221,6 +227,10 @@ const HighlighterApp = () => {
 	const handleAddNote = withAuth(() => {
 		processHighlight((highlightData) => {
 			setOpenNoteUuid(highlightData.uuid);
+			createNote({
+				noteValue: '',
+				itemId: highlightData.uuid,
+			});
 		});
 	}, authModalContext);
 
