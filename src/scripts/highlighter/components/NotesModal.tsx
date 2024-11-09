@@ -1,39 +1,47 @@
 import { Textarea } from '@/components/ui/textarea';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
+import { Note } from '@/utils/supabase/typeAliases';
 import { CirclePlus, Trash2, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
-const NotesModal = ({
-	note,
-	setNote,
-	onClose,
-	rating,
-	setRating,
-	onDelete,
-	shouldFocusInput,
-	onInputFocused,
-}: {
-	note: string;
-	setNote: (note: string) => void;
+type NotesModalProps = {
+	notes: Note[];
+	setNotes: (notes: Note[]) => void;
+	onNoteChange: (noteId: number, value: string) => void;
 	onClose: () => void;
 	rating: number;
 	setRating: (rating: number) => void;
 	onDelete: () => void;
 	shouldFocusInput: boolean;
 	onInputFocused: () => void;
-}) => {
+};
+
+const NotesModal = ({
+	notes,
+	onNoteChange,
+	onClose,
+	rating,
+	setRating,
+	onDelete,
+	shouldFocusInput,
+	onInputFocused,
+}: NotesModalProps) => {
+	console.log('notes', notes);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {
 		if (shouldFocusInput && inputRef.current) {
 			inputRef.current.focus();
-			inputRef.current.setSelectionRange(note.length, note.length);
+			inputRef.current.setSelectionRange(
+				notes[0].value.length,
+				notes[0].value.length
+			);
 			onInputFocused();
 		}
-	}, [shouldFocusInput, onInputFocused]);
+	}, [shouldFocusInput, onInputFocused, notes]);
 
 	const handleDelete = () => {
-		setNote('');
+		// setNote('');
 		onClose();
 		onDelete();
 	};
@@ -72,8 +80,8 @@ const NotesModal = ({
 				ref={inputRef}
 				className='text-primary'
 				placeholder='Write your note'
-				value={note}
-				onChange={(e) => setNote(e.target.value)}
+				value={notes.length > 0 ? notes[0].value : ''}
+				onChange={(e) => onNoteChange(notes[0].id, e.target.value)}
 			/>
 		</div>
 	);
