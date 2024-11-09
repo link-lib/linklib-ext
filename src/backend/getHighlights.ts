@@ -1,14 +1,17 @@
 import { createClient } from '@/utils/supabase/client';
-import { Highlight, Note } from '@/utils/supabase/typeAliases';
+import { Highlight, Note, Reaction } from '@/utils/supabase/typeAliases';
 import { User } from '@supabase/supabase-js';
 
-export type HighlightWithNotes = Highlight & {
-	notes: Note[];
+export type HighlightWithNotesAndReactions = Highlight & {
+	notes: (Note & {
+		reactions: Reaction[];
+	})[];
+	reactions: Reaction[];
 };
 
 export async function getHighlights(
 	pageUrl: string
-): Promise<HighlightWithNotes[]> {
+): Promise<HighlightWithNotesAndReactions[]> {
 	const supabase = createClient();
 
 	let userData: User | undefined = undefined;
@@ -39,7 +42,7 @@ export async function getHighlights(
 		return [];
 	}
 
-	// get all notes for these highlights
+	// Get all notes for these highlights
 	const { data: notes, error: notesError } = await supabase
 		.from('notes')
 		.select('*')
@@ -54,13 +57,42 @@ export async function getHighlights(
 		throw notesError;
 	}
 
-	// Combine highlights with their notes
-	const highlightsWithNotes: HighlightWithNotes[] = highlights.map(
-		(highlight) => ({
-			...highlight,
-			notes: notes?.filter((note) => note.item_id === highlight.id) || [],
-		})
-	);
+	// Get all reactions for both highlights and notes
+	const { data: reactions, error: reactionsError } = await supabase
+		.from('reactions')
+		.select('*')
+		.or(
+			`item_id.in.(${highlights.map((h) => h.id).join(',')}),` +
+				`note_id.in.(${notes?.map((n) => n.id).join(',')})`
+		);
 
-	return highlightsWithNotes;
+	if (reactionsError) {
+		console.log('Error fetching reactions.', reactionsError);
+		throw reactionsError;
+	}
+
+	// Combine highlights with their notes and reactions
+	const highlightsWithNotesAndReactions: HighlightWithNotesAndReactions[] =
+		highlights.map((highlight) => {
+			const highlightNotes =
+				notes?.filter((note) => note.item_id === highlight.id) || [];
+			const notesWithReactions = highlightNotes.map((note) => ({
+				...note,
+				reactions:
+					reactions?.filter(
+						(reaction) => reaction.note_id === note.id
+					) || [],
+			}));
+
+			return {
+				...highlight,
+				notes: notesWithReactions,
+				reactions:
+					reactions?.filter(
+						(reaction) => reaction.item_id === highlight.id
+					) || [],
+			};
+		});
+
+	return highlightsWithNotesAndReactions;
 }

@@ -26,7 +26,6 @@ const NotesModal = ({
 	shouldFocusInput,
 	onInputFocused,
 }: NotesModalProps) => {
-	console.log('notes', notes);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {
