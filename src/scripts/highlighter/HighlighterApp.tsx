@@ -18,6 +18,7 @@ import {
 	checkOverlap,
 	extendHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/utils/overlapHighlights';
+import { createReaction } from '@/backend/reactions/createReaction';
 import { createNote } from '@/backend/notes/createNote';
 
 const HighlighterApp: React.FC = () => {
@@ -225,6 +226,16 @@ const HighlighterApp: React.FC = () => {
 		processHighlight();
 	}, authModalContext);
 
+	const handleAddReaction = withAuth((emoji: string) => {
+		processHighlight((highlightData) => {
+			setOpenNoteUuid(highlightData.uuid);
+			createReaction({
+				emoji,
+				itemId: highlightData.uuid,
+			});
+		});
+	}, authModalContext);
+
 	const handleAddNote = withAuth(() => {
 		processHighlight((highlightData) => {
 			setOpenNoteUuid(highlightData.uuid);
@@ -398,6 +409,7 @@ const HighlighterApp: React.FC = () => {
 	return (
 		<>
 			<ActionBar
+				onAddReaction={handleAddReaction}
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 				handleClose={handleClose}

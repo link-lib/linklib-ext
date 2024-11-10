@@ -1,15 +1,9 @@
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
 import { CirclePlus } from 'lucide-react';
 import { Note, Reaction } from '@/utils/supabase/typeAliases';
 import { useContext, useEffect, useRef } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
+import { EmojiPicker } from './Reactions/EmojiPicker';
 
 type NotesModalProps = {
 	notes: Note[];
@@ -105,27 +99,14 @@ export const NotesModal = ({
 							</button>
 						)
 					)}
-					<Popover>
-						<PopoverTrigger asChild>
+					<EmojiPicker
+						onEmojiSelect={onAddReaction}
+						trigger={
 							<button className='p-1 hover:bg-gray-100 rounded-full'>
 								<CirclePlus className='w-5 h-5' />
 							</button>
-						</PopoverTrigger>
-						<PopoverContent
-							className='p-0 border-none shadow-lg w-[352px]'
-							side='top'
-						>
-							<Picker
-								data={data}
-								onEmojiSelect={(emoji: any) => {
-									onAddReaction(emoji.native);
-								}}
-								theme='light'
-								previewPosition='none'
-								skinTonePosition='none'
-							/>
-						</PopoverContent>
-					</Popover>
+						}
+					/>
 				</div>
 			</div>
 
