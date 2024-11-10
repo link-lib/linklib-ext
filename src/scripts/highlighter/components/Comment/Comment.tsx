@@ -19,15 +19,13 @@ const Comment: React.FC<CommentProps> = ({ uuid, note }) => {
 
 				const offset = windowWidth - 50 - cardRect.right;
 				setOffset(offset);
-				// card.style.left = `${offset}px`;
-				// card.style.transform = 'none'; // Remove the transform
 			}
 		};
 
 		adjustPosition();
 
-		window.addEventListener('resize', adjustPosition);
-		return () => window.removeEventListener('resize', adjustPosition);
+		// window.addEventListener('resize', adjustPosition);
+		// return () => window.removeEventListener('resize', adjustPosition);
 	}, []);
 
 	return (
@@ -37,7 +35,7 @@ const Comment: React.FC<CommentProps> = ({ uuid, note }) => {
 			className='absolute top-0 w-72' // Removed -right-5 since we're using absolute positioning
 			style={{ left: `${noteOffset}px` }}
 		>
-			<Card>
+			<Card className='bg-popover'>
 				<CardHeader>
 					<CardDescription>{note}</CardDescription>
 				</CardHeader>

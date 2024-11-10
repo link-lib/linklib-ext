@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/popover';
 import useStateCallback from '@/lib/hooks/useStateCallback';
 import Comment from '@/scripts/highlighter/components/Comment/Comment';
+import { NewComment } from '@/scripts/highlighter/components/Comment/NewComment';
 import { NotesModal } from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
@@ -201,21 +202,24 @@ export const Highlight = ({
 		}
 	};
 
+	console.log('notes');
+	console.log(highlightData.notes);
+
 	return (
 		<>
-			{highlightContainers[0] &&
+			{/* {highlightContainers[0] &&
 				// highlightData.note &&
 				createPortal(
-					<div className=' relative inline'>
+					<div className='relative inline'>
 						<Comment uuid={highlightData.uuid} note={'hiihi'} />
 					</div>,
 					highlightContainers[0].container
-				)}
+				)} */}
 			{highlightContainers.map(({ container, content }, index) =>
 				createPortal(
 					<Popover
 						key={index}
-						open={isPopoverOpen}
+						open={true}
 						onOpenChange={(open) => {
 							if (!open) {
 								// When popover is closing
@@ -242,24 +246,61 @@ export const Highlight = ({
 							</span>
 						</PopoverTrigger>
 						{index === 0 && (
-							<PopoverContent className='w-[550px]'>
-								<NotesModal
-									notes={notes}
-									setNotes={setNotes}
-									onNoteChange={handleNoteChange}
-									onClose={() => setIsPopoverOpen(false)}
-									rating={rating}
-									setRating={setRating}
-									onDelete={onDelete}
-									shouldFocusInput={shouldFocusInput}
-									onInputFocused={() =>
-										setShouldFocusInput(false)
-									}
-									reactions={reactions}
-									onAddReaction={handleAddReaction}
-									onDeleteReaction={handleDeleteReaction}
-								/>
-							</PopoverContent>
+							<>
+								{highlightData.notes.length > 0 ? (
+									<div className='relative inline'>
+										<Comment
+											uuid={highlightData.uuid}
+											note={'hiihi'}
+										/>
+									</div>
+								) : (
+									<div className='relative inline'>
+										<NotesModal
+											notes={notes}
+											setNotes={setNotes}
+											onNoteChange={handleNoteChange}
+											onClose={() =>
+												setIsPopoverOpen(false)
+											}
+											rating={rating}
+											setRating={setRating}
+											onDelete={onDelete}
+											shouldFocusInput={shouldFocusInput}
+											onInputFocused={() =>
+												setShouldFocusInput(false)
+											}
+											reactions={reactions}
+											onAddReaction={handleAddReaction}
+											onDeleteReaction={
+												handleDeleteReaction
+											}
+										/>
+									</div>
+									// <PopoverContent className='w-[550px]'>
+									// <NotesModal
+									// 	notes={notes}
+									// 	setNotes={setNotes}
+									// 	onNoteChange={handleNoteChange}
+									// 	onClose={() =>
+									// 		setIsPopoverOpen(false)
+									// 	}
+									// 	rating={rating}
+									// 	setRating={setRating}
+									// 	onDelete={onDelete}
+									// 	shouldFocusInput={shouldFocusInput}
+									// 	onInputFocused={() =>
+									// 		setShouldFocusInput(false)
+									// 	}
+									// 	reactions={reactions}
+									// 	onAddReaction={handleAddReaction}
+									// 	onDeleteReaction={
+									// 		handleDeleteReaction
+									// 	}
+									// />
+									// </PopoverContent>
+								)}
+							</>
 						)}
 					</Popover>,
 					container
