@@ -1,4 +1,6 @@
 import { updateNote } from '@/backend/notes/updateNote';
+import { createReaction } from '@/backend/reactions/createReaction';
+import { deleteReaction } from '@/backend/reactions/deleteReaction';
 import {
 	Popover,
 	PopoverContent,
@@ -6,13 +8,13 @@ import {
 } from '@/components/ui/popover';
 import useStateCallback from '@/lib/hooks/useStateCallback';
 import Comment from '@/scripts/highlighter/components/Comment/Comment';
-import NotesModal from '@/scripts/highlighter/components/NotesModal';
+import { NotesModal } from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
 	createElementFallbackOrder,
 	createHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/createHighlight';
-import { Note } from '@/utils/supabase/typeAliases';
+import { Note, Reaction } from '@/utils/supabase/typeAliases';
 import { isEqual } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -63,6 +65,9 @@ export const Highlight = ({
 		HighlightContainer[]
 	>([]);
 	const [shouldFocusInput, setShouldFocusInput] = useState(notesOpen);
+	const [reactions, setReactions] = useState<Reaction[]>(
+		highlightData.reactions || []
+	);
 
 	useEffect(() => {
 		for (const strategy of createElementFallbackOrder) {
@@ -172,6 +177,30 @@ export const Highlight = ({
 		});
 	};
 
+	const handleAddReaction = async (emoji: string) => {
+		try {
+			const newReaction: Reaction = await createReaction({
+				emoji,
+				itemId: highlightData.uuid,
+			});
+			setReactions([...reactions, newReaction]);
+		} catch (error) {
+			console.error('Failed to add reaction:', error);
+			// Optionally add toast notification here
+		}
+	};
+
+	const handleDeleteReaction = async (reactionId: string) => {
+		try {
+			await deleteReaction({ reactionId });
+			setReactions(
+				reactions.filter((reaction) => reaction.id !== reactionId)
+			);
+		} catch (error) {
+			console.error('Failed to delete reaction:', error);
+		}
+	};
+
 	return (
 		<>
 			{highlightContainers[0] &&
@@ -226,6 +255,9 @@ export const Highlight = ({
 									onInputFocused={() =>
 										setShouldFocusInput(false)
 									}
+									reactions={reactions}
+									onAddReaction={handleAddReaction}
+									onDeleteReaction={handleDeleteReaction}
 								/>
 							</PopoverContent>
 						)}

@@ -1,4 +1,4 @@
-import { Note } from '@/utils/supabase/typeAliases';
+import { Note, Reaction } from '@/utils/supabase/typeAliases';
 
 export type SiteMetadata = {
 	url: string;
@@ -36,6 +36,7 @@ export type HighlightData = {
 	rating: number;
 	color: highlightColours;
 	notes: Note[];
+	reactions: Reaction[];
 
 	// Search
 	highlightWords: string[];
