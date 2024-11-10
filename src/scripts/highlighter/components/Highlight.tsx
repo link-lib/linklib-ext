@@ -1,14 +1,9 @@
 import { updateNote } from '@/backend/notes/updateNote';
 import { createReaction } from '@/backend/reactions/createReaction';
 import { deleteReaction } from '@/backend/reactions/deleteReaction';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import useStateCallback from '@/lib/hooks/useStateCallback';
 import Comment from '@/scripts/highlighter/components/Comment/Comment';
-import { NewComment } from '@/scripts/highlighter/components/Comment/NewComment';
 import { NotesModal } from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
@@ -140,6 +135,7 @@ export const Highlight = ({
 			note.id === noteId ? { ...note, value: newValue } : note
 		);
 		setNotes(updatedNotes);
+		// save note
 	};
 
 	const handleModalClose = async () => {
@@ -277,6 +273,7 @@ export const Highlight = ({
 											}
 										/>
 									</div>
+									// Use this when there's not enough space to render it on the side.
 									// <PopoverContent className='w-[550px]'>
 									// <NotesModal
 									// 	notes={notes}

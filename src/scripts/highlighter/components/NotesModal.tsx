@@ -178,8 +178,9 @@ export const NotesModal = ({
 				<Textarea
 					ref={inputRef}
 					className='text-primary'
-					placeholder='Write your note'
+					placeholder='thoughts?'
 					value={notes.length > 0 ? notes[0].value : ''}
+					// fix: notes can't be edited now, can you fix that?
 					onChange={(e) => onNoteChange(notes[0].id, e.target.value)}
 				/>
 			</div>
