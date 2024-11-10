@@ -5,6 +5,7 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
+import Comment from '@/scripts/highlighter/components/Comment/Comment';
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { Note, Reaction } from '@/utils/supabase/typeAliases';
@@ -26,6 +27,7 @@ type NotesModalProps = {
 	onDelete: () => void;
 	shouldFocusInput: boolean;
 	onInputFocused: () => void;
+	isPopoverOpened: boolean;
 };
 
 export const NotesModal = ({
@@ -40,6 +42,7 @@ export const NotesModal = ({
 	onDeleteReaction,
 	shouldFocusInput,
 	onInputFocused,
+	isPopoverOpened,
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const { user } = useContext(AuthContext);
@@ -91,76 +94,79 @@ export const NotesModal = ({
 
 	return (
 		<ThreadContainer>
-			<div className='p-3'>
-				<div className='flex gap-2 justify-between items-center flex-row rounded-md p-2 text-sm'>
-					<div className='flex flex-row'>
-						{Object.entries(groupedReactions).map(
-							([emoji, { count, userReactionId }]) => (
-								<button
-									key={emoji}
-									onClick={() => handleReactionClick(emoji)}
-									className={`flex items-center gap-1 px-2 py-1 text-sm rounded-full border border-gray-200 transition-colors
+			<div className='flex gap-2 justify-between items-center flex-row rounded-md pt-0 p-2 text-sm'>
+				<div className='flex flex-row'>
+					{Object.entries(groupedReactions).map(
+						([emoji, { count, userReactionId }]) => (
+							<button
+								key={emoji}
+								onClick={() => handleReactionClick(emoji)}
+								className={`flex items-center gap-1 px-2 py-1 text-sm rounded-full border border-gray-200 transition-colors
 								${userReactionId ? 'bg-gray-400 hover:bg-gray-500' : 'hover:bg-gray-50'}`}
-								>
-									<span>{emoji}</span>
-									{count > 1 && (
-										<span className='text-xs text-gray-600'>
-											{count}
-										</span>
-									)}
-								</button>
-							)
-						)}
-						<Popover>
-							<PopoverTrigger asChild>
-								<button className='p-1 hover:bg-gray-100 rounded-full'>
-									<CirclePlus className='w-5 h-5' />
-								</button>
-							</PopoverTrigger>
-							<PopoverContent
-								className='p-0 border-none shadow-lg w-[352px]'
-								side='top'
 							>
-								<Picker
-									data={data}
-									onEmojiSelect={(emoji: any) => {
-										onAddReaction(emoji.native);
-									}}
-									theme='light'
-									previewPosition='none'
-									skinTonePosition='none'
-								/>
-							</PopoverContent>
-						</Popover>
-					</div>
-					<div className='flex flex-row items-center'>
-						<StarRating
-							onRating={setRating}
-							initialRating={rating}
-						/>
-						<button
-							className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-							onClick={handleDelete}
+								<span>{emoji}</span>
+								{count > 1 && (
+									<span className='text-xs text-gray-600'>
+										{count}
+									</span>
+								)}
+							</button>
+						)
+					)}
+					<Popover>
+						<PopoverTrigger asChild>
+							<button className='p-1 hover:bg-gray-100 rounded-full'>
+								<CirclePlus className='w-5 h-5' />
+							</button>
+						</PopoverTrigger>
+						<PopoverContent
+							className='p-0 border-none shadow-lg w-[352px]'
+							side='top'
 						>
-							<Trash2 className='w-full h-full' />
-						</button>
-						<button
-							className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-							onClick={onClose}
-						>
-							<X className='w-full h-full' />
-						</button>
-					</div>
+							<Picker
+								data={data}
+								onEmojiSelect={(emoji: any) => {
+									onAddReaction(emoji.native);
+								}}
+								theme='light'
+								previewPosition='none'
+								skinTonePosition='none'
+							/>
+						</PopoverContent>
+					</Popover>
 				</div>
-				<Textarea
-					ref={inputRef}
-					className='text-primary'
-					placeholder='thoughts?'
-					value={notes.length > 0 ? notes[0].value : ''}
-					// fix: notes can't be edited now, can you fix that?
-					onChange={(e) => onNoteChange(notes[0].id, e.target.value)}
-				/>
+				<div className='flex flex-row items-center'>
+					<StarRating onRating={setRating} initialRating={rating} />
+					<button
+						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+						onClick={handleDelete}
+					>
+						<Trash2 className='w-full h-full' />
+					</button>
+					<button
+						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+						onClick={onClose}
+					>
+						<X className='w-full h-full' />
+					</button>
+				</div>
 			</div>
+			{/* Render all notes */}
+			<div className='flex flex-col'>
+				{notes.map((note) => (
+					<Comment note={note} />
+				))}
+			</div>
+
+			{/* Comments */}
+			<Textarea
+				ref={inputRef}
+				className='text-primary'
+				placeholder='thoughts?'
+				value={notes.length > 0 ? notes[0].value : ''}
+				// fix: notes can't be edited now, can you fix that?
+				onChange={(e) => onNoteChange(notes[0].id, e.target.value)}
+			/>
 		</ThreadContainer>
 	);
 };

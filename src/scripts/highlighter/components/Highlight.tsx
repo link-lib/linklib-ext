@@ -3,7 +3,6 @@ import { createReaction } from '@/backend/reactions/createReaction';
 import { deleteReaction } from '@/backend/reactions/deleteReaction';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import useStateCallback from '@/lib/hooks/useStateCallback';
-import Comment from '@/scripts/highlighter/components/Comment/Comment';
 import { NotesModal } from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
@@ -243,29 +242,24 @@ export const Highlight = ({
 						</PopoverTrigger>
 						{index === 0 && (
 							<>
-								{highlightData.notes.length > 0 ? (
-									<Comment
-										uuid={highlightData.uuid}
-										note={'hiihi'}
-									/>
-								) : (
-									<NotesModal
-										notes={notes}
-										setNotes={setNotes}
-										onNoteChange={handleNoteChange}
-										onClose={() => setIsPopoverOpen(false)}
-										rating={rating}
-										setRating={setRating}
-										onDelete={onDelete}
-										shouldFocusInput={shouldFocusInput}
-										onInputFocused={() =>
-											setShouldFocusInput(false)
-										}
-										reactions={reactions}
-										onAddReaction={handleAddReaction}
-										onDeleteReaction={handleDeleteReaction}
-									/>
-									// Use this when there's not enough space to render it on the side.
+								<NotesModal
+									notes={notes}
+									setNotes={setNotes}
+									onNoteChange={handleNoteChange}
+									onClose={() => setIsPopoverOpen(false)}
+									isPopoverOpen={isPopoverOpen}
+									rating={rating}
+									setRating={setRating}
+									onDelete={onDelete}
+									shouldFocusInput={shouldFocusInput}
+									onInputFocused={() =>
+										setShouldFocusInput(false)
+									}
+									reactions={reactions}
+									onAddReaction={handleAddReaction}
+									onDeleteReaction={handleDeleteReaction}
+								/>
+								{/* // Use this when there's not enough space to render it on the side.
 									// <PopoverContent className='w-[550px]'>
 									// <NotesModal
 									// 	notes={notes}
@@ -287,8 +281,7 @@ export const Highlight = ({
 									// 		handleDeleteReaction
 									// 	}
 									// />
-									// </PopoverContent>
-								)}
+									// </PopoverContent> */}
 							</>
 						)}
 					</Popover>,
