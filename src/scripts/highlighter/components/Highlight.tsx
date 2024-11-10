@@ -244,35 +244,27 @@ export const Highlight = ({
 						{index === 0 && (
 							<>
 								{highlightData.notes.length > 0 ? (
-									<div className='relative inline'>
-										<Comment
-											uuid={highlightData.uuid}
-											note={'hiihi'}
-										/>
-									</div>
+									<Comment
+										uuid={highlightData.uuid}
+										note={'hiihi'}
+									/>
 								) : (
-									<div className='relative inline'>
-										<NotesModal
-											notes={notes}
-											setNotes={setNotes}
-											onNoteChange={handleNoteChange}
-											onClose={() =>
-												setIsPopoverOpen(false)
-											}
-											rating={rating}
-											setRating={setRating}
-											onDelete={onDelete}
-											shouldFocusInput={shouldFocusInput}
-											onInputFocused={() =>
-												setShouldFocusInput(false)
-											}
-											reactions={reactions}
-											onAddReaction={handleAddReaction}
-											onDeleteReaction={
-												handleDeleteReaction
-											}
-										/>
-									</div>
+									<NotesModal
+										notes={notes}
+										setNotes={setNotes}
+										onNoteChange={handleNoteChange}
+										onClose={() => setIsPopoverOpen(false)}
+										rating={rating}
+										setRating={setRating}
+										onDelete={onDelete}
+										shouldFocusInput={shouldFocusInput}
+										onInputFocused={() =>
+											setShouldFocusInput(false)
+										}
+										reactions={reactions}
+										onAddReaction={handleAddReaction}
+										onDeleteReaction={handleDeleteReaction}
+									/>
 									// Use this when there's not enough space to render it on the side.
 									// <PopoverContent className='w-[550px]'>
 									// <NotesModal

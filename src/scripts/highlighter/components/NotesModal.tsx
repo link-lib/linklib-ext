@@ -1,16 +1,17 @@
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
-import { CirclePlus, Trash2, X } from 'lucide-react';
-import { Note, Reaction } from '@/utils/supabase/typeAliases';
-import { useContext, useEffect, useRef, useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
+import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
+import { Note, Reaction } from '@/utils/supabase/typeAliases';
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
+import { CirclePlus, Trash2, X } from 'lucide-react';
+import { useContext, useEffect, useRef } from 'react';
 
 type NotesModalProps = {
 	notes: Note[];
@@ -42,26 +43,6 @@ export const NotesModal = ({
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const { user } = useContext(AuthContext);
-	const cardRef = useRef<HTMLDivElement>(null);
-	const [noteOffset, setOffset] = useState(0);
-
-	useEffect(() => {
-		const adjustPosition = () => {
-			if (cardRef.current) {
-				const card = cardRef.current;
-				const windowWidth = window.innerWidth;
-				const cardRect = card.getBoundingClientRect();
-
-				const offset = windowWidth - 50 - cardRect.right;
-				setOffset(offset);
-			}
-		};
-
-		adjustPosition();
-
-		// window.addEventListener('resize', adjustPosition);
-		// return () => window.removeEventListener('resize', adjustPosition);
-	}, []);
 
 	useEffect(() => {
 		if (shouldFocusInput && inputRef.current) {
@@ -109,11 +90,7 @@ export const NotesModal = ({
 	};
 
 	return (
-		<div
-			ref={cardRef}
-			className='absolute top-0 w-72 bg-popover rounded-lg' // Removed -right-5 since we're using absolute positioning
-			style={{ left: `${noteOffset}px` }}
-		>
+		<ThreadContainer>
 			<div className='p-3'>
 				<div className='flex gap-2 justify-between items-center flex-row rounded-md p-2 text-sm'>
 					<div className='flex flex-row'>
@@ -184,6 +161,6 @@ export const NotesModal = ({
 					onChange={(e) => onNoteChange(notes[0].id, e.target.value)}
 				/>
 			</div>
-		</div>
+		</ThreadContainer>
 	);
 };
