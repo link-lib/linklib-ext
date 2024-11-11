@@ -1,73 +1,82 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Note } from '@/utils/supabase/typeAliases';
 import React from 'react';
 
 interface CommentProps {
-	// uuid: string;
 	note: Note;
-	// onAddReaction?: (noteId: number, emoji: string) => Promise<void>;
-	// onRemoveReaction?: (reactionId: string) => Promise<void>;
-	// currentUserId?: string;
 }
 
-const Comment: React.FC<CommentProps> = ({
-	note,
-	// onAddReaction,
-	// onRemoveReaction,
-	// currentUserId,
-}) => {
-	// const handleReactionClick = async (reaction: Reaction) => {
-	// 	if (!onAddReaction || !onRemoveReaction) return;
-
-	// 	if (reaction.user_id === currentUserId) {
-	// 		await onRemoveReaction(reaction.id);
-	// 	} else {
-	// 		await onAddReaction(note.id, reaction.emoji);
-	// 	}
-	// };
-
+const Comment: React.FC<CommentProps> = ({ note }) => {
+	console.log(note);
 	return (
 		<div className='p-4'>
 			<div className='w-full bg-popover'>
-				<div className='pb-2'>
-					<div className='flex items-center gap-2'>
-						<div className='text-sm font-medium text-muted-foreground'>
+				<div className='flex items-center gap-2 flex-row justify-between'>
+					<div className='flex flex-row gap-2'>
+						<Avatar className='w-4 h-4'>
+							<AvatarImage src='https://github.com/shadcn.png' />
+							<AvatarFallback>CN</AvatarFallback>
+						</Avatar>
+						<div className='text-sm font-medium text-muted-foreground truncate'>
 							{/* notes */}
-							{note.user_id || 'Anonymous'}
+							{'Anonymous'}
 						</div>
+					</div>
+					<div className='text-xs text-muted-foreground'>
+						{formatTimeAgo(new Date(note.created_at))}
 					</div>
 				</div>
 
 				<div className='space-y-4'>
-					<div className='text-sm'>{note.value}</div>
-
-					{/* <div className='flex gap-2 flex-wrap'>
-						{note.reactions?.map((reaction) => (
-							<button
-								key={reaction.id}
-								onClick={() => handleReactionClick(reaction)}
-								className={`
-									flex items-center gap-1 px-2 py-1 text-xs rounded-full 
-									border border-gray-200 transition-colors
-									${
-										reaction.user_id === currentUserId
-											? 'bg-gray-100 hover:bg-gray-200'
-											: 'hover:bg-gray-50'
-									}
-								`}
-							>
-								<span>{reaction.emoji}</span>
-								{reaction.count > 1 && (
-									<span className='text-xs text-muted-foreground'>
-										{reaction.count}
-									</span>
-								)}
-							</button>
-						))}
-					</div> */}
+					<div className='text-sm text-primary'>{note.value}</div>
 				</div>
 			</div>
 		</div>
 	);
 };
+
+function formatTimeAgo(date: Date): string {
+	const now = new Date();
+	const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+	// Less than a minute
+	if (diffInSeconds < 60) {
+		return 'now';
+	}
+
+	// Less than an hour
+	if (diffInSeconds < 3600) {
+		const minutes = Math.floor(diffInSeconds / 60);
+		return `${minutes}m`;
+	}
+
+	// Less than a day
+	if (diffInSeconds < 86400) {
+		const hours = Math.floor(diffInSeconds / 3600);
+		return `${hours}h`;
+	}
+
+	// Less than a week
+	if (diffInSeconds < 604800) {
+		const days = Math.floor(diffInSeconds / 86400);
+		return `${days}d`;
+	}
+
+	// Less than a month
+	if (diffInSeconds < 2592000) {
+		const weeks = Math.floor(diffInSeconds / 604800);
+		return `${weeks}w`;
+	}
+
+	// Less than a year
+	if (diffInSeconds < 31536000) {
+		const months = Math.floor(diffInSeconds / 2592000);
+		return `${months}mo`;
+	}
+
+	// More than a year
+	const years = Math.floor(diffInSeconds / 31536000);
+	return `${years}y`;
+}
 
 export default Comment;

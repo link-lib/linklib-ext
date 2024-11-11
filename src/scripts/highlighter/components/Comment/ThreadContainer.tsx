@@ -28,7 +28,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({ children }) => {
 		<div className='relative inline'>
 			<div
 				ref={containerRef}
-				className='absolute top-0 w-72 bg-popover rounded-lg p-3'
+				className='absolute top-0 w-72 bg-popover rounded-lg p-3 linklib-ext'
 				style={{ left: `${noteOffset}px` }}
 			>
 				{children}

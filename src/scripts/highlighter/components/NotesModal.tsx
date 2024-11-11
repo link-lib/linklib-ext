@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
 	Popover,
 	PopoverContent,
@@ -11,13 +12,12 @@ import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { Note, Reaction } from '@/utils/supabase/typeAliases';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
-import { CirclePlus, Trash2, X } from 'lucide-react';
-import { useContext, useEffect, useRef } from 'react';
+import { CirclePlus, Plus, Trash2, X } from 'lucide-react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { createNote } from '@/backend/notes/createNote';
 
 type NotesModalProps = {
-	notes: Note[];
-	setNotes: (notes: Note[]) => void;
-	onNoteChange: (noteId: number, value: string) => void;
+	initialNotes: Note[];
 	reactions: Reaction[];
 	onAddReaction: (emoji: string) => Promise<void>;
 	onDeleteReaction: (reactionId: string) => Promise<void>;
@@ -28,11 +28,11 @@ type NotesModalProps = {
 	shouldFocusInput: boolean;
 	onInputFocused: () => void;
 	isPopoverOpened: boolean;
+	highlightId: string;
 };
 
 export const NotesModal = ({
-	notes,
-	onNoteChange,
+	initialNotes,
 	onClose,
 	rating,
 	setRating,
@@ -43,9 +43,12 @@ export const NotesModal = ({
 	shouldFocusInput,
 	onInputFocused,
 	isPopoverOpened,
+	highlightId,
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const { user } = useContext(AuthContext);
+	const [notes, setNotes] = useState<Note[]>(initialNotes);
+	const [newNote, setNewNote] = useState('');
 
 	useEffect(() => {
 		if (shouldFocusInput && inputRef.current) {
@@ -57,6 +60,13 @@ export const NotesModal = ({
 			onInputFocused();
 		}
 	}, [shouldFocusInput, onInputFocused, notes]);
+
+	const handleNoteChange = (noteId: number, value: string) => {
+		const updatedNotes = notes.map((note) =>
+			note.id === noteId ? { ...note, value } : note
+		);
+		setNotes(updatedNotes);
+	};
 
 	const handleDelete = () => {
 		// setNote('');
@@ -92,9 +102,35 @@ export const NotesModal = ({
 		}
 	};
 
+	const handleAddNote = async () => {
+		if (!newNote.trim()) return;
+
+		try {
+			await createNote({
+				noteValue: newNote,
+				itemId: highlightId,
+			});
+
+			// Optimistically update the local state
+			const optimisticNote: Note = {
+				id: Date.now(), // temporary ID
+				value: newNote,
+				user_id: user?.id,
+				item_id: highlightId,
+				created_at: new Date().toISOString(),
+			};
+
+			setNotes([...notes, optimisticNote]);
+			setNewNote(''); // Clear the input
+		} catch (error) {
+			console.error('Failed to create note:', error);
+			// Optionally add error handling UI here
+		}
+	};
+
 	return (
 		<ThreadContainer>
-			<div className='flex gap-2 justify-between items-center flex-row rounded-md pt-0 p-2 text-sm'>
+			<div className='flex gap-2 justify-between items-center flex-row rounded-md pt-0 p-2 text-sm border-b border-lining'>
 				<div className='flex flex-row'>
 					{Object.entries(groupedReactions).map(
 						([emoji, { count, userReactionId }]) => (
@@ -154,7 +190,7 @@ export const NotesModal = ({
 			{/* Render all notes */}
 			<div className='flex flex-col'>
 				{notes.map((note) => (
-					<Comment note={note} />
+					<Comment key={note.id} note={note} />
 				))}
 			</div>
 
@@ -163,10 +199,18 @@ export const NotesModal = ({
 				ref={inputRef}
 				className='text-primary'
 				placeholder='thoughts?'
-				value={notes.length > 0 ? notes[0].value : ''}
-				// fix: notes can't be edited now, can you fix that?
-				onChange={(e) => onNoteChange(notes[0].id, e.target.value)}
+				value={newNote}
+				onChange={(e) => setNewNote(e.target.value)}
 			/>
+			<div className='flex pt-2 justify-end'>
+				<Button
+					onClick={() => handleAddNote()}
+					// variant=''
+					// size='icon'
+				>
+					<Plus className='h-4 w-4' /> Add
+				</Button>
+			</div>
 		</ThreadContainer>
 	);
 };

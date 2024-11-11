@@ -9,8 +9,7 @@ import {
 	createElementFallbackOrder,
 	createHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/createHighlight';
-import { Note, Reaction } from '@/utils/supabase/typeAliases';
-import { isEqual } from 'lodash';
+import { Reaction } from '@/utils/supabase/typeAliases';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -44,7 +43,7 @@ function nodeToReact(node: Node, index: number): React.ReactNode {
 
 export const Highlight = ({
 	highlightData,
-	setHighlightData,
+	// setHighlightData,
 	notesOpen = false,
 	onDelete,
 }: {
@@ -53,7 +52,6 @@ export const Highlight = ({
 	notesOpen?: boolean;
 	onDelete: () => void;
 }) => {
-	const [notes, setNotes] = useState<Note[]>(highlightData.notes || []);
 	const [isPopoverOpen, setIsPopoverOpen] = useStateCallback(notesOpen);
 	const [rating, setRating] = useState(highlightData.rating);
 	const [highlightContainers, setHighlightContainers] = useState<
@@ -123,25 +121,11 @@ export const Highlight = ({
 		}
 	}, [notesOpen, setIsPopoverOpen]);
 
-	useEffect(() => {
-		if (!isEqual(notes, highlightData.notes) && !isPopoverOpen) {
-			setHighlightData({ ...highlightData, notes });
-		}
-	}, [isPopoverOpen, notes, highlightData, setHighlightData]);
-
-	const handleNoteChange = (noteId: number, newValue: string) => {
-		const updatedNotes = notes.map((note) =>
-			note.id === noteId ? { ...note, value: newValue } : note
-		);
-		setNotes(updatedNotes);
-		// save note
-	};
-
 	const handleModalClose = async () => {
 		try {
 			// Save all modified notes when modal closes
 			await Promise.all(
-				notes.map((note) =>
+				highlightData.notes.map((note) =>
 					updateNote({
 						noteId: note.id,
 						noteValue: note.value || '',
@@ -202,14 +186,6 @@ export const Highlight = ({
 
 	return (
 		<>
-			{/* {highlightContainers[0] &&
-				// highlightData.note &&
-				createPortal(
-					<div className='relative inline'>
-						<Comment uuid={highlightData.uuid} note={'hiihi'} />
-					</div>,
-					highlightContainers[0].container
-				)} */}
 			{highlightContainers.map(({ container, content }, index) =>
 				createPortal(
 					<Popover
@@ -217,7 +193,6 @@ export const Highlight = ({
 						open={true}
 						onOpenChange={(open) => {
 							if (!open) {
-								// When popover is closing
 								handleModalClose();
 							}
 							setIsPopoverOpen(open);
@@ -243,11 +218,10 @@ export const Highlight = ({
 						{index === 0 && (
 							<>
 								<NotesModal
-									notes={notes}
-									setNotes={setNotes}
-									onNoteChange={handleNoteChange}
+									initialNotes={highlightData.notes || []}
+									highlightId={highlightData.uuid} // Add this line
 									onClose={() => setIsPopoverOpen(false)}
-									isPopoverOpen={isPopoverOpen}
+									isPopoverOpened={isPopoverOpen}
 									rating={rating}
 									setRating={setRating}
 									onDelete={onDelete}
@@ -259,29 +233,6 @@ export const Highlight = ({
 									onAddReaction={handleAddReaction}
 									onDeleteReaction={handleDeleteReaction}
 								/>
-								{/* // Use this when there's not enough space to render it on the side.
-									// <PopoverContent className='w-[550px]'>
-									// <NotesModal
-									// 	notes={notes}
-									// 	setNotes={setNotes}
-									// 	onNoteChange={handleNoteChange}
-									// 	onClose={() =>
-									// 		setIsPopoverOpen(false)
-									// 	}
-									// 	rating={rating}
-									// 	setRating={setRating}
-									// 	onDelete={onDelete}
-									// 	shouldFocusInput={shouldFocusInput}
-									// 	onInputFocused={() =>
-									// 		setShouldFocusInput(false)
-									// 	}
-									// 	reactions={reactions}
-									// 	onAddReaction={handleAddReaction}
-									// 	onDeleteReaction={
-									// 		handleDeleteReaction
-									// 	}
-									// />
-									// </PopoverContent> */}
 							</>
 						)}
 					</Popover>,
