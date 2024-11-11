@@ -11,8 +11,8 @@ const Comment: React.FC<CommentProps> = ({ note }) => {
 	return (
 		<div className='p-4'>
 			<div className='w-full bg-popover'>
-				<div className='flex items-center gap-2 flex-row justify-between'>
-					<div className='flex flex-row gap-2'>
+				<div className='flex items-center gap-2 flex-row justify-between '>
+					<div className='flex flex-row gap-2 items-center'>
 						<Avatar className='w-4 h-4'>
 							<AvatarImage src={note.user_meta.picture} />
 							<AvatarFallback>CN</AvatarFallback>
