@@ -1,10 +1,10 @@
 import { createClient } from '@/utils/supabase/client';
 import { Highlight, Note, Reaction } from '@/utils/supabase/typeAliases';
-import { User } from '@supabase/supabase-js';
 
 export type HighlightWithNotesAndReactions = Highlight & {
 	notes: (Note & {
 		reactions: Reaction[];
+		created_at: string;
 	})[];
 	reactions: Reaction[];
 };
@@ -14,22 +14,10 @@ export async function getHighlights(
 ): Promise<HighlightWithNotesAndReactions[]> {
 	const supabase = createClient();
 
-	let userData: User | undefined = undefined;
-
-	try {
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		userData = user;
-	} catch {
-		console.error('Invalid session stored.');
-		throw new Error('Session parsing error');
-	}
-
+	// Get all highlights for this page URL
 	const { data: highlights, error: highlightsError } = await supabase
 		.from('contentitem')
 		.select('*')
-		.eq('user_id', userData.id)
 		.eq('link', pageUrl)
 		.eq('type', 'QUOTE');
 
@@ -50,7 +38,7 @@ export async function getHighlights(
 			'item_id',
 			highlights.map((h) => h.id)
 		)
-		.eq('user_id', userData.id);
+		.order('created_at', { ascending: false });
 
 	if (notesError) {
 		console.log('Error fetching notes.', notesError);
