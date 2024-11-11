@@ -109,7 +109,7 @@ export const ActionBar = ({
 
 			<div className='flex gap-1'>
 				{/* Quick Reaction Buttons */}
-				<div className='flex items-center gap-1 pr-2 border-r border-gray-200'>
+				<div className='flex items-center gap-1 '>
 					{QUICK_REACTIONS.map(({ emoji, label }) => (
 						<button
 							key={label}

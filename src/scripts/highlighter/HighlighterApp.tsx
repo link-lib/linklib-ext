@@ -140,11 +140,6 @@ const HighlighterApp: React.FC = () => {
 						return updatedHighlights;
 					});
 
-					// Perform additional actions if provided
-					if (additionalActions) {
-						additionalActions(mergedHighlight);
-					}
-
 					try {
 						// Delete the overlapping highlights from the backend
 						await Promise.all(
@@ -168,6 +163,10 @@ const HighlighterApp: React.FC = () => {
 
 						// Save the merged highlight to the backend
 						await saveHighlight(mergedHighlight);
+						// Perform additional actions if provided
+						if (additionalActions) {
+							additionalActions(mergedHighlight);
+						}
 						toast({
 							title: 'Successfully updated and merged highlight.',
 						});
@@ -199,13 +198,12 @@ const HighlighterApp: React.FC = () => {
 						[highlightData.uuid]: highlightData,
 					}));
 
-					// Perform additional actions if provided
-					if (additionalActions) {
-						additionalActions(highlightData);
-					}
-
 					try {
 						await saveHighlight(highlightData);
+						// Perform additional actions if provided
+						if (additionalActions) {
+							additionalActions(highlightData);
+						}
 						toast({ title: 'Successfully saved highlight.' });
 					} catch (error) {
 						toast({ title: 'Error saving highlight.' });
@@ -227,13 +225,17 @@ const HighlighterApp: React.FC = () => {
 	}, authModalContext);
 
 	const handleAddReaction = withAuth((emoji: string) => {
-		processHighlight((highlightData) => {
-			setOpenNoteUuid(highlightData.uuid);
-			createReaction({
-				emoji,
-				itemId: highlightData.uuid,
-			});
-		});
+		processHighlight(
+			(highlightData) => {
+				setOpenNoteUuid(highlightData.uuid);
+			},
+			async (highlightData) => {
+				await createReaction({
+					emoji,
+					itemId: highlightData.uuid,
+				});
+			}
+		);
 	}, authModalContext);
 
 	const handleAddNote = withAuth(() => {

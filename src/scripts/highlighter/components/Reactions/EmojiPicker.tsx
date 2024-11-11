@@ -24,7 +24,7 @@ export const EmojiPicker = ({
 		<Popover>
 			<PopoverTrigger>{trigger}</PopoverTrigger>
 			<PopoverContent
-				className='mt-2 p-0 border-none shadow-lg w-[280px] h-[300px]'
+				className='mt-2 p-0 border-none shadow-lg w-fit h-fit'
 				side={side}
 				align={align}
 				sideOffset={5}
