@@ -1,12 +1,24 @@
 import { createClient } from '@/utils/supabase/client';
 import { Highlight, Note, Reaction } from '@/utils/supabase/typeAliases';
 
+// Add a type for the user metadata JSON structure
+type UserMetadata = {
+	name: string;
+	picture: string;
+};
+
 export type HighlightWithNotesAndReactions = Highlight & {
 	notes: (Note & {
-		reactions: Reaction[];
+		reactions: (Reaction & {
+			user_meta: UserMetadata;
+		})[];
 		created_at: string;
+		user_meta: UserMetadata;
 	})[];
-	reactions: Reaction[];
+	reactions: (Reaction & {
+		user_meta: UserMetadata;
+	})[];
+	user_meta: UserMetadata;
 };
 
 export async function getHighlights(
@@ -16,7 +28,7 @@ export async function getHighlights(
 
 	// Get all highlights for this page URL
 	const { data: highlights, error: highlightsError } = await supabase
-		.from('contentitem')
+		.from('content_with_user_info')
 		.select('*')
 		.eq('link', pageUrl)
 		.eq('type', 'QUOTE');
@@ -32,7 +44,7 @@ export async function getHighlights(
 
 	// Get all notes for these highlights
 	const { data: notes, error: notesError } = await supabase
-		.from('notes')
+		.from('notes_with_user_info')
 		.select('*')
 		.in(
 			'item_id',
@@ -47,7 +59,7 @@ export async function getHighlights(
 
 	// Get all reactions for both highlights and notes
 	const { data: reactions, error: reactionsError } = await supabase
-		.from('reactions')
+		.from('reactions_with_user_info')
 		.select('*')
 		.or(
 			`item_id.in.(${highlights.map((h) => h.id).join(',')}),` +
@@ -61,26 +73,33 @@ export async function getHighlights(
 
 	// Combine highlights with their notes and reactions
 	const highlightsWithNotesAndReactions: HighlightWithNotesAndReactions[] =
-		highlights.map((highlight) => {
-			const highlightNotes =
-				notes?.filter((note) => note.item_id === highlight.id) || [];
-			const notesWithReactions = highlightNotes.map((note) => ({
+		highlights.map((highlight) => ({
+			...highlight,
+			user_meta: highlight.raw_user_meta_data as UserMetadata,
+			notes: (
+				notes?.filter((note) => note.item_id === highlight.id) || []
+			).map((note) => ({
 				...note,
+				user_meta: note.raw_user_meta_data as UserMetadata,
 				reactions:
-					reactions?.filter(
-						(reaction) => reaction.note_id === note.id
-					) || [],
-			}));
+					reactions
+						?.filter((reaction) => reaction.note_id === note.id)
+						.map((reaction) => ({
+							...reaction,
+							user_meta:
+								reaction.raw_user_meta_data as UserMetadata,
+						})) || [],
+			})),
+			reactions:
+				reactions
+					?.filter((reaction) => reaction.item_id === highlight.id)
+					.map((reaction) => ({
+						...reaction,
+						user_meta: reaction.raw_user_meta_data as UserMetadata,
+					})) || [],
+		}));
 
-			return {
-				...highlight,
-				notes: notesWithReactions,
-				reactions:
-					reactions?.filter(
-						(reaction) => reaction.item_id === highlight.id
-					) || [],
-			};
-		});
+	console.log(highlightsWithNotesAndReactions);
 
 	return highlightsWithNotesAndReactions;
 }
