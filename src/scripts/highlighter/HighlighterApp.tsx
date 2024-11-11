@@ -55,6 +55,7 @@ const HighlighterApp: React.FC = () => {
 								...highlightData,
 								notes: highlight.notes || [],
 								reactions: highlight.reactions || [],
+								user_meta: highlight.user_meta,
 							};
 						}
 						return acc;

@@ -87,6 +87,13 @@ export type Database = {
             foreignKeyName: 'contentitemtag_itemid_fkey';
             columns: ['itemid'];
             isOneToOne: false;
+            referencedRelation: 'content_with_user_info';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contentitemtag_itemid_fkey';
+            columns: ['itemid'];
+            isOneToOne: false;
             referencedRelation: 'contentitem';
             referencedColumns: ['id'];
           },
@@ -306,6 +313,13 @@ export type Database = {
             foreignKeyName: 'notes_item_id_fkey';
             columns: ['item_id'];
             isOneToOne: false;
+            referencedRelation: 'content_with_user_info';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notes_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
             referencedRelation: 'contentitem';
             referencedColumns: ['id'];
           },
@@ -348,6 +362,13 @@ export type Database = {
             foreignKeyName: 'reactions_item_id_fkey';
             columns: ['item_id'];
             isOneToOne: false;
+            referencedRelation: 'content_with_user_info';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reactions_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
             referencedRelation: 'contentitem';
             referencedColumns: ['id'];
           },
@@ -363,6 +384,13 @@ export type Database = {
             columns: ['note_id'];
             isOneToOne: false;
             referencedRelation: 'notes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reactions_note_id_fkey';
+            columns: ['note_id'];
+            isOneToOne: false;
+            referencedRelation: 'notes_with_user_info';
             referencedColumns: ['id'];
           }
         ];
@@ -417,6 +445,22 @@ export type Database = {
       };
     };
     Views: {
+      content_with_user_info: {
+        Row: {
+          createdat: string | null;
+          fullPath: string | null;
+          highlight_data: Json | null;
+          id: string | null;
+          link: string | null;
+          nativeid: string | null;
+          path: string | null;
+          raw_user_meta_data: Json | null;
+          type: Database['public']['Enums']['content_type'] | null;
+          user_id: string | null;
+          value: string | null;
+        };
+        Relationships: [];
+      };
       hypopg_hidden_indexes: {
         Row: {
           am_name: unknown | null;
@@ -438,6 +482,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      notes_with_user_info: {
+        Row: {
+          created_at: string | null;
+          id: number | null;
+          item_id: string | null;
+          raw_user_meta_data: Json | null;
+          user_id: string | null;
+          value: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notes_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
+            referencedRelation: 'content_with_user_info';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notes_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
+            referencedRelation: 'contentitem';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notes_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
+            referencedRelation: 'public_content_items';
+            referencedColumns: ['id'];
+          }
+        ];
+      };
       public_content_items: {
         Row: {
           id: string | null;
@@ -449,6 +526,54 @@ export type Database = {
           id: string | null;
         };
         Relationships: [];
+      };
+      reactions_with_user_info: {
+        Row: {
+          created_at: string | null;
+          emoji: string | null;
+          id: string | null;
+          item_id: string | null;
+          note_id: number | null;
+          raw_user_meta_data: Json | null;
+          user_id: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'reactions_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
+            referencedRelation: 'content_with_user_info';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reactions_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
+            referencedRelation: 'contentitem';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reactions_item_id_fkey';
+            columns: ['item_id'];
+            isOneToOne: false;
+            referencedRelation: 'public_content_items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reactions_note_id_fkey';
+            columns: ['note_id'];
+            isOneToOne: false;
+            referencedRelation: 'notes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reactions_note_id_fkey';
+            columns: ['note_id'];
+            isOneToOne: false;
+            referencedRelation: 'notes_with_user_info';
+            referencedColumns: ['id'];
+          }
+        ];
       };
     };
     Functions: {
