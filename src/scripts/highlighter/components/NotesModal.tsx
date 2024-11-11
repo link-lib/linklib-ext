@@ -9,7 +9,7 @@ import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 import Comment from '@/scripts/highlighter/components/Comment/Comment';
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
-import { Note, Reaction } from '@/utils/supabase/typeAliases';
+import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { CirclePlus, Plus, Trash2, X } from 'lucide-react';
@@ -17,7 +17,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { createNote } from '@/backend/notes/createNote';
 
 type NotesModalProps = {
-	initialNotes: Note[];
+	initialNotes: NoteWithUserMeta[];
 	reactions: Reaction[];
 	onAddReaction: (emoji: string) => Promise<void>;
 	onDeleteReaction: (reactionId: string) => Promise<void>;
@@ -47,7 +47,7 @@ export const NotesModal = ({
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const { user } = useContext(AuthContext);
-	const [notes, setNotes] = useState<Note[]>(initialNotes);
+	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
 
 	useEffect(() => {
@@ -112,12 +112,16 @@ export const NotesModal = ({
 			});
 
 			// Optimistically update the local state
-			const optimisticNote: Note = {
+			const optimisticNote: NoteWithUserMeta = {
 				id: Date.now(), // temporary ID
 				value: newNote,
 				user_id: user?.id,
 				item_id: highlightId,
 				created_at: new Date().toISOString(),
+				user_meta: {
+					name: user?.user_metadata?.name,
+					picture: user?.user_metadata?.picture,
+				},
 			};
 
 			setNotes([...notes, optimisticNote]);

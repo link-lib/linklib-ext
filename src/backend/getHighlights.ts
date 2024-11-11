@@ -1,24 +1,23 @@
 import { createClient } from '@/utils/supabase/client';
-import { Highlight, Note, Reaction } from '@/utils/supabase/typeAliases';
+import {
+	HighlightWithUserMeta,
+	NoteWithUserMeta,
+	ReactionWithUserMeta,
+} from '@/utils/supabase/typeAliases';
 
 // Add a type for the user metadata JSON structure
-type UserMetadata = {
+export type UserMetadata = {
 	name: string;
 	picture: string;
 };
 
-export type HighlightWithNotesAndReactions = Highlight & {
-	notes: (Note & {
-		reactions: (Reaction & {
-			user_meta: UserMetadata;
-		})[];
+export type HighlightWithNotesAndReactions = HighlightWithUserMeta & {
+	notes: (NoteWithUserMeta & {
+		reactions: ReactionWithUserMeta[];
 		created_at: string;
 		user_meta: UserMetadata;
 	})[];
-	reactions: (Reaction & {
-		user_meta: UserMetadata;
-	})[];
-	user_meta: UserMetadata;
+	reactions: ReactionWithUserMeta[];
 };
 
 export async function getHighlights(
@@ -50,7 +49,7 @@ export async function getHighlights(
 			'item_id',
 			highlights.map((h) => h.id)
 		)
-		.order('created_at', { ascending: false });
+		.order('created_at');
 
 	if (notesError) {
 		console.log('Error fetching notes.', notesError);
@@ -98,8 +97,6 @@ export async function getHighlights(
 						user_meta: reaction.raw_user_meta_data as UserMetadata,
 					})) || [],
 		}));
-
-	console.log(highlightsWithNotesAndReactions);
 
 	return highlightsWithNotesAndReactions;
 }
