@@ -40,33 +40,37 @@ export const NotesModal = ({
 	reactions,
 	onAddReaction,
 	onDeleteReaction,
-	shouldFocusInput,
-	onInputFocused,
+	// shouldFocusInput,
+	// onInputFocused,
 	isPopoverOpened,
 	highlightId,
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
+	const modalRef = useRef<HTMLDivElement>(null);
 	const { user } = useContext(AuthContext);
 	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
 
 	useEffect(() => {
-		if (shouldFocusInput && inputRef.current) {
-			inputRef.current.focus();
-			inputRef.current.setSelectionRange(
-				notes[0].value.length,
-				notes[0].value.length
-			);
-			onInputFocused();
-		}
-	}, [shouldFocusInput, onInputFocused, notes]);
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				modalRef.current &&
+				!modalRef.current.contains(event.target as Node)
+			) {
+				onClose();
+			}
+		};
 
-	const handleNoteChange = (noteId: number, value: string) => {
-		const updatedNotes = notes.map((note) =>
-			note.id === noteId ? { ...note, value } : note
-		);
-		setNotes(updatedNotes);
-	};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [onClose]);
+
+	// If popover is closed and there are no notes, don't render anything
+	if (!isPopoverOpened && notes.length === 0) {
+		return null;
+	}
 
 	const handleDelete = () => {
 		// setNote('');
@@ -133,8 +137,8 @@ export const NotesModal = ({
 	};
 
 	return (
-		<ThreadContainer>
-			<div className='flex gap-2 justify-between items-center flex-row rounded-md pt-0 p-2 text-sm border-b border-lining'>
+		<ThreadContainer ref={modalRef}>
+			<div className='flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
 				<div className='flex flex-row'>
 					{Object.entries(groupedReactions).map(
 						([emoji, { count, userReactionId }]) => (
