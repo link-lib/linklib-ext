@@ -4,22 +4,21 @@ import { withAuth } from '@/backend/auth/withAuth';
 import { deleteHighlight } from '@/backend/deleteHighlight';
 import { getHighlights } from '@/backend/getHighlights';
 import { saveHighlight } from '@/backend/saveHighlight';
+import { addTagToContentItem } from '@/backend/tags/addTagtoContentItem';
+import { Tag, getTags } from '@/backend/tags/getTags';
 import { toast } from '@/components/ui/use-toast';
 import ActionBar from '@/scripts/highlighter/components/ActionBar/ActionBar';
 import { Highlight } from '@/scripts/highlighter/components/Highlight';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
-import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
-import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
-import { AuthContext } from '../auth/context/AuthModalContext';
-import useSWR from 'swr';
-import { Tag, getTags } from '@/backend/tags/getTags';
-import { addTagToContentItem } from '@/backend/tags/addTagtoContentItem';
 import {
 	checkOverlap,
 	extendHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/utils/overlapHighlights';
 import { createReaction } from '@/backend/reactions/createReaction';
-import { createNote } from '@/backend/notes/createNote';
+import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
+import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
+import useSWR from 'swr';
+import { AuthContext } from '../auth/context/AuthModalContext';
 
 const HighlighterApp: React.FC = () => {
 	const [highlights, setHighlights] = useState<{
@@ -56,6 +55,7 @@ const HighlighterApp: React.FC = () => {
 								...highlightData,
 								notes: highlight.notes || [],
 								reactions: highlight.reactions || [],
+								user_meta: highlight.user_meta,
 							};
 						}
 						return acc;
@@ -241,10 +241,6 @@ const HighlighterApp: React.FC = () => {
 	const handleAddNote = withAuth(() => {
 		processHighlight((highlightData) => {
 			setOpenNoteUuid(highlightData.uuid);
-			createNote({
-				noteValue: '',
-				itemId: highlightData.uuid,
-			});
 		});
 	}, authModalContext);
 

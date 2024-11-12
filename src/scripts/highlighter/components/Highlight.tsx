@@ -10,6 +10,7 @@ import {
 	createHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/createHighlight';
 import { Reaction } from '@/utils/supabase/typeAliases';
+import { PopoverContent } from '@radix-ui/react-popover';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -184,6 +185,20 @@ export const Highlight = ({
 	console.log('notes');
 	console.log(highlightData.notes);
 
+	const renderReactionsBadge = (reactions: Reaction[]) => {
+		if (reactions.length === 0) return null;
+
+		const reaction = reactions[0];
+
+		return (
+			<div className='absolute -top-4 -right-4 flex gap-1 rounded-full px-2 py-0.5'>
+				<span className='flex items-center gap-0.5 text-2xl'>
+					<span>{reaction.emoji}</span>
+				</span>
+			</div>
+		);
+	};
+
 	return (
 		<>
 			{highlightContainers.map(({ container, content }, index) =>
@@ -198,10 +213,28 @@ export const Highlight = ({
 							setIsPopoverOpen(open);
 						}}
 					>
+						{index === 0 && (
+							<NotesModal
+								initialNotes={highlightData.notes || []}
+								highlightId={highlightData.uuid} // Add this line
+								onClose={() => setIsPopoverOpen(false)}
+								isPopoverOpened={isPopoverOpen}
+								rating={rating}
+								setRating={setRating}
+								onDelete={onDelete}
+								shouldFocusInput={shouldFocusInput}
+								onInputFocused={() =>
+									setShouldFocusInput(false)
+								}
+								reactions={reactions}
+								onAddReaction={handleAddReaction}
+								onDeleteReaction={handleDeleteReaction}
+							/>
+						)}
 						<PopoverTrigger asChild>
 							<span
 								highlight-id={`highlight-${highlightData.uuid}`}
-								className='bg-yellow-400 cursor-pointer bytebelli-highlight'
+								className='relative bg-yellow-400 cursor-pointer bytebelli-highlight'
 								onClick={(e) => {
 									e.preventDefault();
 									e.stopPropagation();
@@ -210,31 +243,15 @@ export const Highlight = ({
 								onMouseEnter={handleMouseEnter}
 								onMouseLeave={handleMouseLeave}
 							>
+								{index === 0 && renderReactionsBadge(reactions)}
 								{Array.from(content.childNodes).map((node, i) =>
 									nodeToReact(node, i)
 								)}
 							</span>
 						</PopoverTrigger>
-						{index === 0 && (
-							<>
-								<NotesModal
-									initialNotes={highlightData.notes || []}
-									highlightId={highlightData.uuid} // Add this line
-									onClose={() => setIsPopoverOpen(false)}
-									isPopoverOpened={isPopoverOpen}
-									rating={rating}
-									setRating={setRating}
-									onDelete={onDelete}
-									shouldFocusInput={shouldFocusInput}
-									onInputFocused={() =>
-										setShouldFocusInput(false)
-									}
-									reactions={reactions}
-									onAddReaction={handleAddReaction}
-									onDeleteReaction={handleDeleteReaction}
-								/>
-							</>
-						)}
+						<PopoverContent>
+							
+						</PopoverContent>
 					</Popover>,
 					container
 				)

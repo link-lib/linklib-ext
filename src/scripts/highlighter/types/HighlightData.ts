@@ -1,4 +1,8 @@
-import { Note, Reaction } from '@/utils/supabase/typeAliases';
+import { UserMetadata } from '@/backend/getHighlights';
+import {
+	NoteWithUserMeta,
+	ReactionWithUserMeta,
+} from '@/utils/supabase/typeAliases';
 
 export type SiteMetadata = {
 	url: string;
@@ -35,8 +39,9 @@ export type HighlightData = {
 	// Custom
 	rating: number;
 	color: highlightColours;
-	notes: Note[];
-	reactions: Reaction[];
+	notes: NoteWithUserMeta[];
+	reactions: ReactionWithUserMeta[];
+	user_meta: UserMetadata;
 
 	// Search
 	highlightWords: string[];

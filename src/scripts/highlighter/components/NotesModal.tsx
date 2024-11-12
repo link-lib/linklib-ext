@@ -4,14 +4,14 @@ import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 import Comment from '@/scripts/highlighter/components/Comment/Comment';
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
-import { Note, Reaction } from '@/utils/supabase/typeAliases';
+import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
 import { CirclePlus, Plus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { createNote } from '@/backend/notes/createNote';
 import { EmojiPicker } from './Reactions/EmojiPicker';
 
 type NotesModalProps = {
-	initialNotes: Note[];
+	initialNotes: NoteWithUserMeta[];
 	reactions: Reaction[];
 	onAddReaction: (emoji: string) => Promise<void>;
 	onDeleteReaction: (reactionId: string) => Promise<void>;
@@ -34,33 +34,37 @@ export const NotesModal = ({
 	reactions,
 	onAddReaction,
 	onDeleteReaction,
-	shouldFocusInput,
-	onInputFocused,
+	// shouldFocusInput,
+	// onInputFocused,
 	isPopoverOpened,
 	highlightId,
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
+	const modalRef = useRef<HTMLDivElement>(null);
 	const { user } = useContext(AuthContext);
-	const [notes, setNotes] = useState<Note[]>(initialNotes);
+	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
 
 	useEffect(() => {
-		if (shouldFocusInput && inputRef.current && notes.length > 0) {
-			inputRef.current.focus();
-			inputRef.current.setSelectionRange(
-				notes[0].value.length,
-				notes[0].value.length
-			);
-			onInputFocused();
-		}
-	}, [shouldFocusInput, onInputFocused, notes]);
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				modalRef.current &&
+				!modalRef.current.contains(event.target as Node)
+			) {
+				onClose();
+			}
+		};
 
-	const handleNoteChange = (noteId: number, value: string) => {
-		const updatedNotes = notes.map((note) =>
-			note.id === noteId ? { ...note, value } : note
-		);
-		setNotes(updatedNotes);
-	};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [onClose]);
+
+	// If popover is closed and there are no notes, don't render anything
+	if (!isPopoverOpened && notes.length === 0) {
+		return null;
+	}
 
 	const handleDelete = () => {
 		// setNote('');
@@ -106,12 +110,16 @@ export const NotesModal = ({
 			});
 
 			// Optimistically update the local state
-			const optimisticNote: Note = {
+			const optimisticNote: NoteWithUserMeta = {
 				id: Date.now(), // temporary ID
 				value: newNote,
 				user_id: user?.id,
 				item_id: highlightId,
 				created_at: new Date().toISOString(),
+				user_meta: {
+					name: user?.user_metadata?.name,
+					picture: user?.user_metadata?.picture,
+				},
 			};
 
 			setNotes([...notes, optimisticNote]);
@@ -123,8 +131,8 @@ export const NotesModal = ({
 	};
 
 	return (
-		<ThreadContainer>
-			<div className='flex gap-2 justify-between items-center flex-row rounded-md pt-0 p-2 text-sm border-b border-lining'>
+		<ThreadContainer ref={modalRef}>
+			<div className='flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
 				<div className='flex flex-row'>
 					{Object.entries(groupedReactions).map(
 						([emoji, { count, userReactionId }]) => (

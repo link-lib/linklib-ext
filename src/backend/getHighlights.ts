@@ -1,12 +1,23 @@
 import { createClient } from '@/utils/supabase/client';
-import { Highlight, Note, Reaction } from '@/utils/supabase/typeAliases';
-import { User } from '@supabase/supabase-js';
+import {
+	HighlightWithUserMeta,
+	NoteWithUserMeta,
+	ReactionWithUserMeta,
+} from '@/utils/supabase/typeAliases';
 
-export type HighlightWithNotesAndReactions = Highlight & {
-	notes: (Note & {
-		reactions: Reaction[];
+// Add a type for the user metadata JSON structure
+export type UserMetadata = {
+	name: string;
+	picture: string;
+};
+
+export type HighlightWithNotesAndReactions = HighlightWithUserMeta & {
+	notes: (NoteWithUserMeta & {
+		reactions: ReactionWithUserMeta[];
+		created_at: string;
+		user_meta: UserMetadata;
 	})[];
-	reactions: Reaction[];
+	reactions: ReactionWithUserMeta[];
 };
 
 export async function getHighlights(
@@ -14,22 +25,10 @@ export async function getHighlights(
 ): Promise<HighlightWithNotesAndReactions[]> {
 	const supabase = createClient();
 
-	let userData: User | undefined = undefined;
-
-	try {
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		userData = user;
-	} catch {
-		console.error('Invalid session stored.');
-		throw new Error('Session parsing error');
-	}
-
+	// Get all highlights for this page URL
 	const { data: highlights, error: highlightsError } = await supabase
-		.from('contentitem')
+		.from('content_with_user_info')
 		.select('*')
-		.eq('user_id', userData.id)
 		.eq('link', pageUrl)
 		.eq('type', 'QUOTE');
 
@@ -44,13 +43,13 @@ export async function getHighlights(
 
 	// Get all notes for these highlights
 	const { data: notes, error: notesError } = await supabase
-		.from('notes')
+		.from('notes_with_user_info')
 		.select('*')
 		.in(
 			'item_id',
 			highlights.map((h) => h.id)
 		)
-		.eq('user_id', userData.id);
+		.order('created_at');
 
 	if (notesError) {
 		console.log('Error fetching notes.', notesError);
@@ -59,7 +58,7 @@ export async function getHighlights(
 
 	// Get all reactions for both highlights and notes
 	const { data: reactions, error: reactionsError } = await supabase
-		.from('reactions')
+		.from('reactions_with_user_info')
 		.select('*')
 		.or(
 			`item_id.in.(${highlights.map((h) => h.id).join(',')}),` +
@@ -73,26 +72,31 @@ export async function getHighlights(
 
 	// Combine highlights with their notes and reactions
 	const highlightsWithNotesAndReactions: HighlightWithNotesAndReactions[] =
-		highlights.map((highlight) => {
-			const highlightNotes =
-				notes?.filter((note) => note.item_id === highlight.id) || [];
-			const notesWithReactions = highlightNotes.map((note) => ({
+		highlights.map((highlight) => ({
+			...highlight,
+			user_meta: highlight.raw_user_meta_data as UserMetadata,
+			notes: (
+				notes?.filter((note) => note.item_id === highlight.id) || []
+			).map((note) => ({
 				...note,
+				user_meta: note.raw_user_meta_data as UserMetadata,
 				reactions:
-					reactions?.filter(
-						(reaction) => reaction.note_id === note.id
-					) || [],
-			}));
-
-			return {
-				...highlight,
-				notes: notesWithReactions,
-				reactions:
-					reactions?.filter(
-						(reaction) => reaction.item_id === highlight.id
-					) || [],
-			};
-		});
+					reactions
+						?.filter((reaction) => reaction.note_id === note.id)
+						.map((reaction) => ({
+							...reaction,
+							user_meta:
+								reaction.raw_user_meta_data as UserMetadata,
+						})) || [],
+			})),
+			reactions:
+				reactions
+					?.filter((reaction) => reaction.item_id === highlight.id)
+					.map((reaction) => ({
+						...reaction,
+						user_meta: reaction.raw_user_meta_data as UserMetadata,
+					})) || [],
+		}));
 
 	return highlightsWithNotesAndReactions;
 }

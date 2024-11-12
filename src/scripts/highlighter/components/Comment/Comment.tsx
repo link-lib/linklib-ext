@@ -1,9 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Note } from '@/utils/supabase/typeAliases';
+import { NoteWithUserMeta } from '@/utils/supabase/typeAliases';
 import React from 'react';
 
 interface CommentProps {
-	note: Note;
+	note: NoteWithUserMeta;
 }
 
 const Comment: React.FC<CommentProps> = ({ note }) => {
@@ -11,15 +11,15 @@ const Comment: React.FC<CommentProps> = ({ note }) => {
 	return (
 		<div className='p-4'>
 			<div className='w-full bg-popover'>
-				<div className='flex items-center gap-2 flex-row justify-between'>
-					<div className='flex flex-row gap-2'>
+				<div className='flex items-center gap-2 flex-row justify-between '>
+					<div className='flex flex-row gap-2 items-center'>
 						<Avatar className='w-4 h-4'>
-							<AvatarImage src='https://github.com/shadcn.png' />
+							<AvatarImage src={note.user_meta.picture} />
 							<AvatarFallback>CN</AvatarFallback>
 						</Avatar>
 						<div className='text-sm font-medium text-muted-foreground truncate'>
 							{/* notes */}
-							{'Anonymous'}
+							{note.user_meta.name}
 						</div>
 					</div>
 					<div className='text-xs text-muted-foreground'>
