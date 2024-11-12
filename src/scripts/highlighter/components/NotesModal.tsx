@@ -1,13 +1,15 @@
+import { createNote } from '@/backend/notes/createNote';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
-import Comment from '@/scripts/highlighter/components/Comment/Comment';
+import Comment, {
+	VoiceComment,
+} from '@/scripts/highlighter/components/Comment/Comment';
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
 import { CirclePlus, Plus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { createNote } from '@/backend/notes/createNote';
 import { EmojiPicker } from './Reactions/EmojiPicker';
 
 type NotesModalProps = {
@@ -132,7 +134,7 @@ export const NotesModal = ({
 
 	return (
 		<ThreadContainer ref={modalRef}>
-			<div className='flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
+			<div className='bytebelli-internal flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
 				<div className='flex flex-row'>
 					{Object.entries(groupedReactions).map(
 						([emoji, { count, userReactionId }]) => (
@@ -178,6 +180,7 @@ export const NotesModal = ({
 			</div>
 			{/* Render all notes */}
 			<div className='flex flex-col'>
+				<VoiceComment note={undefined} />
 				{notes.map((note) => (
 					<Comment key={note.id} note={note} />
 				))}

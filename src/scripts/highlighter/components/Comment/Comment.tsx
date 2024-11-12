@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import VoiceNote from '@/scripts/highlighter/components/Comment/VoiceNote';
 import { NoteWithUserMeta } from '@/utils/supabase/typeAliases';
 import React from 'react';
 
@@ -30,6 +31,34 @@ const Comment: React.FC<CommentProps> = ({ note }) => {
 				<div className='space-y-4'>
 					<div className='text-sm text-primary'>{note.value}</div>
 				</div>
+			</div>
+		</div>
+	);
+};
+
+export const VoiceComment: React.FC<CommentProps> = () => {
+	return (
+		<div className='p-4'>
+			<div className='w-full bg-popover'>
+				<div className='flex items-center gap-2 flex-row justify-between '>
+					<div className='flex flex-row gap-2 items-center'>
+						<Avatar className='w-4 h-4'>
+							{/* <AvatarImage src={note.user_meta.picture} /> */}
+							<AvatarFallback>CN</AvatarFallback>
+						</Avatar>
+						<div className='text-sm font-medium text-muted-foreground truncate'>
+							{/* notes */}
+							Nadav
+						</div>
+					</div>
+					<div className='text-xs text-muted-foreground'>5h</div>
+				</div>
+
+				<VoiceNote
+					transcription='ok this is a long rant on how '
+					duration='2:37'
+					audioUrl={''}
+				/>
 			</div>
 		</div>
 	);

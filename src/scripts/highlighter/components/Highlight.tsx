@@ -10,7 +10,6 @@ import {
 	createHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/createHighlight';
 import { Reaction } from '@/utils/supabase/typeAliases';
-import { PopoverContent } from '@radix-ui/react-popover';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -205,7 +204,7 @@ export const Highlight = ({
 				createPortal(
 					<Popover
 						key={index}
-						open={true}
+						open={isPopoverOpen}
 						onOpenChange={(open) => {
 							if (!open) {
 								handleModalClose();
@@ -214,22 +213,33 @@ export const Highlight = ({
 						}}
 					>
 						{index === 0 && (
-							<NotesModal
-								initialNotes={highlightData.notes || []}
-								highlightId={highlightData.uuid} // Add this line
-								onClose={() => setIsPopoverOpen(false)}
-								isPopoverOpened={isPopoverOpen}
-								rating={rating}
-								setRating={setRating}
-								onDelete={onDelete}
-								shouldFocusInput={shouldFocusInput}
-								onInputFocused={() =>
-									setShouldFocusInput(false)
-								}
-								reactions={reactions}
-								onAddReaction={handleAddReaction}
-								onDeleteReaction={handleDeleteReaction}
-							/>
+							<>
+								<NotesModal
+									initialNotes={highlightData.notes || []}
+									highlightId={highlightData.uuid} // Add this line
+									onClose={() => setIsPopoverOpen(false)}
+									isPopoverOpened={isPopoverOpen}
+									rating={rating}
+									setRating={setRating}
+									onDelete={onDelete}
+									shouldFocusInput={shouldFocusInput}
+									onInputFocused={() =>
+										setShouldFocusInput(false)
+									}
+									reactions={reactions}
+									onAddReaction={handleAddReaction}
+									onDeleteReaction={handleDeleteReaction}
+								/>
+								{/* <div className='bg-popover text-slate-400 ll-gap-3 gap-2 w-fit justify-center items-center flex flex-row rounded-md border p-2 text-sm z-infinite '>
+									<RatingsBar onRate={() => {}} />
+									<button
+										className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+										onClick={() => {}}
+									>
+										<X className='w-full h-full' />
+									</button>
+								</div> */}
+							</>
 						)}
 						<PopoverTrigger asChild>
 							<span
@@ -249,9 +259,6 @@ export const Highlight = ({
 								)}
 							</span>
 						</PopoverTrigger>
-						<PopoverContent>
-							
-						</PopoverContent>
 					</Popover>,
 					container
 				)
