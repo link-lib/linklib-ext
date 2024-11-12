@@ -36,7 +36,11 @@ const Comment: React.FC<CommentProps> = ({ note }) => {
 	);
 };
 
-export const VoiceComment: React.FC<CommentProps> = () => {
+export const VoiceComment: React.FC<{ highlightId: string }> = ({
+	highlightId,
+}) => {
+	if (highlightId !== 'c215184f-324d-45df-99f3-50744c19884a') return null;
+
 	return (
 		<div className='p-4'>
 			<div className='w-full bg-popover'>

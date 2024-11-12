@@ -190,10 +190,8 @@ export const Highlight = ({
 		const reaction = reactions[0];
 
 		return (
-			<div className='absolute -top-4 -right-4 flex gap-1 rounded-full px-2 py-0.5'>
-				<span className='flex items-center gap-0.5 text-2xl'>
-					<span>{reaction.emoji}</span>
-				</span>
+			<div className='absolute -top-4 -right-4 flex gap-1 rounded-full px-2 py-0.5 text-2xl'>
+				<span>{reaction.emoji}</span>
 			</div>
 		);
 	};

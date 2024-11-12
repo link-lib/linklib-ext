@@ -180,7 +180,7 @@ export const NotesModal = ({
 			</div>
 			{/* Render all notes */}
 			<div className='flex flex-col'>
-				<VoiceComment note={undefined} />
+				<VoiceComment highlightId={highlightId} />
 				{notes.map((note) => (
 					<Comment key={note.id} note={note} />
 				))}
