@@ -14,6 +14,7 @@ import {
 	checkOverlap,
 	extendHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/utils/overlapHighlights';
+import { createReaction } from '@/backend/reactions/createReaction';
 import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataUtils';
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
 import useSWR from 'swr';
@@ -139,11 +140,6 @@ const HighlighterApp: React.FC = () => {
 						return updatedHighlights;
 					});
 
-					// Perform additional actions if provided
-					if (additionalActions) {
-						additionalActions(mergedHighlight);
-					}
-
 					try {
 						// Delete the overlapping highlights from the backend
 						await Promise.all(
@@ -167,6 +163,10 @@ const HighlighterApp: React.FC = () => {
 
 						// Save the merged highlight to the backend
 						await saveHighlight(mergedHighlight);
+						// Perform additional actions if provided
+						if (additionalActions) {
+							additionalActions(mergedHighlight);
+						}
 						toast({
 							title: 'Successfully updated and merged highlight.',
 						});
@@ -198,13 +198,12 @@ const HighlighterApp: React.FC = () => {
 						[highlightData.uuid]: highlightData,
 					}));
 
-					// Perform additional actions if provided
-					if (additionalActions) {
-						additionalActions(highlightData);
-					}
-
 					try {
 						await saveHighlight(highlightData);
+						// Perform additional actions if provided
+						if (additionalActions) {
+							additionalActions(highlightData);
+						}
 						toast({ title: 'Successfully saved highlight.' });
 					} catch (error) {
 						toast({ title: 'Error saving highlight.' });
@@ -223,6 +222,20 @@ const HighlighterApp: React.FC = () => {
 
 	const handleHighlight = withAuth(() => {
 		processHighlight();
+	}, authModalContext);
+
+	const handleAddReaction = withAuth((emoji: string) => {
+		processHighlight(
+			(highlightData) => {
+				setOpenNoteUuid(highlightData.uuid);
+			},
+			async (highlightData) => {
+				await createReaction({
+					emoji,
+					itemId: highlightData.uuid,
+				});
+			}
+		);
 	}, authModalContext);
 
 	const handleAddNote = withAuth(() => {
@@ -394,6 +407,7 @@ const HighlighterApp: React.FC = () => {
 	return (
 		<>
 			<ActionBar
+				onAddReaction={handleAddReaction}
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
 				handleClose={handleClose}

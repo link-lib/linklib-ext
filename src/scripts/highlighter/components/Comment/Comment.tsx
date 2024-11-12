@@ -57,6 +57,7 @@ export const VoiceComment: React.FC<CommentProps> = () => {
 				<VoiceNote
 					transcription='ok this is a long rant on how '
 					duration='2:37'
+					audioUrl={''}
 				/>
 			</div>
 		</div>

@@ -1,10 +1,5 @@
 import { createNote } from '@/backend/notes/createNote';
 import { Button } from '@/components/ui/button';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 import Comment, {
@@ -13,10 +8,9 @@ import Comment, {
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
 import { CirclePlus, Plus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { EmojiPicker } from './Reactions/EmojiPicker';
 
 type NotesModalProps = {
 	initialNotes: NoteWithUserMeta[];
@@ -159,27 +153,14 @@ export const NotesModal = ({
 							</button>
 						)
 					)}
-					<Popover>
-						<PopoverTrigger asChild>
+					<EmojiPicker
+						onEmojiSelect={onAddReaction}
+						trigger={
 							<button className='p-1 hover:bg-gray-100 rounded-full'>
 								<CirclePlus className='w-5 h-5' />
 							</button>
-						</PopoverTrigger>
-						<PopoverContent
-							className='p-0 border-none shadow-lg w-[352px]'
-							side='top'
-						>
-							<Picker
-								data={data}
-								onEmojiSelect={(emoji: any) => {
-									onAddReaction(emoji.native);
-								}}
-								theme='light'
-								previewPosition='none'
-								skinTonePosition='none'
-							/>
-						</PopoverContent>
-					</Popover>
+						}
+					/>
 				</div>
 				<div className='flex flex-row items-center'>
 					<StarRating onRating={setRating} initialRating={rating} />
@@ -199,7 +180,7 @@ export const NotesModal = ({
 			</div>
 			{/* Render all notes */}
 			<div className='flex flex-col'>
-				<VoiceComment />
+				<VoiceComment note={undefined} />
 				{notes.map((note) => (
 					<Comment key={note.id} note={note} />
 				))}
