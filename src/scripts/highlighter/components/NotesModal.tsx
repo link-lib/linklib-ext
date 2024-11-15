@@ -177,7 +177,7 @@ export const NotesModal = ({
 							<button
 								key={emoji}
 								onClick={() => handleReactionClick(emoji)}
-								className={`flex items-center h-6 w-6 gap-1 justify-center text-sm rounded-full border border-gray-200 transition-colors
+								className={`flex items-center h-6 w-6 gap-1 justify-center text-sm rounded-full border border-muted-foreground transition-colors
 								${userReactionId ? 'bg-gray-400 hover:bg-gray-500' : 'hover:bg-gray-50'}`}
 							>
 								<span>{emoji}</span>
