@@ -134,7 +134,7 @@ export const NotesModal = ({
 
 	return (
 		<ThreadContainer ref={modalRef}>
-			<div className='bytebelli-internal flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
+			<div className='z-infinite bytebelli-internal flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
 				<div className='flex flex-row'>
 					{Object.entries(groupedReactions).map(
 						([emoji, { count, userReactionId }]) => (

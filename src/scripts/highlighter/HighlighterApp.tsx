@@ -19,6 +19,7 @@ import { extractHighlightData } from '@/scripts/highlighter/utils/highlightDataU
 import HighlightSidebar from '@/scripts/sidebar/HighlightSidebar';
 import useSWR from 'swr';
 import { AuthContext } from '../auth/context/AuthModalContext';
+import { getHighlightColour } from '@/scripts/highlighter/utils/getHighlightColour';
 
 const HighlighterApp: React.FC = () => {
 	const [highlights, setHighlights] = useState<{
@@ -421,6 +422,9 @@ const HighlighterApp: React.FC = () => {
 					setHighlightData={handleEditHighlight}
 					onDelete={() => handleDeleteHighlight(uuid)}
 					notesOpen={openNoteUuid === uuid}
+					highlightColor={getHighlightColour(
+						highlightData.user_meta.name
+					)}
 				/>
 			))}
 			<HighlightSidebar highlights={highlights} />
