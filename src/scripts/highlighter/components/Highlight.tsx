@@ -41,17 +41,21 @@ function nodeToReact(node: Node, index: number): React.ReactNode {
 	return null;
 }
 
+interface HighlightProps {
+	highlightData: HighlightData;
+	setHighlightData: (highlightData: HighlightData) => void;
+	notesOpen?: boolean;
+	onDelete: () => void;
+	highlightColor?: string; // Add this prop
+}
+
 export const Highlight = ({
 	highlightData,
 	// setHighlightData,
 	notesOpen = false,
 	onDelete,
-}: {
-	highlightData: HighlightData;
-	setHighlightData: (highlightData: HighlightData) => void;
-	notesOpen?: boolean;
-	onDelete: () => void;
-}) => {
+	highlightColor = 'bg-yellow-400', // Default color
+}: HighlightProps) => {
 	const [isPopoverOpen, setIsPopoverOpen] = useStateCallback(notesOpen);
 	const [rating, setRating] = useState(highlightData.rating);
 	const [highlightContainers, setHighlightContainers] = useState<
@@ -137,13 +141,17 @@ export const Highlight = ({
 		}
 	};
 
+	const getHoverColor = (baseColor: string) => {
+		return baseColor.replace(/-(200|300|400|500)/, '-100');
+	};
+
 	const handleMouseEnter = () => {
 		const elements = document.querySelectorAll(
 			`[highlight-id="highlight-${highlightData.uuid}"]`
 		);
 		elements.forEach((el) => {
-			(el as HTMLElement).classList.add('bg-yellow-200');
-			(el as HTMLElement).classList.remove('bg-yellow-400');
+			(el as HTMLElement).classList.add(getHoverColor(highlightColor));
+			(el as HTMLElement).classList.remove(highlightColor);
 		});
 	};
 
@@ -152,8 +160,8 @@ export const Highlight = ({
 			`[highlight-id="highlight-${highlightData.uuid}"]`
 		);
 		elements.forEach((el) => {
-			(el as HTMLElement).classList.add('bg-yellow-400');
-			(el as HTMLElement).classList.remove('bg-yellow-200');
+			(el as HTMLElement).classList.add(highlightColor);
+			(el as HTMLElement).classList.remove(getHoverColor(highlightColor));
 		});
 	};
 
@@ -191,7 +199,7 @@ export const Highlight = ({
 
 		return (
 			<div className='absolute -top-4 -right-4 flex gap-1 rounded-full px-2 py-0.5 text-2xl'>
-				<span>{reaction.emoji}</span>
+				{reaction.emoji}
 			</div>
 		);
 	};
@@ -240,22 +248,27 @@ export const Highlight = ({
 							</>
 						)}
 						<PopoverTrigger asChild>
-							<span
-								highlight-id={`highlight-${highlightData.uuid}`}
-								className='relative bg-yellow-400 cursor-pointer bytebelli-highlight'
-								onClick={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-									setIsPopoverOpen(true);
-								}}
-								onMouseEnter={handleMouseEnter}
-								onMouseLeave={handleMouseLeave}
-							>
-								{index === 0 && renderReactionsBadge(reactions)}
-								{Array.from(content.childNodes).map((node, i) =>
-									nodeToReact(node, i)
-								)}
-							</span>
+							<>
+								<span
+									highlight-id={`highlight-${highlightData.uuid}`}
+									className={`relative cursor-pointer bytebelli-highlight ${highlightColor}`}
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										setIsPopoverOpen(true);
+									}}
+									onMouseEnter={handleMouseEnter}
+									onMouseLeave={handleMouseLeave}
+								>
+									{Array.from(content.childNodes).map(
+										(node, i) => nodeToReact(node, i)
+									)}
+								</span>
+								<span className='relative'>
+									{index === highlightContainers.length - 1 &&
+										renderReactionsBadge(reactions)}
+								</span>
+							</>
 						</PopoverTrigger>
 					</Popover>,
 					container

@@ -134,7 +134,7 @@ export const NotesModal = ({
 
 	return (
 		<ThreadContainer ref={modalRef}>
-			<div className='bytebelli-internal flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
+			<div className='z-infinite bytebelli-internal flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
 				<div className='flex flex-row'>
 					{Object.entries(groupedReactions).map(
 						([emoji, { count, userReactionId }]) => (
@@ -193,6 +193,12 @@ export const NotesModal = ({
 				placeholder='thoughts?'
 				value={newNote}
 				onChange={(e) => setNewNote(e.target.value)}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+						e.preventDefault();
+						handleAddNote();
+					}
+				}}
 			/>
 			<div className='flex pt-2 justify-end'>
 				<Button

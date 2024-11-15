@@ -42,6 +42,16 @@ function getSelectionWithNewlines(selection: Selection): string {
 	return body;
 }
 
+const cleanUrl = (url: string): string => {
+	// Check if it's a Substack URL
+	if (url.includes('substack.com')) {
+		// Remove all parameters by taking everything before the '?'
+		const cleanedUrl = url.split('?')[0];
+		return cleanedUrl;
+	}
+	return url;
+};
+
 export const extractHighlightData = (
 	selection: Selection
 ): HighlightData | null => {
@@ -124,7 +134,7 @@ export const extractHighlightData = (
 			},
 		},
 		siteMetadata: {
-			url: window.location.href,
+			url: cleanUrl(window.location.href),
 			title: document.title,
 			favicon: getLinkIcon(),
 			author: author,
