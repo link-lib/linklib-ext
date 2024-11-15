@@ -6,7 +6,7 @@ import {
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
-import { Highlighter, PenBoxIcon, SmilePlus } from 'lucide-react';
+import { Highlighter, PenBoxIcon, SmilePlus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { EmojiPicker } from '../Reactions/EmojiPicker';
 // import { useSWRConfig } from 'swr';
@@ -29,7 +29,7 @@ type ActionBarProps = {
 export const ActionBar = ({
 	handleHighlight,
 	handleAddNote,
-	// handleClose,
+	handleClose,
 	// handleRate,
 	// handleHighlightAndTag,
 	onAddReaction,
@@ -135,16 +135,14 @@ export const ActionBar = ({
 
 				{/* Other Actions */}
 				<div className='flex items-center gap-1'>
-					{/* ... other action buttons ... */}
+					<button
+						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+						onClick={handleClose}
+					>
+						<X className='w-full h-full' />
+					</button>
 				</div>
 			</div>
-
-			{/* <button
-				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-				onClick={handleClose}
-			>
-				<X className='w-full h-full' />
-			</button> */}
 		</div>
 	);
 };

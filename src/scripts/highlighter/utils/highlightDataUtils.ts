@@ -8,6 +8,7 @@ import {
 	getArticleMetadata,
 	getLinkIcon,
 } from '@/scripts/ImageDrop/saveWebsite';
+import { User } from '@supabase/supabase-js';
 
 function getSelectionWithNewlines(selection: Selection): string {
 	if (selection.rangeCount === 0) return '';
@@ -53,7 +54,8 @@ const cleanUrl = (url: string): string => {
 };
 
 export const extractHighlightData = (
-	selection: Selection
+	selection: Selection,
+	user: User
 ): HighlightData | null => {
 	if (!selection.rangeCount || selection.isCollapsed) {
 		return null;
@@ -148,6 +150,11 @@ export const extractHighlightData = (
 		pageTitleWords: pageTitleWords,
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		user_meta: {
+			name: user.user_metadata.name,
+			picture: user.user_metadata.picture,
+		},
+		user_id: user.id,
 	};
 
 	return highlightData;

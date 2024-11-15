@@ -6,11 +6,15 @@ import Comment, {
 	VoiceComment,
 } from '@/scripts/highlighter/components/Comment/Comment';
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
-import { StarRating } from '@/scripts/highlighter/components/Stars';
+// import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
 import { CirclePlus, Plus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { EmojiPicker } from './Reactions/EmojiPicker';
+import { toast } from '@/components/ui/use-toast';
+import { updateNote } from '@/backend/notes/updateNote';
+import { deleteNote } from '@/backend/notes/deleteNote';
+import { HighlightData } from '../types/HighlightData';
 
 type NotesModalProps = {
 	initialNotes: NoteWithUserMeta[];
@@ -24,14 +28,14 @@ type NotesModalProps = {
 	shouldFocusInput: boolean;
 	onInputFocused: () => void;
 	isPopoverOpened: boolean;
-	highlightId: string;
+	highlight: HighlightData;
 };
 
 export const NotesModal = ({
 	initialNotes,
 	onClose,
-	rating,
-	setRating,
+	// rating,
+	// setRating,
 	onDelete,
 	reactions,
 	onAddReaction,
@@ -39,13 +43,14 @@ export const NotesModal = ({
 	// shouldFocusInput,
 	// onInputFocused,
 	isPopoverOpened,
-	highlightId,
+	highlight,
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const modalRef = useRef<HTMLDivElement>(null);
 	const { user } = useContext(AuthContext);
 	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
+	const [isEditingNote, setIsEditingNote] = useState(false);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -108,7 +113,7 @@ export const NotesModal = ({
 		try {
 			await createNote({
 				noteValue: newNote,
-				itemId: highlightId,
+				itemId: highlight.uuid,
 			});
 
 			// Optimistically update the local state
@@ -116,7 +121,7 @@ export const NotesModal = ({
 				id: Date.now(), // temporary ID
 				value: newNote,
 				user_id: user?.id,
-				item_id: highlightId,
+				item_id: highlight.uuid,
 				created_at: new Date().toISOString(),
 				user_meta: {
 					name: user?.user_metadata?.name,
@@ -129,6 +134,37 @@ export const NotesModal = ({
 		} catch (error) {
 			console.error('Failed to create note:', error);
 			// Optionally add error handling UI here
+		}
+	};
+
+	const handleEditNote = async (
+		note: NoteWithUserMeta,
+		editValue: string
+	) => {
+		try {
+			await updateNote({
+				noteId: note.id,
+				noteValue: editValue,
+			});
+			setIsEditingNote(false);
+			setNotes(
+				notes.map((n) =>
+					n.id === note.id ? { ...n, value: editValue } : n
+				)
+			);
+		} catch (error) {
+			console.error('Error updating note:', error);
+			toast({ title: 'Error updating note' });
+		}
+	};
+
+	const handleDeleteNote = async (note: NoteWithUserMeta) => {
+		try {
+			await deleteNote({ noteId: note.id });
+			setNotes(notes.filter((n) => n.id !== note.id));
+		} catch (error) {
+			console.error('Error deleting note:', error);
+			toast({ title: 'Error deleting note' });
 		}
 	};
 
@@ -163,13 +199,15 @@ export const NotesModal = ({
 					/>
 				</div>
 				<div className='flex flex-row items-center'>
-					<StarRating onRating={setRating} initialRating={rating} />
-					<button
-						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-						onClick={handleDelete}
-					>
-						<Trash2 className='w-full h-full' />
-					</button>
+					{/* <StarRating onRating={setRating} initialRating={rating} /> */}
+					{highlight.user_id === user.id && (
+						<button
+							className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+							onClick={handleDelete}
+						>
+							<Trash2 className='w-full h-full' />
+						</button>
+					)}
 					<button
 						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
 						onClick={onClose}
@@ -180,9 +218,16 @@ export const NotesModal = ({
 			</div>
 			{/* Render all notes */}
 			<div className='flex flex-col'>
-				<VoiceComment highlightId={highlightId} />
+				<VoiceComment highlightId={highlight.uuid} />
 				{notes.map((note) => (
-					<Comment key={note.id} note={note} />
+					<Comment
+						key={note.id}
+						note={note}
+						onDelete={handleDeleteNote}
+						onEdit={handleEditNote}
+						isEditing={isEditingNote}
+						setIsEditing={setIsEditingNote}
+					/>
 				))}
 			</div>
 
