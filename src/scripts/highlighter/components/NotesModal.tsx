@@ -193,6 +193,12 @@ export const NotesModal = ({
 				placeholder='thoughts?'
 				value={newNote}
 				onChange={(e) => setNewNote(e.target.value)}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+						e.preventDefault();
+						handleAddNote();
+					}
+				}}
 			/>
 			<div className='flex pt-2 justify-end'>
 				<Button

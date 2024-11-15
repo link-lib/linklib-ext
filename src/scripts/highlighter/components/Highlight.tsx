@@ -191,7 +191,7 @@ export const Highlight = ({
 
 		return (
 			<div className='absolute -top-4 -right-4 flex gap-1 rounded-full px-2 py-0.5 text-2xl'>
-				<span>{reaction.emoji}</span>
+				{reaction.emoji}
 			</div>
 		);
 	};
@@ -240,22 +240,27 @@ export const Highlight = ({
 							</>
 						)}
 						<PopoverTrigger asChild>
-							<span
-								highlight-id={`highlight-${highlightData.uuid}`}
-								className='relative bg-yellow-400 cursor-pointer bytebelli-highlight'
-								onClick={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-									setIsPopoverOpen(true);
-								}}
-								onMouseEnter={handleMouseEnter}
-								onMouseLeave={handleMouseLeave}
-							>
-								{index === 0 && renderReactionsBadge(reactions)}
-								{Array.from(content.childNodes).map((node, i) =>
-									nodeToReact(node, i)
-								)}
-							</span>
+							<>
+								<span
+									highlight-id={`highlight-${highlightData.uuid}`}
+									className='relative bg-yellow-400 cursor-pointer bytebelli-highlight'
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										setIsPopoverOpen(true);
+									}}
+									onMouseEnter={handleMouseEnter}
+									onMouseLeave={handleMouseLeave}
+								>
+									{Array.from(content.childNodes).map(
+										(node, i) => nodeToReact(node, i)
+									)}
+								</span>
+								<span className='relative'>
+									{index === highlightContainers.length - 1 &&
+										renderReactionsBadge(reactions)}
+								</span>
+							</>
 						</PopoverTrigger>
 					</Popover>,
 					container
