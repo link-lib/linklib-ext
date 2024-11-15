@@ -29,6 +29,7 @@ const HighlighterApp: React.FC = () => {
 	const [openNoteUuid, setOpenNoteUuid] = useState<string | null>(null);
 
 	const [isLoading, setIsLoading] = useState(true);
+	const { user } = useContext(AuthContext);
 
 	useSWR<Tag[]>('getTags', getTags, {
 		revalidateOnFocus: false,
@@ -57,6 +58,7 @@ const HighlighterApp: React.FC = () => {
 								notes: highlight.notes || [],
 								reactions: highlight.reactions || [],
 								user_meta: highlight.user_meta,
+								user_id: highlight.user_id,
 							};
 						}
 						return acc;
@@ -104,7 +106,7 @@ const HighlighterApp: React.FC = () => {
 		}
 
 		if (userSelection) {
-			const highlightData = extractHighlightData(userSelection);
+			const highlightData = extractHighlightData(userSelection, user);
 			if (highlightData) {
 				// Apply modifier if provided
 				if (modifier) {
@@ -231,10 +233,28 @@ const HighlighterApp: React.FC = () => {
 				setOpenNoteUuid(highlightData.uuid);
 			},
 			async (highlightData) => {
-				await createReaction({
+				const newReaction = await createReaction({
 					emoji,
 					itemId: highlightData.uuid,
 				});
+
+				setHighlights((prev) => ({
+					...prev,
+					[highlightData.uuid]: {
+						...prev[highlightData.uuid],
+						user_meta: prev[highlightData.uuid].user_meta,
+						reactions: [
+							...(prev[highlightData.uuid].reactions || []),
+							{
+								...newReaction,
+								user_meta: {
+									name: user.user_metadata.name,
+									picture: user.user_metadata.picture,
+								},
+							},
+						],
+					},
+				}));
 			}
 		);
 	}, authModalContext);
@@ -254,7 +274,7 @@ const HighlighterApp: React.FC = () => {
 	const handleHighlightAndTag = withAuth((tag: Tag) => {
 		const userSelection = window.getSelection();
 		if (userSelection) {
-			const highlightData = extractHighlightData(userSelection);
+			const highlightData = extractHighlightData(userSelection, user);
 			if (highlightData) {
 				setHighlights({
 					...highlights,

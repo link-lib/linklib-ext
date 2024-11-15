@@ -67,6 +67,10 @@ export const Highlight = ({
 	);
 
 	useEffect(() => {
+		setReactions(highlightData.reactions || []);
+	}, [highlightData.reactions]);
+
+	useEffect(() => {
 		for (const strategy of createElementFallbackOrder) {
 			let ranges: Range[] = [];
 			try {
@@ -222,7 +226,7 @@ export const Highlight = ({
 							<>
 								<NotesModal
 									initialNotes={highlightData.notes || []}
-									highlightId={highlightData.uuid} // Add this line
+									highlight={highlightData}
 									onClose={() => setIsPopoverOpen(false)}
 									isPopoverOpened={isPopoverOpen}
 									rating={rating}

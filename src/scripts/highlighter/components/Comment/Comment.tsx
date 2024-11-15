@@ -1,14 +1,31 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import VoiceNote from '@/scripts/highlighter/components/Comment/VoiceNote';
 import { NoteWithUserMeta } from '@/utils/supabase/typeAliases';
-import React from 'react';
+import React, { useContext, useState } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
+import { Textarea } from '@/components/ui/textarea';
 
 interface CommentProps {
 	note: NoteWithUserMeta;
+	onDelete: (note: NoteWithUserMeta) => Promise<void>;
+	onEdit: (note: NoteWithUserMeta, noteValue: string) => Promise<void>;
+	isEditing: boolean;
+	setIsEditing: (isEditing: boolean) => void;
 }
 
-const Comment: React.FC<CommentProps> = ({ note }) => {
-	console.log(note);
+const Comment: React.FC<CommentProps> = ({
+	note,
+	onDelete,
+	onEdit,
+	isEditing,
+	setIsEditing,
+}) => {
+	const { user } = useContext(AuthContext);
+	const isCommentOwner = user?.id === note.user_id;
+	const [editValue, setEditValue] = useState(note.value);
+
 	return (
 		<div className='p-4'>
 			<div className='w-full bg-popover'>
@@ -19,17 +36,60 @@ const Comment: React.FC<CommentProps> = ({ note }) => {
 							<AvatarFallback>CN</AvatarFallback>
 						</Avatar>
 						<div className='text-sm font-medium text-muted-foreground truncate'>
-							{/* notes */}
 							{note.user_meta.name}
 						</div>
 					</div>
-					<div className='text-xs text-muted-foreground'>
-						{formatTimeAgo(new Date(note.created_at))}
+					<div className='flex items-center gap-2'>
+						<div className='text-xs text-muted-foreground'>
+							{formatTimeAgo(new Date(note.created_at))}
+						</div>
+
+						{isCommentOwner && (
+							<div className='flex gap-1'>
+								<button
+									className='hover:text-white flex justify-center align-center items-center text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+									onClick={() => setIsEditing(true)}
+								>
+									<Pencil className='h-4 w-4' />
+								</button>
+								<button
+									className='hover:text-white text-white hover:border-white flex justify-center align-center items-center border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+									onClick={() => onDelete(note)}
+								>
+									<Trash2 className='h-4 w-4' />
+								</button>
+							</div>
+						)}
 					</div>
 				</div>
 
 				<div className='space-y-4'>
-					<div className='text-sm text-primary'>{note.value}</div>
+					{isEditing ? (
+						<div className='space-y-2'>
+							<Textarea
+								value={editValue}
+								onChange={(e) => setEditValue(e.target.value)}
+								className='w-full min-h-[100px] p-2 text-sm rounded-md border text-primary'
+							/>
+							<div className='flex justify-end gap-2'>
+								<Button
+									variant='outline'
+									size='sm'
+									onClick={() => setIsEditing(false)}
+								>
+									Cancel
+								</Button>
+								<Button
+									size='sm'
+									onClick={() => onEdit(note, editValue)}
+								>
+									Save
+								</Button>
+							</div>
+						</div>
+					) : (
+						<div className='text-sm text-primary'>{note.value}</div>
+					)}
 				</div>
 			</div>
 		</div>

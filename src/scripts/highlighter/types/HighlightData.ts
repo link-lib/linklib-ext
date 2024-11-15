@@ -42,6 +42,7 @@ export type HighlightData = {
 	notes: NoteWithUserMeta[];
 	reactions: ReactionWithUserMeta[];
 	user_meta: UserMetadata;
+	user_id: string;
 
 	// Search
 	highlightWords: string[];
