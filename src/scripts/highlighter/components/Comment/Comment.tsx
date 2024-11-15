@@ -2,8 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import VoiceNote from '@/scripts/highlighter/components/Comment/VoiceNote';
 import { NoteWithUserMeta } from '@/utils/supabase/typeAliases';
 import React, { useContext, useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Pencil, Trash2, X, Check } from 'lucide-react';
 import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -25,73 +24,73 @@ const Comment: React.FC<CommentProps> = ({
 	const { user } = useContext(AuthContext);
 	const isCommentOwner = user?.id === note.user_id;
 	const [editValue, setEditValue] = useState(note.value);
+	const [isHovering, setIsHovering] = useState(false);
 
 	return (
-		<div className='p-4'>
-			<div className='w-full bg-popover'>
-				<div className='flex items-center gap-2 flex-row justify-between '>
-					<div className='flex flex-row gap-2 items-center'>
-						<Avatar className='w-4 h-4'>
-							<AvatarImage src={note.user_meta.picture} />
-							<AvatarFallback>CN</AvatarFallback>
-						</Avatar>
-						<div className='text-sm font-medium text-muted-foreground truncate'>
-							{note.user_meta.name}
-						</div>
-					</div>
-					<div className='flex items-center gap-2'>
+		<div
+			className='p-3 text-white text-sm'
+			onMouseEnter={() => setIsHovering(true)}
+			onMouseLeave={() => setIsHovering(false)}
+		>
+			<div className='flex items-center justify-between mb-2'>
+				<div className='flex items-center gap-2'>
+					<Avatar className='w-6 h-6'>
+						<AvatarImage src={note.user_meta.picture} />
+						<AvatarFallback>
+							{note.user_meta.name.substring(0, 2)}
+						</AvatarFallback>
+					</Avatar>
+					<div>
+						<div>{note.user_meta.name}</div>
 						<div className='text-xs text-muted-foreground'>
 							{formatTimeAgo(new Date(note.created_at))}
 						</div>
-
-						{isCommentOwner && (
-							<div className='flex gap-1'>
-								<button
-									className='hover:text-white flex justify-center align-center items-center text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-									onClick={() => setIsEditing(true)}
-								>
-									<Pencil className='h-4 w-4' />
-								</button>
-								<button
-									className='hover:text-white text-white hover:border-white flex justify-center align-center items-center border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-									onClick={() => onDelete(note)}
-								>
-									<Trash2 className='h-4 w-4' />
-								</button>
-							</div>
-						)}
 					</div>
 				</div>
 
-				<div className='space-y-4'>
-					{isEditing ? (
-						<div className='space-y-2'>
-							<Textarea
-								value={editValue}
-								onChange={(e) => setEditValue(e.target.value)}
-								className='w-full min-h-[100px] p-2 text-sm rounded-md border text-primary'
-							/>
-							<div className='flex justify-end gap-2'>
-								<Button
-									variant='outline'
-									size='sm'
-									onClick={() => setIsEditing(false)}
-								>
-									Cancel
-								</Button>
-								<Button
-									size='sm'
-									onClick={() => onEdit(note, editValue)}
-								>
-									Save
-								</Button>
-							</div>
-						</div>
-					) : (
-						<div className='text-sm text-primary'>{note.value}</div>
-					)}
-				</div>
+				{isCommentOwner && isHovering && (
+					<div className='flex gap-1 text-muted-foreground'>
+						<button
+							className='hover:text-white flex justify-center align-center items-center  hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+							onClick={() => setIsEditing(true)}
+						>
+							<Pencil className='h-4 w-4' />
+						</button>
+						<button
+							className='hover:text-white  hover:border-white flex justify-center align-center items-center border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+							onClick={() => onDelete(note)}
+						>
+							<Trash2 className='h-4 w-4' />
+						</button>
+					</div>
+				)}
 			</div>
+
+			{isEditing ? (
+				<div className='space-y-2 mt-2'>
+					<Textarea
+						value={editValue}
+						onChange={(e) => setEditValue(e.target.value)}
+						className='min-h-[100px] resize-none'
+					/>
+					<div className='flex gap-1 justify-end'>
+						<button
+							className='hover:text-white flex justify-center align-center items-center  hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+							onClick={() => setIsEditing(false)}
+						>
+							<X className='h-4 w-4' />
+						</button>
+						<button
+							className='hover:text-white  hover:border-white flex justify-center align-center items-center border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+							onClick={() => onEdit(note, editValue)}
+						>
+							<Check className='h-4 w-4' />
+						</button>
+					</div>
+				</div>
+			) : (
+				<div className='whitespace-pre-wrap mt-2'>{note.value}</div>
+			)}
 		</div>
 	);
 };

@@ -8,7 +8,7 @@ import Comment, {
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 // import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
-import { CirclePlus, Plus, Trash2, X } from 'lucide-react';
+import { SmilePlus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { EmojiPicker } from './Reactions/EmojiPicker';
 import { toast } from '@/components/ui/use-toast';
@@ -50,7 +50,7 @@ export const NotesModal = ({
 	const { user } = useContext(AuthContext);
 	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
-	const [isEditingNote, setIsEditingNote] = useState(false);
+	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -146,7 +146,7 @@ export const NotesModal = ({
 				noteId: note.id,
 				noteValue: editValue,
 			});
-			setIsEditingNote(false);
+			setEditingNoteId(null);
 			setNotes(
 				notes.map((n) =>
 					n.id === note.id ? { ...n, value: editValue } : n
@@ -171,13 +171,13 @@ export const NotesModal = ({
 	return (
 		<ThreadContainer ref={modalRef}>
 			<div className='z-infinite bytebelli-internal flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
-				<div className='flex flex-row'>
+				<div className='flex flex-row gap-1'>
 					{Object.entries(groupedReactions).map(
 						([emoji, { count, userReactionId }]) => (
 							<button
 								key={emoji}
 								onClick={() => handleReactionClick(emoji)}
-								className={`flex items-center gap-1 px-2 py-1 text-sm rounded-full border border-gray-200 transition-colors
+								className={`flex items-center h-6 w-6 gap-1 justify-center text-sm rounded-full border border-muted-foreground transition-colors
 								${userReactionId ? 'bg-gray-400 hover:bg-gray-500' : 'hover:bg-gray-50'}`}
 							>
 								<span>{emoji}</span>
@@ -192,13 +192,13 @@ export const NotesModal = ({
 					<EmojiPicker
 						onEmojiSelect={onAddReaction}
 						trigger={
-							<button className='p-1 hover:bg-gray-100 rounded-full'>
-								<CirclePlus className='w-5 h-5' />
+							<button className='hover:text-white flex justify-center items-center hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+								<SmilePlus className='w-4 h-4' />
 							</button>
 						}
 					/>
 				</div>
-				<div className='flex flex-row items-center'>
+				<div className='flex flex-row items-center text-muted-foreground'>
 					{/* <StarRating onRating={setRating} initialRating={rating} /> */}
 					{highlight.user_id === user.id && (
 						<button
@@ -225,35 +225,42 @@ export const NotesModal = ({
 						note={note}
 						onDelete={handleDeleteNote}
 						onEdit={handleEditNote}
-						isEditing={isEditingNote}
-						setIsEditing={setIsEditingNote}
+						isEditing={editingNoteId === note.id}
+						setIsEditing={(isEditing) =>
+							setEditingNoteId(isEditing ? note.id : null)
+						}
 					/>
 				))}
 			</div>
 
 			{/* Comments */}
-			<Textarea
-				ref={inputRef}
-				className='text-primary'
-				placeholder='thoughts?'
-				value={newNote}
-				onChange={(e) => setNewNote(e.target.value)}
-				onKeyDown={(e) => {
-					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-						e.preventDefault();
-						handleAddNote();
-					}
-				}}
-			/>
-			<div className='flex pt-2 justify-end'>
-				<Button
-					onClick={() => handleAddNote()}
-					// variant=''
-					// size='icon'
-				>
-					<Plus className='h-4 w-4' /> Add
-				</Button>
-			</div>
+			{!editingNoteId && (
+				<>
+					<Textarea
+						ref={inputRef}
+						className='text-primary'
+						placeholder='thoughts?'
+						value={newNote}
+						onChange={(e) => setNewNote(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+								e.preventDefault();
+								handleAddNote();
+							}
+						}}
+					/>
+
+					<div className='flex pt-2 justify-end'>
+						<Button
+							onClick={() => handleAddNote()}
+							// variant=''
+							// size='icon'
+						>
+							Add
+						</Button>
+					</div>
+				</>
+			)}
 		</ThreadContainer>
 	);
 };
