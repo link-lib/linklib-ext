@@ -8,7 +8,7 @@ import Comment, {
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 // import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
-import { SmilePlus, Trash2, X } from 'lucide-react';
+import { SmilePlus, Trash2, X, MessageCircle } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { EmojiPicker } from './Reactions/EmojiPicker';
 import { toast } from '@/components/ui/use-toast';
@@ -76,6 +76,25 @@ export const NotesModal = ({
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, [onClose, manuallyClosed]);
+
+	// If manually closed and has notes, show the circular button
+	if (manuallyClosed && notes.length > 0) {
+		return (
+			<ThreadContainer ref={modalRef}>
+				<div className='relative -translate-x-full pr-2'>
+					<button
+						onClick={() => setManuallyClosed(false)}
+						className='relative p-2 rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90'
+					>
+						<MessageCircle className='w-4 h-4' />
+						<span className='absolute -top-2 -right-2 bg-popover text-xs rounded-full w-5 h-5 flex items-center justify-center transition-colors group-hover:bg-popover/90'>
+							{notes.length}
+						</span>
+					</button>
+				</div>
+			</ThreadContainer>
+		);
+	}
 
 	// If popover is closed and there are no notes, don't render anything
 	if (manuallyClosed || (!isPopoverOpened && notes.length === 0)) {
@@ -184,97 +203,102 @@ export const NotesModal = ({
 
 	return (
 		<ThreadContainer ref={modalRef}>
-			<div className='z-infinite bytebelli-internal flex gap-2 justify-between items-center flex-row pt-0 p-2 text-sm border-b border-lining'>
-				<div className='flex flex-row gap-1'>
-					{Object.entries(groupedReactions).map(
-						([emoji, { count, userReactionId }]) => (
+			<div className='bg-popover rounded-lg w-72 p-3'>
+				<div className='z-infinite flex gap-2 justify-between items-center flex-row pt-0 text-sm border-b border-lining p-2'>
+					<div className='flex flex-row gap-1'>
+						{Object.entries(groupedReactions).map(
+							([emoji, { count, userReactionId }]) => (
+								<button
+									key={emoji}
+									onClick={() => handleReactionClick(emoji)}
+									className={`flex items-center h-6 w-6 gap-1 justify-center text-sm rounded-full border border-muted-foreground transition-colors
+							${userReactionId ? 'bg-gray-400 hover:bg-gray-500' : 'hover:bg-gray-50'}`}
+								>
+									<span>{emoji}</span>
+									{count > 1 && (
+										<span className='text-xs text-gray-600'>
+											{count}
+										</span>
+									)}
+								</button>
+							)
+						)}
+						<EmojiPicker
+							onEmojiSelect={onAddReaction}
+							trigger={
+								<button className='hover:text-white flex justify-center items-center hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+									<SmilePlus className='w-4 h-4' />
+								</button>
+							}
+						/>
+					</div>
+					<div className='flex flex-row items-center text-muted-foreground'>
+						{/* <StarRating onRating={setRating} initialRating={rating} /> */}
+						{highlight.user_id === user.id && (
 							<button
-								key={emoji}
-								onClick={() => handleReactionClick(emoji)}
-								className={`flex items-center h-6 w-6 gap-1 justify-center text-sm rounded-full border border-muted-foreground transition-colors
-								${userReactionId ? 'bg-gray-400 hover:bg-gray-500' : 'hover:bg-gray-50'}`}
+								className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+								onClick={handleDelete}
 							>
-								<span>{emoji}</span>
-								{count > 1 && (
-									<span className='text-xs text-gray-600'>
-										{count}
-									</span>
-								)}
+								<Trash2 className='w-full h-full' />
 							</button>
-						)
-					)}
-					<EmojiPicker
-						onEmojiSelect={onAddReaction}
-						trigger={
-							<button className='hover:text-white flex justify-center items-center hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
-								<SmilePlus className='w-4 h-4' />
-							</button>
-						}
-					/>
-				</div>
-				<div className='flex flex-row items-center text-muted-foreground'>
-					{/* <StarRating onRating={setRating} initialRating={rating} /> */}
-					{highlight.user_id === user.id && (
+						)}
 						<button
 							className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-							onClick={handleDelete}
+							onClick={handleClose}
 						>
-							<Trash2 className='w-full h-full' />
+							<X className='w-full h-full' />
 						</button>
-					)}
-					<button
-						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-						onClick={handleClose}
-					>
-						<X className='w-full h-full' />
-					</button>
-				</div>
-			</div>
-			{/* Render all notes */}
-			<div className='flex flex-col'>
-				<VoiceComment highlightId={highlight.uuid} />
-				{notes.map((note) => (
-					<Comment
-						key={note.id}
-						note={note}
-						onDelete={handleDeleteNote}
-						onEdit={handleEditNote}
-						isEditing={editingNoteId === note.id}
-						setIsEditing={(isEditing) =>
-							setEditingNoteId(isEditing ? note.id : null)
-						}
-					/>
-				))}
-			</div>
-
-			{/* Comments */}
-			{!editingNoteId && (
-				<>
-					<Textarea
-						ref={inputRef}
-						className='text-primary'
-						placeholder='thoughts?'
-						value={newNote}
-						onChange={(e) => setNewNote(e.target.value)}
-						onKeyDown={(e) => {
-							if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-								e.preventDefault();
-								handleAddNote();
-							}
-						}}
-					/>
-
-					<div className='flex pt-2 justify-end'>
-						<Button
-							onClick={() => handleAddNote()}
-							// variant=''
-							// size='icon'
-						>
-							Add
-						</Button>
 					</div>
-				</>
-			)}
+				</div>
+				{/* Render all notes */}
+				<div className='flex flex-col'>
+					<VoiceComment highlightId={highlight.uuid} />
+					{notes.map((note) => (
+						<Comment
+							key={note.id}
+							note={note}
+							onDelete={handleDeleteNote}
+							onEdit={handleEditNote}
+							isEditing={editingNoteId === note.id}
+							setIsEditing={(isEditing) =>
+								setEditingNoteId(isEditing ? note.id : null)
+							}
+						/>
+					))}
+				</div>
+
+				{/* Comments */}
+				{!editingNoteId && (
+					<>
+						<Textarea
+							ref={inputRef}
+							className='text-primary'
+							placeholder='thoughts?'
+							value={newNote}
+							onChange={(e) => setNewNote(e.target.value)}
+							onKeyDown={(e) => {
+								if (
+									e.key === 'Enter' &&
+									(e.metaKey || e.ctrlKey)
+								) {
+									e.preventDefault();
+									handleAddNote();
+								}
+							}}
+						/>
+
+						<div className='flex pt-2 justify-end'>
+							<Button
+								onClick={() => handleAddNote()}
+								// variant=''
+								// size='icon'
+							>
+								Add
+							</Button>
+						</div>
+					</>
+				)}
+			</div>
 		</ThreadContainer>
 	);
 };
