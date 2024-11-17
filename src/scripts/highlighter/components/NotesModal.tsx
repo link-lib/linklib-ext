@@ -83,7 +83,7 @@ export const NotesModal = ({
 	if (manuallyClosed && notes.length > 0) {
 		return (
 			<ThreadContainer ref={modalRef}>
-				<div className='relative -translate-x-full pr-2'>
+				<div className='relative -translate-x-full pr-3'>
 					<button
 						onClick={() => setManuallyClosed(false)}
 						className='relative p-2 rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90'
@@ -206,16 +206,24 @@ export const NotesModal = ({
 	return (
 		<ThreadContainer ref={modalRef}>
 			<div
-				className='bg-popover rounded-lg w-72 p-3 border cursor-pointer hover:bg-popover-hover'
+				className={` rounded-lg w-72 p-3 border cursor-pointer hover:bg-popover-hover relative
+					${
+						isPopoverOpen
+							? 'border-2 shadow-xl z-infinite+1 bg-popover-hover'
+							: 'z-infinite bg-popover'
+					}`}
 				onClick={() => setIsPopoverOpen(true)}
 			>
-				<div className='z-infinite flex gap-2 justify-between items-center flex-row pt-0 text-sm border-b border-lining p-2'>
+				<div className=' flex gap-2 justify-between items-center flex-row pt-0 text-sm border-b border-lining p-2'>
 					<div className='flex flex-row gap-1'>
 						{Object.entries(groupedReactions).map(
 							([emoji, { count, userReactionId }]) => (
 								<button
 									key={emoji}
-									onClick={() => handleReactionClick(emoji)}
+									onClick={(e) => {
+										e.stopPropagation();
+										handleReactionClick(emoji);
+									}}
 									className={`flex items-center h-6 w-6 gap-1 justify-center text-sm rounded-full border border-muted-foreground transition-colors
 							${userReactionId ? 'bg-gray-400 hover:bg-gray-500' : 'hover:bg-gray-50'}`}
 								>
@@ -242,14 +250,20 @@ export const NotesModal = ({
 						{highlight.user_id === user.id && (
 							<button
 								className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-								onClick={handleDelete}
+								onClick={(e) => {
+									e.stopPropagation();
+									handleDelete();
+								}}
 							>
 								<Trash2 className='w-full h-full' />
 							</button>
 						)}
 						<button
 							className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-							onClick={handleClose}
+							onClick={(e) => {
+								e.stopPropagation();
+								handleClose();
+							}}
 						>
 							<X className='w-full h-full' />
 						</button>
