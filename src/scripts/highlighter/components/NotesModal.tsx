@@ -51,12 +51,21 @@ export const NotesModal = ({
 	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
 	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+	const [manuallyClosed, setManuallyClosed] = useState(false);
+
+	// Reset manuallyClosed when popover is opened
+	useEffect(() => {
+		if (isPopoverOpened) {
+			setManuallyClosed(false);
+		}
+	}, [isPopoverOpened]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				modalRef.current &&
-				!modalRef.current.contains(event.target as Node)
+				!modalRef.current.contains(event.target as Node) &&
+				!manuallyClosed // Only close on click outside if not manually closed
 			) {
 				onClose();
 			}
@@ -66,12 +75,17 @@ export const NotesModal = ({
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [onClose]);
+	}, [onClose, manuallyClosed]);
 
 	// If popover is closed and there are no notes, don't render anything
-	if (!isPopoverOpened && notes.length === 0) {
+	if (manuallyClosed || (!isPopoverOpened && notes.length === 0)) {
 		return null;
 	}
+
+	const handleClose = () => {
+		setManuallyClosed(true);
+		onClose();
+	};
 
 	const handleDelete = () => {
 		// setNote('');
@@ -210,7 +224,7 @@ export const NotesModal = ({
 					)}
 					<button
 						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-						onClick={onClose}
+						onClick={handleClose}
 					>
 						<X className='w-full h-full' />
 					</button>
