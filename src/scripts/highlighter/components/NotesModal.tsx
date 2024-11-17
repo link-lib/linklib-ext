@@ -7,14 +7,15 @@ import Comment, {
 } from '@/scripts/highlighter/components/Comment/Comment';
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 // import { StarRating } from '@/scripts/highlighter/components/Stars';
-import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
-import { SmilePlus, Trash2, X, MessageCircle } from 'lucide-react';
-import { useContext, useEffect, useRef, useState } from 'react';
-import { EmojiPicker } from './Reactions/EmojiPicker';
-import { toast } from '@/components/ui/use-toast';
-import { updateNote } from '@/backend/notes/updateNote';
 import { deleteNote } from '@/backend/notes/deleteNote';
+import { updateNote } from '@/backend/notes/updateNote';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { toast } from '@/components/ui/use-toast';
+import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
+import { SmilePlus, Trash2, X } from 'lucide-react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { HighlightData } from '../types/HighlightData';
+import { EmojiPicker } from './Reactions/EmojiPicker';
 
 type NotesModalProps = {
 	initialNotes: NoteWithUserMeta[];
@@ -53,7 +54,7 @@ export const NotesModal = ({
 	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
 	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
-	const [manuallyClosed, setManuallyClosed] = useState(false);
+	const [manuallyClosed, setManuallyClosed] = useState(true);
 
 	// Reset manuallyClosed when popover is opened
 	useEffect(() => {
@@ -83,17 +84,24 @@ export const NotesModal = ({
 	if (manuallyClosed && notes.length > 0) {
 		return (
 			<ThreadContainer ref={modalRef}>
-				<div className='relative -translate-x-full pr-3'>
+				<div className='relative pr-3'>
 					<button
 						onClick={() => setManuallyClosed(false)}
-						className='relative p-2 rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90'
+						className='	relative -translate-x-full rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90 '
 					>
-						<MessageCircle className='w-4 h-4' />
+						<Avatar className='w-8 h-8 hover:opacity-90 transition-opacity'>
+							<AvatarImage src={notes[0]?.user_meta?.picture} />
+							<AvatarFallback>
+								{notes[0]?.user_meta?.name?.substring(0, 2) ||
+									'U'}
+							</AvatarFallback>
+						</Avatar>
 						<span className='absolute -top-2 -right-2 bg-popover text-xs rounded-full w-5 h-5 flex items-center justify-center transition-colors group-hover:bg-popover/90'>
 							{notes.length}
 						</span>
 					</button>
 				</div>
+				<div className='w-72'></div>
 			</ThreadContainer>
 		);
 	}
@@ -206,7 +214,7 @@ export const NotesModal = ({
 	return (
 		<ThreadContainer ref={modalRef}>
 			<div
-				className={` rounded-lg w-72 p-3 border cursor-pointer hover:bg-popover-hover relative
+				className={` rounded-lg ml-3 w-72 p-3 border cursor-pointer hover:bg-popover-hover relative
 					${
 						isPopoverOpen
 							? 'border-2 shadow-xl z-infinite+1 bg-popover-hover'
