@@ -27,7 +27,8 @@ type NotesModalProps = {
 	onDelete: () => void;
 	shouldFocusInput: boolean;
 	onInputFocused: () => void;
-	isPopoverOpened: boolean;
+	isPopoverOpen: boolean;
+	setIsPopoverOpen: (popover: boolean) => void;
 	highlight: HighlightData;
 };
 
@@ -42,7 +43,8 @@ export const NotesModal = ({
 	onDeleteReaction,
 	// shouldFocusInput,
 	// onInputFocused,
-	isPopoverOpened,
+	isPopoverOpen,
+	setIsPopoverOpen,
 	highlight,
 }: NotesModalProps) => {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -55,10 +57,10 @@ export const NotesModal = ({
 
 	// Reset manuallyClosed when popover is opened
 	useEffect(() => {
-		if (isPopoverOpened) {
+		if (isPopoverOpen) {
 			setManuallyClosed(false);
 		}
-	}, [isPopoverOpened]);
+	}, [isPopoverOpen]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -97,7 +99,7 @@ export const NotesModal = ({
 	}
 
 	// If popover is closed and there are no notes, don't render anything
-	if (manuallyClosed || (!isPopoverOpened && notes.length === 0)) {
+	if (manuallyClosed || (!isPopoverOpen && notes.length === 0)) {
 		return null;
 	}
 
@@ -203,7 +205,10 @@ export const NotesModal = ({
 
 	return (
 		<ThreadContainer ref={modalRef}>
-			<div className='bg-popover rounded-lg w-72 p-3'>
+			<div
+				className='bg-popover rounded-lg w-72 p-3 border cursor-pointer hover:bg-popover-hover'
+				onClick={() => setIsPopoverOpen(true)}
+			>
 				<div className='z-infinite flex gap-2 justify-between items-center flex-row pt-0 text-sm border-b border-lining p-2'>
 					<div className='flex flex-row gap-1'>
 						{Object.entries(groupedReactions).map(
@@ -251,9 +256,10 @@ export const NotesModal = ({
 					</div>
 				</div>
 				{/* Render all notes */}
-				<div className='flex flex-col'>
+				<div className='flex flex-col justify-start'>
 					<VoiceComment highlightId={highlight.uuid} />
-					{notes.map((note) => (
+					{/* Show either all comments or just the first two */}
+					{(isPopoverOpen ? notes : notes.slice(0, 2)).map((note) => (
 						<Comment
 							key={note.id}
 							note={note}
@@ -265,10 +271,22 @@ export const NotesModal = ({
 							}
 						/>
 					))}
+
+					{/* Show "show more" button if there are more than 2 comments */}
+					{!isPopoverOpen && notes.length > 2 && (
+						<Button
+							variant='link'
+							onClick={() => {}}
+							className='p-3 w-fit text-sm text-muted-foreground hover:text-primary transition-colors mt-1'
+						>
+							Show {notes.length - 2} more{' '}
+							{notes.length - 2 === 1 ? 'comment' : 'comments'}
+						</Button>
+					)}
 				</div>
 
 				{/* Comments */}
-				{!editingNoteId && (
+				{isPopoverOpen && (
 					<>
 						<Textarea
 							ref={inputRef}

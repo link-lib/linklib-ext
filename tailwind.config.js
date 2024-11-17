@@ -68,6 +68,7 @@ export default {
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))',
+					hover: 'hsl(var(--popover-hover))',
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
@@ -77,6 +78,7 @@ export default {
 			zIndex: {
 				'1000': '1000', 
 				'infinite': '9999999',
+				'infinite+1': '99999991',
 			},
 			transitionProperty: {
 				...defaultTheme.transitionProperty,
