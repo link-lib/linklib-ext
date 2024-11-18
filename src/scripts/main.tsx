@@ -21,13 +21,13 @@ document.body.appendChild(root);
 const reactRoot = ReactDOM.createRoot(root);
 
 const options = {
-	api_host: import.meta.env.VITE_POSTHOG_HOST,
+	api_host: chrome.runtime.getManifest().env.VITE_POSTHOG_HOST,
 };
 
 reactRoot.render(
 	<React.StrictMode>
 		<PostHogProvider
-			apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+			apiKey={chrome.runtime.getManifest().env.VITE_PUBLIC_POSTHOG_KEY}
 			options={options}
 		>
 			<div className='linklib-ext bytebelli-internal'>
