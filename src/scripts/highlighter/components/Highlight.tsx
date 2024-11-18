@@ -228,7 +228,8 @@ export const Highlight = ({
 									initialNotes={highlightData.notes || []}
 									highlight={highlightData}
 									onClose={() => setIsPopoverOpen(false)}
-									isPopoverOpened={isPopoverOpen}
+									isPopoverOpen={isPopoverOpen}
+									setIsPopoverOpen={setIsPopoverOpen}
 									rating={rating}
 									setRating={setRating}
 									onDelete={onDelete}
@@ -237,7 +238,7 @@ export const Highlight = ({
 										setShouldFocusInput(false)
 									}
 									reactions={reactions}
-									onAddReaction={handleAddReaction}
+										onAddReaction={handleAddReaction}
 									onDeleteReaction={handleDeleteReaction}
 								/>
 								{/* <div className='bg-popover text-slate-400 ll-gap-3 gap-2 w-fit justify-center items-center flex flex-row rounded-md border p-2 text-sm z-infinite '>
