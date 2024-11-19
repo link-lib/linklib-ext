@@ -28,17 +28,17 @@ export const EmojiPicker = ({
 				side={side}
 				align={align}
 				sideOffset={5}
+				onClick={(e) => e.stopPropagation()}
 			>
 				<Picker
 					data={data}
 					onEmojiSelect={(emoji: any, e: MouseEvent) => {
-						e.stopPropagation(); // Add this line
+						e.stopPropagation();
 						onEmojiSelect(emoji.native);
 					}}
 					theme='dark'
 					previewPosition='none'
 					skinTonePosition='none'
-					searchPosition='none'
 					navPosition='none'
 					perLine={6}
 					maxFrequentRows={1}
