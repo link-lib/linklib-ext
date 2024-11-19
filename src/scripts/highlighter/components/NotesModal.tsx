@@ -65,10 +65,12 @@ export const NotesModal = ({
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
+			const emojiPicker = document.querySelector('.emoji-picker');
 			if (
 				modalRef.current &&
 				!modalRef.current.contains(event.target as Node) &&
-				!manuallyClosed // Only close on click outside if not manually closed
+				!manuallyClosed && // Only close on click outside if not manually closed
+				(!emojiPicker || !emojiPicker.contains(event.target as Node))
 			) {
 				onClose();
 			}
@@ -79,6 +81,13 @@ export const NotesModal = ({
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, [onClose, manuallyClosed]);
+
+	// Add this effect after your other useEffect hooks
+	useEffect(() => {
+		if (isPopoverOpen && inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, [isPopoverOpen]);
 
 	// If manually closed and has notes, show the circular button
 	if (manuallyClosed && notes.length > 0) {

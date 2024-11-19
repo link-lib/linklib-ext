@@ -24,14 +24,15 @@ export const EmojiPicker = ({
 		<Popover>
 			<PopoverTrigger>{trigger}</PopoverTrigger>
 			<PopoverContent
-				className='mt-2 p-0 border-none shadow-lg w-fit h-fit'
+				className='mt-2 p-0 border-none shadow-lg w-fit h-fit emoji-picker z-infinite+1'
 				side={side}
 				align={align}
 				sideOffset={5}
 			>
 				<Picker
 					data={data}
-					onEmojiSelect={(emoji: any) => {
+					onEmojiSelect={(emoji: any, e: MouseEvent) => {
+						e.stopPropagation(); // Add this line
 						onEmojiSelect(emoji.native);
 					}}
 					theme='dark'
