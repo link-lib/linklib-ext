@@ -7,7 +7,7 @@ import {
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
 import { Highlighter, PenBoxIcon, SmilePlus, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { EmojiPicker } from '../Reactions/EmojiPicker';
 // import { useSWRConfig } from 'swr';
 
@@ -20,7 +20,6 @@ const QUICK_REACTIONS = [
 type ActionBarProps = {
 	handleHighlight: () => void;
 	handleAddNote: () => void;
-	handleClose: () => void;
 	handleRate: (rating: number) => void;
 	handleHighlightAndTag: (tag: Tag) => void;
 	onAddReaction: (emoji: string) => Promise<void>;
@@ -29,7 +28,6 @@ type ActionBarProps = {
 export const ActionBar = ({
 	handleHighlight,
 	handleAddNote,
-	handleClose,
 	// handleRate,
 	// handleHighlightAndTag,
 	onAddReaction,
@@ -37,41 +35,60 @@ export const ActionBar = ({
 	const [markerPosition, setMarkerPosition] = useState<
 		MarkerPosition | { display: 'none' }
 	>({ display: 'none' });
+	const actionBarRef = useRef<HTMLDivElement>(null);
 
 	// const { cache } = useSWRConfig();
 	// const { data: tags = [] } = (cache.get('getTags') || {}) as {
-	// 	data?: Tag[];
+	//  data?: Tag[];
 	// };
 
 	// const watchLaterTag = tags.find(
-	// 	(tag) => tag.name.toLowerCase() === 'watch later'
+	//  (tag) => tag.name.toLowerCase() === 'watch later'
 	// );
+	const handleClose = () => {
+		window.getSelection()?.empty();
+		setMarkerPosition({ display: 'none' });
+	};
 
+	const isClickInsideEmojiPicker = (event: MouseEvent) => {
+		return (event.target as Element)?.closest('em-emoji-picker') !== null;
+	};
+
+	// Handle text selection
 	useEffect(() => {
-		document.addEventListener('click', () => {
-			if (getSelectedText().length > 0) {
+		const handleSelectionChange = (event: MouseEvent) => {
+			const selectedText = getSelectedText();
+			if (selectedText.length > 0) {
 				setMarkerPosition(getMarkerPosition());
-			}
-		});
-
-		document.addEventListener('selectionchange', () => {
-			if (getSelectedText().length === 0) {
+			} else if (!isClickInsideEmojiPicker(event)) {
 				setMarkerPosition({ display: 'none' });
 			}
-		});
+		};
+
+		document.addEventListener('mouseup', handleSelectionChange);
 
 		return () => {
-			document.removeEventListener('click', () => {
-				if (getSelectedText().length > 0) {
-					setMarkerPosition(getMarkerPosition());
-				}
-			});
+			document.removeEventListener('mouseup', handleSelectionChange);
+		};
+	}, []);
 
-			document.removeEventListener('selectionchange', () => {
-				if (getSelectedText().length === 0) {
-					setMarkerPosition({ display: 'none' });
-				}
-			});
+	// Handle clicks outside the action bar
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			const isInsideActionBar = actionBarRef.current?.contains(
+				event.target as Node
+			);
+
+			if (!isInsideActionBar && !isClickInsideEmojiPicker(event)) {
+				console.log('clicked outside');
+				setMarkerPosition({ display: 'none' });
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, []);
 
@@ -81,6 +98,7 @@ export const ActionBar = ({
 
 	return (
 		<div
+			ref={actionBarRef}
 			className='fixed bg-popover text-slate-400 ll-gap-3 gap-2 w-fit justify-center items-center flex-row rounded-md border p-2 text-sm z-infinite'
 			style={markerPosition}
 		>

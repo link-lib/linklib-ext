@@ -337,10 +337,6 @@ const HighlighterApp: React.FC = () => {
 			});
 	}, authModalContext);
 
-	const handleClose = () => {
-		window.getSelection()?.empty();
-	};
-
 	useEffect(() => {
 		const mergeConflictingHighlights = async () => {
 			const highlightEntries = Object.values(highlights);
@@ -431,7 +427,6 @@ const HighlighterApp: React.FC = () => {
 				onAddReaction={handleAddReaction}
 				handleHighlight={handleHighlight}
 				handleAddNote={handleAddNote}
-				handleClose={handleClose}
 				handleRate={handleRate}
 				handleHighlightAndTag={handleHighlightAndTag}
 			/>
