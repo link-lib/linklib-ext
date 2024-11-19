@@ -82,13 +82,6 @@ export const NotesModal = ({
 		};
 	}, [onClose, manuallyClosed]);
 
-	// Add this effect after your other useEffect hooks
-	useEffect(() => {
-		if (isPopoverOpen && inputRef.current) {
-			inputRef.current.focus();
-		}
-	}, [isPopoverOpen]);
-
 	// If manually closed and has notes, show the circular button
 	if (manuallyClosed && notes.length > 0) {
 		return (
@@ -324,6 +317,15 @@ export const NotesModal = ({
 					<>
 						<Textarea
 							ref={inputRef}
+							autoFocus={isPopoverOpen}
+							onFocus={(e) => {
+								// Move cursor to end of text
+								const length = e.currentTarget.value.length;
+								e.currentTarget.setSelectionRange(
+									length,
+									length
+								);
+							}}
 							className='text-primary'
 							placeholder='thoughts?'
 							value={newNote}
