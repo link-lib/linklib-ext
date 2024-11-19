@@ -1,3 +1,4 @@
+import { cleanUrl } from '@/scripts/highlighter/utils/highlightDataUtils';
 import { createClient } from '@/utils/supabase/client';
 import {
 	HighlightWithUserMeta,
@@ -24,12 +25,13 @@ export async function getHighlights(
 	pageUrl: string
 ): Promise<HighlightWithNotesAndReactions[]> {
 	const supabase = createClient();
+	const cleanedUrl = cleanUrl(pageUrl);
 
 	// Get all highlights for this page URL
 	const { data: highlights, error: highlightsError } = await supabase
 		.from('content_with_user_info')
 		.select('*')
-		.eq('link', pageUrl)
+		.eq('link', cleanedUrl)
 		.eq('type', 'QUOTE');
 
 	if (highlightsError) {
