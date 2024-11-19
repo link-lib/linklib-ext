@@ -220,7 +220,7 @@ export const NotesModal = ({
 				className={` rounded-lg ml-3 w-72 p-3 border cursor-pointer hover:bg-popover-hover relative
 					${
 						isPopoverOpen
-							? 'border-2 shadow-xl z-infinite+1 bg-popover-hover'
+							? 'border-2 shadow-xl z-infinite bg-popover-hover'
 							: 'z-infinite bg-popover'
 					}`}
 				onClick={() => setIsPopoverOpen(true)}
