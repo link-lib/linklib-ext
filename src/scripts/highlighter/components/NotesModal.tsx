@@ -82,6 +82,13 @@ export const NotesModal = ({
 		};
 	}, [onClose, manuallyClosed]);
 
+	// Add this effect after your other useEffect hooks
+	useEffect(() => {
+		if (isPopoverOpen && inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, [isPopoverOpen]);
+
 	// If manually closed and has notes, show the circular button
 	if (manuallyClosed && notes.length > 0) {
 		return (
