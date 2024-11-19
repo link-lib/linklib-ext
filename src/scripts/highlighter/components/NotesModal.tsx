@@ -12,10 +12,9 @@ import { updateNote } from '@/backend/notes/updateNote';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
-import { SmilePlus, Trash2, X } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { HighlightData } from '../types/HighlightData';
-import { EmojiPicker } from './Reactions/EmojiPicker';
 
 type NotesModalProps = {
 	initialNotes: NoteWithUserMeta[];
@@ -245,14 +244,14 @@ export const NotesModal = ({
 								</button>
 							)
 						)}
-						<EmojiPicker
+						{/* <EmojiPicker
 							onEmojiSelect={onAddReaction}
 							trigger={
 								<button className='hover:text-white flex justify-center items-center hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 									<SmilePlus className='w-4 h-4' />
 								</button>
 							}
-						/>
+						/> */}
 					</div>
 					<div className='flex flex-row items-center text-muted-foreground'>
 						{/* <StarRating onRating={setRating} initialRating={rating} /> */}

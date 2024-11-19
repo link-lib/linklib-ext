@@ -6,9 +6,8 @@ import {
 	getMarkerPosition,
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
-import { Highlighter, PenBoxIcon, SmilePlus, X } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
-import { EmojiPicker } from '../Reactions/EmojiPicker';
+import { Highlighter, PenBoxIcon, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 // import { useSWRConfig } from 'swr';
 
 const QUICK_REACTIONS = [
@@ -139,7 +138,7 @@ export const ActionBar = ({
 						</button>
 					))}
 
-					<EmojiPicker
+					{/* <EmojiPicker
 						onEmojiSelect={onAddReaction}
 						side='bottom'
 						align='center'
@@ -148,7 +147,7 @@ export const ActionBar = ({
 								<SmilePlus className='w-full h-full' />
 							</button>
 						}
-					/>
+					/> */}
 				</div>
 
 				{/* Other Actions */}
