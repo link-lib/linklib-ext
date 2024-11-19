@@ -219,7 +219,7 @@ export const NotesModal = ({
 	return (
 		<ThreadContainer ref={modalRef}>
 			<div
-				className={` rounded-lg ml-3 w-72 p-3 border cursor-pointer hover:bg-popover-hover relative
+				className={` rounded-lg ml-3 w-72 p-3 border cursor-pointer hover:bg-popover-hover relative text-start
 					${
 						isPopoverOpen
 							? 'border-2 shadow-xl z-infinite+1 bg-popover-hover'
@@ -319,17 +319,21 @@ export const NotesModal = ({
 							ref={inputRef}
 							autoFocus={isPopoverOpen}
 							onFocus={(e) => {
-								// Move cursor to end of text
 								const length = e.currentTarget.value.length;
 								e.currentTarget.setSelectionRange(
 									length,
 									length
 								);
 							}}
-							className='text-primary'
+							className='text-primary min-h-[60px] max-h-[200px] resize-none'
 							placeholder='thoughts?'
 							value={newNote}
-							onChange={(e) => setNewNote(e.target.value)}
+							onChange={(e) => {
+								setNewNote(e.target.value);
+								// Auto-adjust height
+								e.target.style.height = 'auto';
+								e.target.style.height = `${e.target.scrollHeight}px`;
+							}}
 							onKeyDown={(e) => {
 								if (
 									e.key === 'Enter' &&
