@@ -7,7 +7,7 @@ interface VoiceNoteProps {
 	duration: string; // in format "MM:SS"
 }
 
-const VoiceNote = ({ audioUrl, transcription, duration }: VoiceNoteProps) => {
+const VoiceNote = ({ transcription, duration }: VoiceNoteProps) => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [showTranscription, setShowTranscription] = useState(false);
 
