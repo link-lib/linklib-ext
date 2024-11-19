@@ -86,7 +86,10 @@ export const NotesModal = ({
 			<ThreadContainer ref={modalRef}>
 				<div className='relative pr-3'>
 					<button
-						onClick={() => setManuallyClosed(false)}
+						onClick={() => {
+							setManuallyClosed(false);
+							setIsPopoverOpen(true);
+						}}
 						className='	relative -translate-x-full rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90 '
 					>
 						<Avatar className='w-8 h-8 hover:opacity-90 transition-opacity'>
