@@ -61,7 +61,6 @@ export const Highlight = ({
 	const [highlightContainers, setHighlightContainers] = useState<
 		HighlightContainer[]
 	>([]);
-	const [shouldFocusInput, setShouldFocusInput] = useState(notesOpen);
 	const [reactions, setReactions] = useState<Reaction[]>(
 		highlightData.reactions || []
 	);
@@ -121,14 +120,6 @@ export const Highlight = ({
 		}
 	}, [highlightData.matching]);
 
-	useEffect(() => {
-		if (notesOpen) {
-			setIsPopoverOpen(true, () => {
-				setShouldFocusInput(true);
-			});
-		}
-	}, [notesOpen, setIsPopoverOpen]);
-
 	const handleModalClose = async () => {
 		try {
 			// Save all modified notes when modal closes
@@ -146,7 +137,7 @@ export const Highlight = ({
 	};
 
 	const getHoverColor = (baseColor: string) => {
-		return baseColor.replace(/-(200|300|400|500)/, '-100');
+		return baseColor.replace(/-(300|400|500)/, '-200');
 	};
 
 	const handleMouseEnter = () => {
@@ -233,12 +224,8 @@ export const Highlight = ({
 									rating={rating}
 									setRating={setRating}
 									onDelete={onDelete}
-									shouldFocusInput={shouldFocusInput}
-									onInputFocused={() =>
-										setShouldFocusInput(false)
-									}
 									reactions={reactions}
-										onAddReaction={handleAddReaction}
+									onAddReaction={handleAddReaction}
 									onDeleteReaction={handleDeleteReaction}
 								/>
 								{/* <div className='bg-popover text-slate-400 ll-gap-3 gap-2 w-fit justify-center items-center flex flex-row rounded-md border p-2 text-sm z-infinite '>
@@ -256,7 +243,7 @@ export const Highlight = ({
 							<>
 								<span
 									highlight-id={`highlight-${highlightData.uuid}`}
-									className={`relative cursor-pointer bytebelli-highlight ${highlightColor}`}
+									className={`relative cursor-pointer bytebelli-highlight text-black ${highlightColor}`}
 									onClick={(e) => {
 										e.preventDefault();
 										e.stopPropagation();
