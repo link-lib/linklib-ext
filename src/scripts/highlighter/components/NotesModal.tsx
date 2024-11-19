@@ -26,8 +26,6 @@ type NotesModalProps = {
 	rating: number;
 	setRating: (rating: number) => void;
 	onDelete: () => void;
-	shouldFocusInput: boolean;
-	onInputFocused: () => void;
 	isPopoverOpen: boolean;
 	setIsPopoverOpen: (popover: boolean) => void;
 	highlight: HighlightData;
@@ -42,8 +40,6 @@ export const NotesModal = ({
 	reactions,
 	onAddReaction,
 	onDeleteReaction,
-	// shouldFocusInput,
-	// onInputFocused,
 	isPopoverOpen,
 	setIsPopoverOpen,
 	highlight,

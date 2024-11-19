@@ -1,18 +1,18 @@
 const userColors = {
-	default: 'bg-yellow-200',
-	user1: 'bg-blue-200',
-	user2: 'bg-green-200',
-	user3: 'bg-purple-200',
-	user4: 'bg-pink-200',
-	user5: 'bg-orange-200',
+	default: 'bg-yellow-300',
+	user1: 'bg-blue-300',
+	user2: 'bg-green-300',
+	user3: 'bg-purple-300',
+	user4: 'bg-pink-300',
+	user5: 'bg-orange-300',
 };
 
 export const unused = {
-	userHighlight1: 'bg-blue-100',
-	userHighlight2: 'bg-green-100',
-	userHighlight3: 'bg-purple-100',
-	userHighlight4: 'bg-pink-100',
-	userHighlight5: 'bg-orange-100',
+	userHighlight1: 'bg-blue-200',
+	userHighlight2: 'bg-green-200',
+	userHighlight3: 'bg-purple-200',
+	userHighlight4: 'bg-pink-200',
+	userHighlight5: 'bg-orange-200',
 };
 
 const hashString = (str: string) => {
