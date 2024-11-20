@@ -15,7 +15,8 @@ import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
 import { SmilePlus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { HighlightData } from '../types/HighlightData';
-import { EmojiPicker } from './Reactions/EmojiPicker';
+import { withAuth } from '@/backend/auth/withAuth';
+import { EmojiPickerWrapper } from './Reactions/EmojiPickerWrapper';
 
 type NotesModalProps = {
 	initialNotes: NoteWithUserMeta[];
@@ -51,6 +52,7 @@ export const NotesModal = ({
 	const [newNote, setNewNote] = useState('');
 	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 	const [manuallyClosed, setManuallyClosed] = useState(true);
+	const authContext = useContext(AuthContext);
 
 	// Reset manuallyClosed when popover is opened
 	useEffect(() => {
@@ -58,6 +60,13 @@ export const NotesModal = ({
 			setManuallyClosed(false);
 		}
 	}, [isPopoverOpen]);
+
+	// Although the prop of setIsPopoverOpen is wrapped with withAuth, we need to wrap it again because of state race conditions
+	// setManuallyClosed will be set to false when the popover is opened, so it'll crash before the auth check has a chance to finish
+	const handlePopoverOpen = withAuth(() => {
+		setIsPopoverOpen(true);
+		setManuallyClosed(false);
+	}, authContext);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -85,8 +94,7 @@ export const NotesModal = ({
 				<div className='relative pr-3'>
 					<button
 						onClick={() => {
-							setManuallyClosed(false);
-							setIsPopoverOpen(true);
+							handlePopoverOpen();
 						}}
 						className='	relative -translate-x-full rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90 '
 					>
@@ -221,7 +229,7 @@ export const NotesModal = ({
 							? 'border-2 shadow-xl z-infinite+1 bg-popover-hover'
 							: 'z-infinite bg-popover'
 					}`}
-				onClick={() => setIsPopoverOpen(true)}
+				onClick={handlePopoverOpen}
 			>
 				<div className=' flex gap-2 justify-between items-center flex-row pt-0 text-sm border-b border-lining p-2'>
 					<div className='flex flex-row gap-1'>
@@ -245,8 +253,8 @@ export const NotesModal = ({
 								</button>
 							)
 						)}
-						<EmojiPicker
-							onEmojiSelect={onAddReaction}
+						<EmojiPickerWrapper
+							onEmojiClick={onAddReaction}
 							trigger={
 								<button className='hover:text-white flex justify-center items-center hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 									<SmilePlus className='w-4 h-4' />

@@ -7,8 +7,8 @@ import {
 	getSelectedText,
 } from '@/scripts/highlighter/utils/markerUtils';
 import { Highlighter, PenBoxIcon, SmilePlus, X } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
-import { EmojiPicker } from '../Reactions/EmojiPicker';
+import { useEffect, useRef, useState } from 'react';
+import { EmojiPickerWrapper } from '../Reactions/EmojiPickerWrapper';
 // import { useSWRConfig } from 'swr';
 
 const QUICK_REACTIONS = [
@@ -51,7 +51,7 @@ export const ActionBar = ({
 	};
 
 	const isClickInsideEmojiPicker = (event: MouseEvent) => {
-		return (event.target as Element)?.closest('em-emoji-picker') !== null;
+		return (event.target as Element)?.closest('.emoji-picker') !== null;
 	};
 
 	// Handle text selection
@@ -80,7 +80,6 @@ export const ActionBar = ({
 			);
 
 			if (!isInsideActionBar && !isClickInsideEmojiPicker(event)) {
-				console.log('clicked outside');
 				setMarkerPosition({ display: 'none' });
 			}
 		};
@@ -139,15 +138,14 @@ export const ActionBar = ({
 						</button>
 					))}
 
-					<EmojiPicker
-						onEmojiSelect={onAddReaction}
-						side='bottom'
-						align='center'
+					<EmojiPickerWrapper
+						onEmojiClick={onAddReaction}
 						trigger={
 							<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 								<SmilePlus className='w-full h-full' />
 							</button>
 						}
+						searchDisabled={true}
 					/>
 				</div>
 

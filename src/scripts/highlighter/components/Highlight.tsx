@@ -1,8 +1,10 @@
+import { withAuth } from '@/backend/auth/withAuth';
 import { updateNote } from '@/backend/notes/updateNote';
 import { createReaction } from '@/backend/reactions/createReaction';
 import { deleteReaction } from '@/backend/reactions/deleteReaction';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import useStateCallback from '@/lib/hooks/useStateCallback';
+import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 import { NotesModal } from '@/scripts/highlighter/components/NotesModal';
 import { HighlightData } from '@/scripts/highlighter/types/HighlightData';
 import {
@@ -10,7 +12,7 @@ import {
 	createHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/createHighlight';
 import { Reaction } from '@/utils/supabase/typeAliases';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 type HighlightContainer = {
@@ -64,6 +66,15 @@ export const Highlight = ({
 	const [reactions, setReactions] = useState<Reaction[]>(
 		highlightData.reactions || []
 	);
+
+	const authContext = useContext(AuthContext);
+
+	// wrapped version of setIsPopoverOpen
+	const setIsPopoverOpenAuth = (open: boolean, callback?: () => void) => {
+		withAuth(() => {
+			setIsPopoverOpen(open, callback);
+		}, authContext)();
+	};
 
 	useEffect(() => {
 		setReactions(highlightData.reactions || []);
@@ -210,7 +221,7 @@ export const Highlight = ({
 							if (!open) {
 								handleModalClose();
 							}
-							setIsPopoverOpen(open);
+							setIsPopoverOpenAuth(open);
 						}}
 					>
 						{index === 0 && (
@@ -218,9 +229,9 @@ export const Highlight = ({
 								<NotesModal
 									initialNotes={highlightData.notes || []}
 									highlight={highlightData}
-									onClose={() => setIsPopoverOpen(false)}
+									onClose={() => setIsPopoverOpenAuth(false)}
 									isPopoverOpen={isPopoverOpen}
-									setIsPopoverOpen={setIsPopoverOpen}
+									setIsPopoverOpen={setIsPopoverOpenAuth}
 									rating={rating}
 									setRating={setRating}
 									onDelete={onDelete}
@@ -247,7 +258,7 @@ export const Highlight = ({
 									onClick={(e) => {
 										e.preventDefault();
 										e.stopPropagation();
-										setIsPopoverOpen(true);
+										setIsPopoverOpenAuth(true);
 									}}
 									onMouseEnter={handleMouseEnter}
 									onMouseLeave={handleMouseLeave}
