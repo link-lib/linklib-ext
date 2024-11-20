@@ -56,6 +56,21 @@ export const ActionBar = ({
 		return (event.target as Element)?.closest('.emoji-picker') !== null;
 	};
 
+	// Handles if any event is in emoji picker including scroll and click events to prevent action bar from closing
+	const isInsideEmojiPicker = (event: Event): boolean => {
+		const target = event.target;
+		if (target instanceof Element) {
+			return target.closest('.emoji-picker') !== null;
+		}
+		if (target instanceof Document) {
+			return false;
+		}
+		if (target instanceof HTMLElement) {
+			return target.closest('.emoji-picker') !== null;
+		}
+		return false;
+	};
+
 	// Wrap all action bar handlers to close the action bar when they're done
 	const wrappedHandlers = {
 		handleHighlight: () => {
@@ -83,9 +98,10 @@ export const ActionBar = ({
 			}
 		};
 
-		// Add scroll event listener
-		const handleScroll = () => {
-			closeActionBar(true);
+		const handleScroll = (event: Event) => {
+			if (!isInsideEmojiPicker(event)) {
+				closeActionBar(true);
+			}
 		};
 
 		// Add selection change listener
