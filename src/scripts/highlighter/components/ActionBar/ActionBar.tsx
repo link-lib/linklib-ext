@@ -145,6 +145,7 @@ export const ActionBar = ({
 								<SmilePlus className='w-full h-full' />
 							</button>
 						}
+						searchDisabled={true}
 					/>
 				</div>
 

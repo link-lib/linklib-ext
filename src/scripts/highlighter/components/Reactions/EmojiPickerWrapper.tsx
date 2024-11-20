@@ -12,9 +12,11 @@ import EmojiPicker, {
 export const EmojiPickerWrapper = ({
 	onEmojiClick,
 	trigger,
+	searchDisabled = false,
 }: {
 	onEmojiClick: (emoji: string) => void;
 	trigger: React.ReactNode;
+	searchDisabled?: boolean;
 }) => {
 	const emojiDataObj: EmojiClickData = {
 		activeSkinTone: SkinTones.NEUTRAL,
@@ -65,6 +67,7 @@ export const EmojiPickerWrapper = ({
 					onEmojiClick={handleEmojiClick}
 					previewConfig={{ showPreview: false }}
 					width={300}
+					searchDisabled={searchDisabled}
 				/>
 			</PopoverContent>
 		</Popover>
