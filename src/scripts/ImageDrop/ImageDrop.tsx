@@ -18,8 +18,14 @@ import {
 	getLinkIcon,
 } from '@/scripts/ImageDrop/saveWebsite';
 import { removeLocalStorage } from '@/utils/supabase/client';
-import { EnterIcon, ExitIcon } from '@radix-ui/react-icons';
-import { ArrowLeftFromLine, FileText, Heart, ImageUp } from 'lucide-react';
+import {
+	ArrowLeftFromLine,
+	FileText,
+	Heart,
+	ImageUp,
+	LogIn,
+	LogOut,
+} from 'lucide-react';
 import {
 	FormEventHandler,
 	useContext,
@@ -318,100 +324,108 @@ const ImageDrop = () => {
 				</div>
 			) : isHovered || isSelectingFile ? (
 				<div className='bg-popover p-2 rounded-lg flex items-center gap-2'>
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger>
-								<Button
-									onClick={
-										userAuthenticated
-											? handleSignOut
-											: () =>
-													authModalContext?.setIsOpen(
-														true
-													)
-									}
-									variant='outline'
-								>
-									{userAuthenticated ? (
-										<ExitIcon className='w-4 h-4' />
-									) : (
-										<EnterIcon className='w-4 h-4' />
-									)}
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>
-									{userAuthenticated ? 'Sign out' : 'Sign In'}
-								</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
+					{userAuthenticated ? (
+						<>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger>
+										<Button
+											onClick={handleSignOut}
+											variant='outline'
+										>
+											<LogOut className='w-4 h-4' />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>
+											{userAuthenticated
+												? 'Sign out'
+												: 'Sign In'}
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger>
-								<Button
-									onClick={handleButtonClick}
-									variant='outline'
-								>
-									<ImageUp className='w-4 h-4' />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>
-									Drag and drop any image directly on bytey to
-									save to ByteBelli!
-								</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger>
+										<Button
+											onClick={handleButtonClick}
+											variant='outline'
+										>
+											<ImageUp className='w-4 h-4' />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>
+											Drag and drop any image directly on
+											bytey to save to ByteBelli!
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger>
-								<Button
-									onClick={handleSaveLink}
-									variant='outline'
-								>
-									{/* TODO: Fill heart if link is already saved */}
-									<Heart className='w-4 h-4' />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>Click to save the link to this site!</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger>
+										<Button
+											onClick={handleSaveLink}
+											variant='outline'
+										>
+											{/* TODO: Fill heart if link is already saved */}
+											<Heart className='w-4 h-4' />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>
+											Click to save the link to this site!
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger>
-								<Button onClick={saveContent} variant='outline'>
-									<FileText className='w-4 h-4' />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>Save a cleaned article!</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger>
+										<Button
+											onClick={saveContent}
+											variant='outline'
+										>
+											<FileText className='w-4 h-4' />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>Save a cleaned article!</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger>
-								<Button
-									onClick={handleOpenDrawer}
-									variant='outline'
-									disabled
-								>
-									<ArrowLeftFromLine className='w-4 h-4' />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>See all highlights on this page!</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger>
+										<Button
+											onClick={handleOpenDrawer}
+											variant='outline'
+											disabled
+										>
+											<ArrowLeftFromLine className='w-4 h-4' />
+										</Button>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>See all highlights on this page!</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
+						</>
+					) : (
+						<Button
+							onClick={() => authModalContext?.setIsOpen(true)}
+							className='gap-2 text-black'
+						>
+							<LogIn className='w-4 h-4' color='black' />
+							Sign in!
+						</Button>
+					)}
 
 					<form onSubmit={handleFileChange} className='hidden'>
 						<input type='file' ref={fileInputRef} />
@@ -419,12 +433,16 @@ const ImageDrop = () => {
 					</form>
 				</div>
 			) : (
-				<div className='rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
+				<div className='relative rounded-full w-10 h-10 flex items-center justify-center bg-popover'>
 					<img
 						src={chrome.runtime.getURL(iconImage)}
 						alt='Linklib Icon'
 						className='w-full h-full p-1 object-cover rounded-full'
 					/>
+					{/* Red Badge */}
+					{!userAuthenticated && (
+						<span className='absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-600 ring-1 ring-white animate-[bounce_1s_infinite]'></span>
+					)}
 				</div>
 			)}
 		</div>

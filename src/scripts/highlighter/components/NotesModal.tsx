@@ -15,6 +15,15 @@ import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
 import { SmilePlus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { HighlightData } from '../types/HighlightData';
+
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 import { withAuth } from '@/backend/auth/withAuth';
 import { EmojiPickerWrapper } from './Reactions/EmojiPickerWrapper';
 
@@ -52,6 +61,7 @@ export const NotesModal = ({
 	const [newNote, setNewNote] = useState('');
 	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 	const [manuallyClosed, setManuallyClosed] = useState(true);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const authContext = useContext(AuthContext);
 
 	// Reset manuallyClosed when popover is opened
@@ -74,7 +84,6 @@ export const NotesModal = ({
 			if (
 				modalRef.current &&
 				!modalRef.current.contains(event.target as Node) &&
-				!manuallyClosed && // Only close on click outside if not manually closed
 				(!emojiPicker || !emojiPicker.contains(event.target as Node))
 			) {
 				onClose();
@@ -85,7 +94,7 @@ export const NotesModal = ({
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [onClose, manuallyClosed]);
+	}, [onClose]);
 
 	// If manually closed and has notes, show the circular button
 	if (manuallyClosed && notes.length > 0) {
@@ -126,7 +135,16 @@ export const NotesModal = ({
 	};
 
 	const handleDelete = () => {
-		// setNote('');
+		if (notes.length > 0) {
+			setShowDeleteDialog(true);
+		} else {
+			onClose();
+			onDelete();
+		}
+	};
+
+	const handleConfirmDelete = () => {
+		setShowDeleteDialog(false);
 		onClose();
 		onDelete();
 	};
@@ -222,6 +240,34 @@ export const NotesModal = ({
 
 	return (
 		<ThreadContainer ref={modalRef}>
+			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+				<DialogContent className='z-infinite+1'>
+					<DialogHeader>
+						<DialogTitle>Delete Highlight</DialogTitle>
+						<DialogDescription>
+							This highlight has {notes.length}{' '}
+							{notes.length === 1 ? 'note' : 'notes'}. Are you
+							sure you want to delete it? This action cannot be
+							undone.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<Button
+							variant='outline'
+							onClick={() => setShowDeleteDialog(false)}
+						>
+							Cancel
+						</Button>
+						<Button
+							variant='destructive'
+							onClick={handleConfirmDelete}
+						>
+							Delete
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
 			<div
 				className={` rounded-lg ml-3 w-72 p-3 border cursor-pointer hover:bg-popover-hover relative text-start
 					${
@@ -321,7 +367,7 @@ export const NotesModal = ({
 					<>
 						<Textarea
 							ref={inputRef}
-							autoFocus={isPopoverOpen}
+							autoFocus={true}
 							onFocus={(e) => {
 								const length = e.currentTarget.value.length;
 								e.currentTarget.setSelectionRange(

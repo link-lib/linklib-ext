@@ -210,6 +210,13 @@ export const Highlight = ({
 		);
 	};
 
+	const handleHighlightClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		setIsPopoverOpen(true);
+	};
+
 	return (
 		<>
 			{highlightContainers.map(({ container, content }, index) =>
@@ -255,11 +262,7 @@ export const Highlight = ({
 								<span
 									highlight-id={`highlight-${highlightData.uuid}`}
 									className={`relative cursor-pointer bytebelli-highlight text-black ${highlightColor}`}
-									onClick={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										setIsPopoverOpenAuth(true);
-									}}
+									onClick={handleHighlightClick}
 									onMouseEnter={handleMouseEnter}
 									onMouseLeave={handleMouseLeave}
 								>
