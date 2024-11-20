@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 		const {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((event, session) => {
-			console.log(`Supabase auth event: ${event}`);
+			console.log(`Supabase auth event: ${session}`);
 			setSession(session);
 			setUser(session?.user ?? null);
 
@@ -44,6 +44,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 			switch (event) {
 				case 'INITIAL_SESSION':
 				case 'SIGNED_IN':
+					if (!session) {
+						break;
+					}
 					// Handle sign in (e.g., store user info in localStorage)
 					setUser(session.user);
 					setSession(session);
