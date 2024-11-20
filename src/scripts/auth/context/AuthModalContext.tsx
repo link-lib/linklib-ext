@@ -9,6 +9,7 @@ export interface AuthContextType {
 	setIsOpen: (isOpen: boolean) => void;
 	accessToken: string | null;
 	setSession: (session: Session | null) => void;
+	setUser: (user: User | null) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -36,7 +37,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 		const {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((event, session) => {
-			console.log(`Supabase auth event: ${session}`);
+			console.log(`Supabase auth event: ${event}`);
 			setSession(session);
 			setUser(session?.user ?? null);
 
@@ -84,6 +85,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 				setIsOpen,
 				accessToken,
 				setSession,
+				setUser,
 			}}
 		>
 			{children}
