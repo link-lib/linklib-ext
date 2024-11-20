@@ -10,8 +10,9 @@ import {
 	createHighlight,
 } from '@/scripts/highlighter/utils/createHighlight/createHighlight';
 import { Reaction } from '@/utils/supabase/typeAliases';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { createPortal } from 'react-dom';
+import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 
 type HighlightContainer = {
 	container: HTMLElement;
@@ -64,6 +65,8 @@ export const Highlight = ({
 	const [reactions, setReactions] = useState<Reaction[]>(
 		highlightData.reactions || []
 	);
+	const authModalContext = useContext(AuthContext);
+	const [userAuthenticated, setUserAuthenticated] = useState(false);
 
 	useEffect(() => {
 		setReactions(highlightData.reactions || []);
@@ -119,6 +122,16 @@ export const Highlight = ({
 			}
 		}
 	}, [highlightData.matching]);
+
+	// Add auth check effect
+	useEffect(() => {
+		const checkAuthStatus = async () => {
+			const authStatus = authModalContext.session;
+			setUserAuthenticated(!!authStatus);
+		};
+
+		checkAuthStatus();
+	}, [authModalContext.session]);
 
 	const handleModalClose = async () => {
 		try {
@@ -199,6 +212,18 @@ export const Highlight = ({
 		);
 	};
 
+	const handleHighlightClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (!userAuthenticated) {
+			authModalContext?.setIsOpen(true);
+			return;
+		}
+
+		setIsPopoverOpen(true);
+	};
+
 	return (
 		<>
 			{highlightContainers.map(({ container, content }, index) =>
@@ -244,11 +269,7 @@ export const Highlight = ({
 								<span
 									highlight-id={`highlight-${highlightData.uuid}`}
 									className={`relative cursor-pointer bytebelli-highlight text-black ${highlightColor}`}
-									onClick={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										setIsPopoverOpen(true);
-									}}
+									onClick={handleHighlightClick}
 									onMouseEnter={handleMouseEnter}
 									onMouseLeave={handleMouseLeave}
 								>
