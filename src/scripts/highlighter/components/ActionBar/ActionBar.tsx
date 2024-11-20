@@ -139,13 +139,16 @@ export const ActionBar = ({
 					))}
 
 					<EmojiPickerWrapper
+						searchDisabled
 						onEmojiClick={onAddReaction}
 						trigger={
-							<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
+							<button
+								className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
+								onMouseDown={(e) => e.preventDefault()}
+							>
 								<SmilePlus className='w-full h-full' />
 							</button>
 						}
-						searchDisabled={true}
 					/>
 				</div>
 
