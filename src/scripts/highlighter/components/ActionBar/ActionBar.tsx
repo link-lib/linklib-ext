@@ -45,13 +45,31 @@ export const ActionBar = ({
 	// const watchLaterTag = tags.find(
 	//  (tag) => tag.name.toLowerCase() === 'watch later'
 	// );
-	const handleClose = () => {
-		window.getSelection()?.empty();
+	const closeActionBar = (clearSelection: boolean = false) => {
+		if (clearSelection) {
+			window.getSelection()?.empty();
+		}
 		setMarkerPosition({ display: 'none' });
 	};
 
 	const isClickInsideEmojiPicker = (event: MouseEvent) => {
 		return (event.target as Element)?.closest('.emoji-picker') !== null;
+	};
+
+	// Wrap all action bar handlers to close the action bar when they're done
+	const wrappedHandlers = {
+		handleHighlight: () => {
+			handleHighlight();
+			closeActionBar(false);
+		},
+		handleAddNote: () => {
+			handleAddNote();
+			closeActionBar(true);
+		},
+		onAddReaction: async (emoji: string) => {
+			await onAddReaction(emoji);
+			closeActionBar(true);
+		},
 	};
 
 	// Handle text selection
@@ -61,14 +79,37 @@ export const ActionBar = ({
 			if (selectedText.length > 0) {
 				setMarkerPosition(getMarkerPosition());
 			} else if (!isClickInsideEmojiPicker(event)) {
-				setMarkerPosition({ display: 'none' });
+				closeActionBar(false);
+			}
+		};
+
+		// Add scroll event listener
+		const handleScroll = () => {
+			closeActionBar(true);
+		};
+
+		// Add selection change listener
+		const handleSelectionChangeEvent = () => {
+			const selectedText = getSelectedText();
+			if (!selectedText) {
+				closeActionBar(false);
 			}
 		};
 
 		document.addEventListener('mouseup', handleSelectionChange);
+		document.addEventListener('scroll', handleScroll, true); // true for capture phase
+		document.addEventListener(
+			'selectionchange',
+			handleSelectionChangeEvent
+		);
 
 		return () => {
 			document.removeEventListener('mouseup', handleSelectionChange);
+			document.removeEventListener('scroll', handleScroll, true);
+			document.removeEventListener(
+				'selectionchange',
+				handleSelectionChangeEvent
+			);
 		};
 	}, []);
 
@@ -103,13 +144,13 @@ export const ActionBar = ({
 		>
 			<button
 				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-				onClick={handleHighlight}
+				onClick={wrappedHandlers.handleHighlight}
 			>
 				<Highlighter className='w-full h-full' />
 			</button>
 			<button
 				className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-				onClick={handleAddNote}
+				onClick={wrappedHandlers.handleAddNote}
 			>
 				<PenBoxIcon className='w-full h-full' />
 			</button>
@@ -130,7 +171,7 @@ export const ActionBar = ({
 					{QUICK_REACTIONS.map(({ emoji, label }) => (
 						<button
 							key={label}
-							onClick={() => onAddReaction(emoji)}
+							onClick={() => wrappedHandlers.onAddReaction(emoji)}
 							className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150 flex items-center justify-center'
 							aria-label={`React with ${label}`}
 						>
@@ -139,7 +180,7 @@ export const ActionBar = ({
 					))}
 
 					<EmojiPickerWrapper
-						onEmojiClick={onAddReaction}
+						onEmojiClick={wrappedHandlers.onAddReaction}
 						trigger={
 							<button className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'>
 								<SmilePlus className='w-full h-full' />
@@ -153,7 +194,7 @@ export const ActionBar = ({
 				<div className='flex items-center gap-1'>
 					<button
 						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-						onClick={handleClose}
+						onClick={() => closeActionBar(true)}
 					>
 						<X className='w-full h-full' />
 					</button>
