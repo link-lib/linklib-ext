@@ -24,7 +24,9 @@ import onboardingExample from '@/assets/onboardingExample2.png';
 import pinExtension from '@/assets/pinExtension.png';
 
 export const AuthModal = () => {
-	const { isOpen, setIsOpen, setSession } = useContext(AuthContext) ?? {
+	const { isOpen, setIsOpen, setSession, setUser } = useContext(
+		AuthContext
+	) ?? {
 		isOpen: false,
 		setIsOpen: () => null,
 	};
@@ -54,10 +56,12 @@ export const AuthModal = () => {
 		formData.append('email', email);
 		formData.append('password', password);
 		logIn(formData)
-			.then(() => {
+			.then((data) => {
 				successToast();
 				console.log('Logged in Successfully');
 				setIsOpen(false);
+				setSession(data.session);
+				setUser(data.user);
 			})
 			.catch((e) => {
 				toast({
@@ -97,6 +101,7 @@ export const AuthModal = () => {
 				successToast();
 				setIsOpen(false);
 				setSession(session);
+				setUser(session.user);
 				const createdAt = new Date(session.user.created_at);
 				const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 				if (createdAt > fiveMinutesAgo) {
