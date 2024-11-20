@@ -66,8 +66,6 @@ export const Highlight = ({
 	const [reactions, setReactions] = useState<Reaction[]>(
 		highlightData.reactions || []
 	);
-	const authModalContext = useContext(AuthContext);
-	const [userAuthenticated, setUserAuthenticated] = useState(false);
 
 	const authContext = useContext(AuthContext);
 
@@ -132,16 +130,6 @@ export const Highlight = ({
 			}
 		}
 	}, [highlightData.matching]);
-
-	// Add auth check effect
-	useEffect(() => {
-		const checkAuthStatus = async () => {
-			const authStatus = authModalContext.session;
-			setUserAuthenticated(!!authStatus);
-		};
-
-		checkAuthStatus();
-	}, [authModalContext.session]);
 
 	const handleModalClose = async () => {
 		try {
@@ -225,11 +213,6 @@ export const Highlight = ({
 	const handleHighlightClick = (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-
-		if (!userAuthenticated) {
-			authModalContext?.setIsOpen(true);
-			return;
-		}
 
 		setIsPopoverOpen(true);
 	};
