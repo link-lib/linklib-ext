@@ -100,7 +100,7 @@ export const ActionBar = ({
 
 		const handleScroll = (event: Event) => {
 			if (!isInsideEmojiPicker(event)) {
-				closeActionBar(true);
+				closeActionBar(false);
 			}
 		};
 
