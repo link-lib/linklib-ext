@@ -196,6 +196,7 @@ export const NotesModal = ({
 				user_meta: {
 					name: user?.user_metadata?.name,
 					picture: user?.user_metadata?.picture,
+					email: user?.email,
 				},
 			};
 

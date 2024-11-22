@@ -41,7 +41,7 @@ const Comment: React.FC<CommentProps> = ({
 						</AvatarFallback>
 					</Avatar>
 					<div>
-						<div>{note.user_meta.name}</div>
+						<div>{note.user_meta.name ?? note.user_meta.email}</div>
 						<div className='text-xs text-muted-foreground'>
 							{formatTimeAgo(new Date(note.created_at))}
 						</div>

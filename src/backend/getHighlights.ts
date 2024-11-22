@@ -10,6 +10,7 @@ import {
 export type UserMetadata = {
 	name: string;
 	picture: string;
+	email: string;
 };
 
 export type HighlightWithNotesAndReactions = HighlightWithUserMeta & {
