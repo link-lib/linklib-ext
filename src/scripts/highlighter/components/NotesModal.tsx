@@ -85,7 +85,6 @@ export const NotesModal = ({
 		setIsPopoverOpen(true);
 	}, authContext);
 
-	// If manually closed and has notes, show the circular button
 	if (!isPopoverOpen && notes.length > 0) {
 		return (
 			<ThreadContainer ref={modalRef}>
