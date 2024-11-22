@@ -26,7 +26,7 @@ const ThreadContainer = forwardRef<HTMLDivElement, ThreadContainerProps>(
 		}, []);
 
 		return (
-			<div className='relative inline'>
+			<div className='relative inline bytebelli-internal'>
 				<div
 					ref={(node) => {
 						// Assign both refs
