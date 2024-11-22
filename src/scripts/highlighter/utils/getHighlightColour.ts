@@ -1,5 +1,5 @@
 const userColors = {
-	default: 'bg-yellow-300',
+	default: 'bg-yellow-400',
 	user1: 'bg-blue-300',
 	user2: 'bg-green-300',
 	user3: 'bg-purple-300',

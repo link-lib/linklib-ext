@@ -86,39 +86,35 @@ export const NotesModal = ({
 	}, authContext);
 
 	// If manually closed and has notes, show the circular button
-	if (!isPopoverOpen) {
-		if (notes.length > 0) {
-			return (
-				<ThreadContainer ref={modalRef}>
-					<div className='relative pr-3'>
-						<button
-							onClick={() => {
-								handlePopoverOpen();
-							}}
-							className=' relative -translate-x-full rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90 '
-						>
-							<Avatar className='w-8 h-8 hover:opacity-90 transition-opacity'>
-								<AvatarImage
-									src={notes[0]?.user_meta?.picture}
-								/>
-								<AvatarFallback>
-									{notes[0]?.user_meta?.name?.substring(
-										0,
-										2
-									) || 'U'}
-								</AvatarFallback>
-							</Avatar>
-							<span className='absolute -top-2 -right-2 bg-popover text-xs rounded-full w-5 h-5 flex items-center justify-center transition-colors group-hover:bg-popover/90'>
-								{notes.length}
-							</span>
-						</button>
-					</div>
-					<div className='w-72'></div>
-				</ThreadContainer>
-			);
-		} else {
-			return null;
-		}
+	if (!isPopoverOpen && notes.length > 0) {
+		return (
+			<ThreadContainer ref={modalRef}>
+				<div className='relative pr-3'>
+					<button
+						onClick={() => {
+							handlePopoverOpen();
+						}}
+						className=' relative -translate-x-full rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90 '
+					>
+						<Avatar className='w-8 h-8 hover:opacity-90 transition-opacity'>
+							<AvatarImage src={notes[0]?.user_meta?.picture} />
+							<AvatarFallback>
+								{notes[0]?.user_meta?.name?.substring(0, 2) ||
+									'U'}
+							</AvatarFallback>
+						</Avatar>
+						<span className='absolute -top-2 -right-2 bg-popover text-xs rounded-full w-5 h-5 flex items-center justify-center transition-colors group-hover:bg-popover/90'>
+							{notes.length}
+						</span>
+					</button>
+				</div>
+				<div className='w-72'></div>
+			</ThreadContainer>
+		);
+	}
+
+	if (!isPopoverOpen && notes.length === 0) {
+		return null;
 	}
 
 	const handleClose = () => {
