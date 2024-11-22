@@ -439,7 +439,8 @@ const HighlighterApp: React.FC = () => {
 					onDelete={() => handleDeleteHighlight(uuid)}
 					notesOpen={openNoteUuid === uuid}
 					highlightColor={getHighlightColour(
-						highlightData.user_meta.name
+						highlightData.user_meta.name ||
+							highlightData.user_meta.firstName
 					)}
 				/>
 			))}

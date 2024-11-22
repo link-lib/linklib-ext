@@ -45,7 +45,7 @@ function getSelectionWithNewlines(selection: Selection): string {
 
 export const cleanUrl = (url: string): string => {
 	// Check if it's a Substack URL
-	if (url.includes('substack.com')) {
+	if (url.includes('substack.com') || url.includes('avabear.xyz')) {
 		// Remove all parameters by taking everything before the '?'
 		const cleanedUrl = url.split('?')[0];
 		return cleanedUrl;

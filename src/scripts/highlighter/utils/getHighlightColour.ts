@@ -1,5 +1,5 @@
 const userColors = {
-	default: 'bg-yellow-300',
+	default: 'bg-yellow-400',
 	user1: 'bg-blue-300',
 	user2: 'bg-green-300',
 	user3: 'bg-purple-300',
@@ -8,6 +8,7 @@ const userColors = {
 };
 
 export const unused = {
+	default: 'bg-yellow-200',
 	userHighlight1: 'bg-blue-200',
 	userHighlight2: 'bg-green-200',
 	userHighlight3: 'bg-purple-200',
@@ -26,9 +27,13 @@ const hashString = (str: string) => {
 };
 
 export const getHighlightColour = (id: string) => {
-	const colorKeys = Object.keys(userColors).filter(
-		(key) => key !== 'default'
-	);
-	const colorIndex = Math.abs(hashString(id)) % colorKeys.length;
-	return userColors[colorKeys[colorIndex] as keyof typeof userColors];
+	try {
+		const colorKeys = Object.keys(userColors).filter(
+			(key) => key !== 'default'
+		);
+		const colorIndex = Math.abs(hashString(id)) % colorKeys.length;
+		return userColors[colorKeys[colorIndex] as keyof typeof userColors];
+	} catch (e) {
+		return userColors.default;
+	}
 };
