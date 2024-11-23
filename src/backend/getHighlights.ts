@@ -8,9 +8,10 @@ import {
 
 // Add a type for the user metadata JSON structure
 export type UserMetadata = {
-	name: string;
+	name?: string;
 	picture: string;
 	email: string;
+	firstName?: string;
 };
 
 export type HighlightWithNotesAndReactions = HighlightWithUserMeta & {

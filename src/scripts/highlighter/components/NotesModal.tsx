@@ -60,23 +60,8 @@ export const NotesModal = ({
 	const [notes, setNotes] = useState<NoteWithUserMeta[]>(initialNotes);
 	const [newNote, setNewNote] = useState('');
 	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
-	const [manuallyClosed, setManuallyClosed] = useState(true);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const authContext = useContext(AuthContext);
-
-	// Reset manuallyClosed when popover is opened
-	useEffect(() => {
-		if (isPopoverOpen) {
-			setManuallyClosed(false);
-		}
-	}, [isPopoverOpen]);
-
-	// Although the prop of setIsPopoverOpen is wrapped with withAuth, we need to wrap it again because of state race conditions
-	// setManuallyClosed will be set to false when the popover is opened, so it'll crash before the auth check has a chance to finish
-	const handlePopoverOpen = withAuth(() => {
-		setIsPopoverOpen(true);
-		setManuallyClosed(false);
-	}, authContext);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -96,8 +81,11 @@ export const NotesModal = ({
 		};
 	}, [onClose]);
 
-	// If manually closed and has notes, show the circular button
-	if (manuallyClosed && notes.length > 0) {
+	const handlePopoverOpen = withAuth(() => {
+		setIsPopoverOpen(true);
+	}, authContext);
+
+	if (!isPopoverOpen && notes.length > 0) {
 		return (
 			<ThreadContainer ref={modalRef}>
 				<div className='relative pr-3'>
@@ -105,7 +93,7 @@ export const NotesModal = ({
 						onClick={() => {
 							handlePopoverOpen();
 						}}
-						className='	relative -translate-x-full rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90 '
+						className=' relative -translate-x-full rounded-full bg-popover hover:bg-popover/90 transition-colors group text-primary group-hover:text-primary/90 '
 					>
 						<Avatar className='w-8 h-8 hover:opacity-90 transition-opacity'>
 							<AvatarImage src={notes[0]?.user_meta?.picture} />
@@ -124,8 +112,7 @@ export const NotesModal = ({
 		);
 	}
 
-	// If popover is closed and there are no notes, don't render anything
-	if (manuallyClosed || (!isPopoverOpen && notes.length === 0)) {
+	if (!isPopoverOpen && notes.length === 0) {
 		return null;
 	}
 
@@ -136,7 +123,6 @@ export const NotesModal = ({
 			highlight_id: highlight.uuid,
 			url: window.location.href,
 		});
-		setManuallyClosed(true);
 		onClose();
 	};
 
