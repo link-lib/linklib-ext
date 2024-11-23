@@ -66,6 +66,13 @@ export const NotesModal = ({
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			const emojiPicker = document.querySelector('.emoji-picker');
+			const dialog = document.querySelector('[role="dialog"]');
+
+			// Don't close if delete dialog is open
+			if (showDeleteDialog || dialog?.contains(event.target as Node)) {
+				return;
+			}
+
 			if (
 				modalRef.current &&
 				!modalRef.current.contains(event.target as Node) &&
@@ -79,7 +86,7 @@ export const NotesModal = ({
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [onClose]);
+	}, [onClose, showDeleteDialog]);
 
 	const handlePopoverOpen = withAuth(() => {
 		setIsPopoverOpen(true);
