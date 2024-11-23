@@ -8,7 +8,6 @@ import Comment, {
 import ThreadContainer from '@/scripts/highlighter/components/Comment/ThreadContainer';
 // import { StarRating } from '@/scripts/highlighter/components/Stars';
 import { deleteNote } from '@/backend/notes/deleteNote';
-import { updateNote } from '@/backend/notes/updateNote';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { NoteWithUserMeta, Reaction } from '@/utils/supabase/typeAliases';
@@ -16,6 +15,7 @@ import { SmilePlus, Trash2, X } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { HighlightData } from '../types/HighlightData';
 
+import { withAuth } from '@/backend/auth/withAuth';
 import {
 	Dialog,
 	DialogContent,
@@ -24,7 +24,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import { withAuth } from '@/backend/auth/withAuth';
+import posthog from 'posthog-js';
 import { EmojiPickerWrapper } from './Reactions/EmojiPickerWrapper';
 
 type NotesModalProps = {
@@ -130,12 +130,23 @@ export const NotesModal = ({
 	}
 
 	const handleClose = () => {
+		posthog.capture('close_notes_modal', {
+			note_count: notes.length,
+			reaction_count: reactions.length,
+			highlight_id: highlight.uuid,
+			url: window.location.href,
+		});
 		setManuallyClosed(true);
 		onClose();
 	};
 
 	const handleDelete = () => {
 		if (notes.length > 0) {
+			posthog.capture('open_delete_dialog', {
+				note_count: notes.length,
+				highlight_id: highlight.uuid,
+				url: window.location.href,
+			});
 			setShowDeleteDialog(true);
 		} else {
 			onClose();
@@ -144,6 +155,12 @@ export const NotesModal = ({
 	};
 
 	const handleConfirmDelete = () => {
+		posthog.capture('delete_highlight', {
+			note_count: notes.length,
+			reaction_count: reactions.length,
+			highlight_id: highlight.uuid,
+			url: window.location.href,
+		});
 		setShowDeleteDialog(false);
 		onClose();
 		onDelete();
@@ -169,10 +186,18 @@ export const NotesModal = ({
 	const handleReactionClick = async (emoji: string) => {
 		const reactionInfo = groupedReactions[emoji];
 		if (reactionInfo?.userReactionId) {
-			// User has already reacted - delete the reaction
+			posthog.capture('delete_reaction', {
+				emoji: emoji,
+				highlight_id: highlight.uuid,
+				url: window.location.href,
+			});
 			await onDeleteReaction(reactionInfo.userReactionId);
 		} else {
-			// User hasn't reacted - add new reaction
+			posthog.capture('add_reaction', {
+				emoji: emoji,
+				highlight_id: highlight.uuid,
+				url: window.location.href,
+			});
 			await onAddReaction(emoji);
 		}
 	};
@@ -181,6 +206,12 @@ export const NotesModal = ({
 		if (!newNote.trim()) return;
 
 		try {
+			posthog.capture('add_note', {
+				note_length: newNote.length,
+				highlight_id: highlight.uuid,
+				url: window.location.href,
+			});
+
 			await createNote({
 				noteValue: newNote,
 				itemId: highlight.uuid,
@@ -203,6 +234,11 @@ export const NotesModal = ({
 			setNotes([...notes, optimisticNote]);
 			setNewNote(''); // Clear the input
 		} catch (error) {
+			posthog.capture('note_error', {
+				error_type: 'create_note_failed',
+				highlight_id: highlight.uuid,
+				url: window.location.href,
+			});
 			console.error('Failed to create note:', error);
 			// Optionally add error handling UI here
 		}
@@ -213,9 +249,12 @@ export const NotesModal = ({
 		editValue: string
 	) => {
 		try {
-			await updateNote({
-				noteId: note.id,
-				noteValue: editValue,
+			posthog.capture('edit_note', {
+				note_id: note.id,
+				original_length: note.value.length,
+				new_length: editValue.length,
+				highlight_id: highlight.uuid,
+				url: window.location.href,
 			});
 			setEditingNoteId(null);
 			setNotes(

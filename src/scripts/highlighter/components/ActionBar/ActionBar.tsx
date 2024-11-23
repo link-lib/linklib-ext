@@ -10,6 +10,7 @@ import { Highlighter, PenBoxIcon, SmilePlus, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { EmojiPickerWrapper } from '../Reactions/EmojiPickerWrapper';
 // import { useSWRConfig } from 'swr';
+import posthog from 'posthog-js';
 
 const QUICK_REACTIONS = [
 	{ emoji: '❤️', label: 'heart' },
@@ -74,14 +75,27 @@ export const ActionBar = ({
 	// Wrap all action bar handlers to close the action bar when they're done
 	const wrappedHandlers = {
 		handleHighlight: () => {
+			posthog.capture('highlight_text', {
+				text_length: getSelectedText().length,
+				url: window.location.href,
+			});
 			handleHighlight();
 			closeActionBar(false);
 		},
 		handleAddNote: () => {
+			posthog.capture('add_note', {
+				text_length: getSelectedText().length,
+				url: window.location.href,
+			});
 			handleAddNote();
 			closeActionBar(true);
 		},
 		onAddReaction: async (emoji: string) => {
+			posthog.capture('add_reaction', {
+				emoji: emoji,
+				text_length: getSelectedText().length,
+				url: window.location.href,
+			});
 			await onAddReaction(emoji);
 			closeActionBar(true);
 		},
@@ -187,7 +201,15 @@ export const ActionBar = ({
 					{QUICK_REACTIONS.map(({ emoji, label }) => (
 						<button
 							key={label}
-							onClick={() => wrappedHandlers.onAddReaction(emoji)}
+							onClick={() => {
+								posthog.capture('quick_reaction', {
+									emoji: emoji,
+									label: label,
+									text_length: getSelectedText().length,
+									url: window.location.href,
+								});
+								wrappedHandlers.onAddReaction(emoji);
+							}}
 							className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150 flex items-center justify-center'
 							aria-label={`React with ${label}`}
 						>
@@ -213,7 +235,13 @@ export const ActionBar = ({
 				<div className='flex items-center gap-1'>
 					<button
 						className='hover:text-white hover:border-white border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-						onClick={() => closeActionBar(true)}
+						onClick={() => {
+							posthog.capture('close_action_bar', {
+								text_length: getSelectedText().length,
+								url: window.location.href,
+							});
+							closeActionBar(true);
+						}}
 					>
 						<X className='w-full h-full' />
 					</button>

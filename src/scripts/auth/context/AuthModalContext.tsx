@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
+import posthog from 'posthog-js';
 
 export interface AuthContextType {
 	session: Session | null;
@@ -31,6 +32,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 		supabase.auth.getSession().then(({ data: { session } }) => {
 			setSession(session);
 			setUser(session?.user ?? null);
+
+			// Identify user in PostHog if session exists
+			if (session?.user) {
+				posthog.identify(session.user.id, {
+					email: session.user.email,
+					name: session.user.user_metadata.name,
+					firstName: session.user.user_metadata.firstName,
+					avatar: session.user.user_metadata.picture,
+					platform: 'extension',
+				});
+			}
 		});
 
 		// Listen for auth changes
