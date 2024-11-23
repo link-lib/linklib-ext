@@ -26,6 +26,13 @@ const Comment: React.FC<CommentProps> = ({
 	const [editValue, setEditValue] = useState(note.value);
 	const [isHovering, setIsHovering] = useState(false);
 
+	const handleSaveEdit = () => {
+		if (editValue.trim() !== note.value) {
+			onEdit(note, editValue);
+		}
+		setIsEditing(false);
+	};
+
 	return (
 		<div
 			className='p-3 text-white text-sm'
@@ -72,6 +79,12 @@ const Comment: React.FC<CommentProps> = ({
 						value={editValue}
 						onChange={(e) => setEditValue(e.target.value)}
 						className='min-h-[100px] resize-none'
+						onKeyDown={(e) => {
+							if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+								e.preventDefault();
+								handleSaveEdit();
+							}
+						}}
 					/>
 					<div className='flex gap-1 justify-end'>
 						<button
@@ -82,7 +95,7 @@ const Comment: React.FC<CommentProps> = ({
 						</button>
 						<button
 							className='hover:text-white  hover:border-white flex justify-center align-center items-center border border-transparent cursor-pointer w-6 h-6 rounded-lg p-1 transition-colors duration-150'
-							onClick={() => onEdit(note, editValue)}
+							onClick={handleSaveEdit}
 						>
 							<Check className='h-4 w-4' />
 						</button>

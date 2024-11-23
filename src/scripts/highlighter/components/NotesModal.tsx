@@ -85,6 +85,19 @@ export const NotesModal = ({
 		setIsPopoverOpen(true);
 	}, authContext);
 
+	useEffect(() => {
+		if (isPopoverOpen && inputRef.current) {
+			const timeoutId = setTimeout(() => {
+				inputRef.current?.focus();
+				// Position cursor at end of text
+				const length = inputRef.current.value.length;
+				inputRef.current.setSelectionRange(length, length);
+			}, 500);
+
+			return () => clearTimeout(timeoutId);
+		}
+	}, [isPopoverOpen]);
+
 	if (!isPopoverOpen && notes.length > 0) {
 		return (
 			<ThreadContainer ref={modalRef}>

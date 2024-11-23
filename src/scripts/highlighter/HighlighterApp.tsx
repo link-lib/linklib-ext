@@ -165,11 +165,11 @@ const HighlighterApp: React.FC = () => {
 						);
 
 						// Save the merged highlight to the backend
-						await saveHighlight(mergedHighlight);
 						// Perform additional actions if provided
 						if (additionalActions) {
 							additionalActions(mergedHighlight);
 						}
+						await saveHighlight(mergedHighlight);
 						toast({
 							title: 'Successfully updated and merged highlight.',
 						});
@@ -195,7 +195,6 @@ const HighlighterApp: React.FC = () => {
 						userSelection.empty();
 					}
 				} else {
-					// No overlap detected; proceed as usual
 					setHighlights((prevHighlights) => ({
 						...prevHighlights,
 						[highlightData.uuid]: highlightData,
@@ -203,7 +202,6 @@ const HighlighterApp: React.FC = () => {
 
 					try {
 						await saveHighlight(highlightData);
-						// Perform additional actions if provided
 						if (additionalActions) {
 							additionalActions(highlightData);
 						}
@@ -439,8 +437,7 @@ const HighlighterApp: React.FC = () => {
 					onDelete={() => handleDeleteHighlight(uuid)}
 					notesOpen={openNoteUuid === uuid}
 					highlightColor={getHighlightColour(
-						highlightData.user_meta.name ||
-							highlightData.user_meta.firstName
+						highlightData.user_meta.name
 					)}
 				/>
 			))}
