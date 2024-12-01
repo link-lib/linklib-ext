@@ -1,0 +1,19 @@
+name: Schedule Cleanup Notifications
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Runs daily at 2:00 AM UTC
+  push:
+    branches:
+      - periodic_notification_cleanup
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Supabase Edge Function
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -X POST https://sjnxdkoqfwuhjxxatbqt.supabase.co/functions/v1/cleanupNotifications \
+          -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"
