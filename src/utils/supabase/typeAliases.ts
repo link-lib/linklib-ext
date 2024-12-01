@@ -13,3 +13,5 @@ export type Reaction = Database['public']['Tables']['reactions']['Row'];
 export type ReactionWithUserMeta = Reaction & {
 	user_meta: UserMetadata;
 };
+
+export type Notification = Database['public']['Tables']['notifications']['Row'];

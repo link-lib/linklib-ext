@@ -332,6 +332,33 @@ export type Database = {
           }
         ];
       };
+      notifications: {
+        Row: {
+          created_at: string;
+          id: number;
+          is_read: boolean | null;
+          related_id: string;
+          related_table: Database['public']['Enums']['notifiable_item_table'];
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          is_read?: boolean | null;
+          related_id: string;
+          related_table: Database['public']['Enums']['notifiable_item_table'];
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          is_read?: boolean | null;
+          related_id?: string;
+          related_table?: Database['public']['Enums']['notifiable_item_table'];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       reactions: {
         Row: {
           created_at: string;
@@ -577,6 +604,20 @@ export type Database = {
       };
     };
     Functions: {
+      fetch_user_notifications: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          notification_id: number;
+          user_id: string;
+          related_table: Database['public']['Enums']['notifiable_item_table'];
+          related_id: string;
+          is_read: boolean;
+          created_at: string;
+          related_data: Json;
+        }[];
+      };
       get_list_for_tags_sql: {
         Args: {
           sql: string;
@@ -673,6 +714,7 @@ export type Database = {
         | 'REDDIT'
         | 'PINTEREST'
         | 'LOOM';
+      notifiable_item_table: 'notes' | 'reactions' | 'contentitem';
     };
     CompositeTypes: {
       [_ in never]: never;
