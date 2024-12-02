@@ -14,9 +14,11 @@ import {
 	Mail,
 	NotebookPen,
 	Settings,
+	Check,
 } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
 import './App.css';
+import { markNotificationsAsRead } from '@/backend/notifications/markNotificationsAsRead';
 
 function App() {
 	const auth = useContext(AuthContext);
@@ -87,8 +89,8 @@ function App() {
 
 	const NotificationsContent = () => (
 		<>
-			<div className='flex items-center justify-between'>
-				<div className='flex items-center p-4 pb-0'>
+			<div className='flex items-center justify-between p-4 pb-0'>
+				<div className='flex items-center '>
 					<img
 						src={chrome.runtime.getURL(iconImage)}
 						alt='Linklib Icon'
@@ -98,13 +100,37 @@ function App() {
 						Notifications
 					</h1>
 				</div>
-				<Button
-					variant='outline'
-					size='sm'
-					onClick={() => setShowSettings(true)}
-				>
-					<Settings className='h-4 w-4' />
-				</Button>
+				<div className='flex gap-2'>
+					{notifications.length > 0 && (
+						<Button
+							variant='ghost'
+							size='sm'
+							onClick={async () => {
+								await markNotificationsAsRead(
+									notifications.map((n) => n.id)
+								);
+								setNotifications(
+									notifications.map((n) => ({
+										...n,
+										is_read: true,
+									}))
+								);
+								setUnreadCount(0);
+							}}
+							className='text-xs text-muted-foreground hover:text-foreground'
+						>
+							<Check className='h-3 w-3 mr-1' />
+							Mark all as read
+						</Button>
+					)}
+					<Button
+						variant='outline'
+						size='sm'
+						onClick={() => setShowSettings(true)}
+					>
+						<Settings className='h-4 w-4' />
+					</Button>
+				</div>
 			</div>
 			<div className='flex flex-col divide-y divide-border'>
 				{notifications.length > 0 ? (

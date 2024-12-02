@@ -516,7 +516,7 @@ export const NotesModal = ({
 									);
 								}}
 								className='text-primary min-h-[60px] max-h-[200px] resize-none'
-								placeholder='thoughts? Use @ to mention someone'
+								placeholder='thoughts?'
 								value={newNote}
 								onChange={(e) => {
 									setNewNote(e.target.value);
