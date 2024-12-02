@@ -1,3 +1,4 @@
+import { markNotificationsAsRead } from '@/backend/notifications/markNotificationsAsRead';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatTimeAgo } from '@/scripts/highlighter/components/Comment/Comment';
 import { Notification } from '@/utils/supabase/typeAliases';
@@ -17,8 +18,8 @@ export const NotificationItem = ({
 
 	const handleClick = async () => {
 		if (!notification.read) {
-			await markNotificationsAsRead([notification.id]);
-			onMarkAsRead?.(notification.id);
+			await markNotificationsAsRead([notification.notification_id]);
+			onMarkAsRead?.(notification.notification_id);
 		}
 	};
 

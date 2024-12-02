@@ -11,23 +11,64 @@ import {
 	Linkedin,
 	Mail,
 	NotebookPen,
+	Settings,
 } from 'lucide-react';
 import { useState } from 'react';
 import './App.css';
+import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
 
 function App() {
+	const [showSettings, setShowSettings] = useState(false);
+	const [notifications, setNotifications] = useState([]); // Add state for notifications
+	const [unreadCount, setUnreadCount] = useState(0);
 	const [showContact, setShowContact] = useState(false);
+
+	const NotificationsContent = () => (
+		<>
+			<div className='flex items-center justify-between'>
+				<div className='flex items-center'>
+					<img
+						src={chrome.runtime.getURL(iconImage)}
+						alt='Linklib Icon'
+						className='w-6 h-6 mr-2 object-cover rounded-full'
+					/>
+					<h1 className='font-bold text-lg'>Notifications</h1>
+				</div>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => setShowSettings(true)}
+				>
+					<Settings className='h-4 w-4' />
+				</Button>
+			</div>
+			<div className='flex flex-col divide-y divide-border'>
+				{notifications.length > 0 ? (
+					notifications.map((notification) => (
+						<NotificationItem
+							key={notification.id}
+							notification={notification}
+							onMarkAsRead={(id) => {
+								setNotifications(
+									notifications.map((n) =>
+										n.id === id ? { ...n, read: true } : n
+									)
+								);
+								setUnreadCount(Math.max(0, unreadCount - 1));
+							}}
+						/>
+					))
+				) : (
+					<div className='p-3 text-center text-muted-foreground'>
+						No notifications
+					</div>
+				)}
+			</div>
+		</>
+	);
 
 	const MainContent = () => (
 		<>
-			<div className='flex items-center align-middle justify-center'>
-				<img
-					src={chrome.runtime.getURL(iconImage)}
-					alt='Linklib Icon'
-					className='w-8 h-8 p-1 object-cover rounded-full'
-				/>
-				<span className='font-bold text-lg pl-2'>Bytebelli</span>
-			</div>
 			{/* <Button
 				variant='outline'
 				onClick={async () => {
@@ -137,11 +178,40 @@ function App() {
 		</>
 	);
 
+	const SettingsContent = () => (
+		<>
+			<div className='flex items-center justify-between'>
+				<div className='flex items-center'>
+					<img
+						src={chrome.runtime.getURL(iconImage)}
+						alt='Linklib Icon'
+						className='w-6 h-6 mr-2 object-cover rounded-full'
+					/>
+					<h1 className='font-bold text-lg'>Settings</h1>
+				</div>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => setShowSettings(false)}
+				>
+					<ArrowLeft className='h-4 w-4' />
+				</Button>
+			</div>
+
+			{/* Your existing MainContent and ContactContent components */}
+			{showContact ? <ContactContent /> : <MainContent />}
+		</>
+	);
+
 	return (
 		<div className='linklib-ext w-60'>
 			<div className='bytebelli-internal text-primary'>
 				<div className='p-4 flex flex-col space-y-4 bg-popover'>
-					{showContact ? <ContactContent /> : <MainContent />}
+					{showSettings ? (
+						<SettingsContent />
+					) : (
+						<NotificationsContent />
+					)}
 				</div>
 			</div>
 		</div>
