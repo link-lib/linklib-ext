@@ -45,7 +45,9 @@ const Comment: React.FC<CommentProps> = ({
 						<AvatarImage src={note.user_meta.picture} />
 						<AvatarFallback>
 							{(
-								note.user_meta.name ?? note.user_meta.firstName
+								note.user_meta.name ??
+								note.user_meta.firstName ??
+								note.user_meta.email
 							).substring(0, 2)}
 						</AvatarFallback>
 					</Avatar>
