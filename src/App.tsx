@@ -272,7 +272,7 @@ function App() {
 
 	const SettingsContent = () => (
 		<>
-			<div className='flex items-center justify-between p-4'>
+			<div className='flex items-center justify-between'>
 				<div className='flex items-center'>
 					<img
 						src={chrome.runtime.getURL(iconImage)}
@@ -300,7 +300,9 @@ function App() {
 			<div className=' text-primary'>
 				<div className='flex flex-col space-y-4 bg-popover'>
 					{showSettings ? (
-						<SettingsContent />
+						<div className='p-4 flex flex-col space-y-4'>
+							<SettingsContent />
+						</div>
 					) : (
 						<NotificationsContent />
 					)}
