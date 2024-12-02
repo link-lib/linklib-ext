@@ -2,10 +2,17 @@ import iconImage from '@/assets/icon.png';
 import iconEating from '@/assets/iconEating.png';
 import { signOut } from '@/backend/auth/actions';
 import { withAuth } from '@/backend/auth/withAuth';
+import { getUserNotifications } from '@/backend/notifications/getUserNotifications';
 import { saveImage } from '@/backend/saveImage';
+import { saveLink } from '@/backend/saveLink';
 import { getWebsiteContent } from '@/backend/websiteContent/getWebsiteContent';
 import { saveWebsiteContent } from '@/backend/websiteContent/saveWebsiteContent';
 import { Button } from '@/components/ui/button';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
 import {
 	Tooltip,
 	TooltipContent,
@@ -18,13 +25,15 @@ import {
 	getLinkIcon,
 } from '@/scripts/ImageDrop/saveWebsite';
 import { removeLocalStorage } from '@/utils/supabase/client';
+import { Notification } from '@/utils/supabase/typeAliases';
 import {
-	ArrowLeftFromLine,
+	Bell,
 	FileText,
 	Heart,
 	ImageUp,
 	LogIn,
 	LogOut,
+	Check,
 } from 'lucide-react';
 import {
 	FormEventHandler,
@@ -34,7 +43,8 @@ import {
 	useState,
 } from 'react';
 import { AuthContext } from '../auth/context/AuthModalContext';
-import { saveLink } from '@/backend/saveLink';
+import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
+import { markNotificationsAsRead } from '@/backend/notifications/markNotificationsAsRead';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -44,6 +54,8 @@ const ImageDrop = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const authModalContext = useContext(AuthContext);
 	const { toast } = useToast();
+	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const [unreadCount, setUnreadCount] = useState(0);
 
 	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
@@ -172,6 +184,29 @@ const ImageDrop = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (userAuthenticated && authModalContext.user?.id) {
+			getUserNotifications(authModalContext.user.id)
+				.then((data) => {
+					setNotifications(data);
+					const unreads = data.filter((n) => !n.is_read).length;
+					setUnreadCount(unreads);
+					if (unreads > 0) {
+						chrome.runtime.sendMessage({
+							type: 'UPDATE_BADGE',
+							count: unreads,
+						});
+					} else {
+						chrome.runtime.sendMessage({
+							type: 'UPDATE_BADGE',
+							count: 0,
+						});
+					}
+				})
+				.catch(console.error);
+		}
+	}, [userAuthenticated, authModalContext.user?.id]);
+
 	const handleMouseEnter = () => {
 		setIsHovered(true);
 	};
@@ -248,8 +283,6 @@ const ImageDrop = () => {
 		}
 	};
 
-	const handleOpenDrawer = () => {};
-
 	const saveContent = async () => {
 		const currentUrl = window.location.href;
 
@@ -304,10 +337,23 @@ const ImageDrop = () => {
 		}
 	};
 
+	const handleMarkAllAsRead = async () => {
+		const unreadNotifications = notifications.filter((n) => !n.is_read);
+		if (unreadNotifications.length > 0) {
+			await markNotificationsAsRead(
+				unreadNotifications.map((n) => n.notification_id)
+			);
+			setNotifications(
+				notifications.map((n) => ({ ...n, is_read: true }))
+			);
+			setUnreadCount(0);
+		}
+	};
+
 	return (
 		<div
 			id='dropContainer'
-			className={`fixed right-1 z-50 image-drop w-fit transition-all duration-300 ${
+			className={`bytebelli-internal fixed right-1 z-50 image-drop w-fit transition-all duration-300 ${
 				isIconUp ? 'bottom-20' : 'bottom-1'
 			}`}
 			onMouseEnter={handleMouseEnter}
@@ -399,23 +445,85 @@ const ImageDrop = () => {
 									</TooltipContent>
 								</Tooltip>
 							</TooltipProvider>
-
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger>
-										<Button
-											onClick={handleOpenDrawer}
-											variant='outline'
-											disabled
-										>
-											<ArrowLeftFromLine className='w-4 h-4' />
-										</Button>
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>See all highlights on this page!</p>
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
+							<Popover>
+								<PopoverTrigger asChild>
+									<Button
+										variant='outline'
+										className='relative'
+									>
+										<div className='relative'>
+											<Bell className='w-4 h-4' />
+											{unreadCount > 0 && (
+												<span className='absolute -right-0 top-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center translate-x-1/2 -translate-y-1/2'>
+													{unreadCount}
+												</span>
+											)}
+										</div>
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent
+									className='w-[500px] p-0 max-h-[80vh] overflow-y-scroll'
+									align='end'
+									side='top'
+								>
+									{notifications.length > 0 && (
+										<div className='p-2 flex justify-between items-center border-b font-mono'>
+											<span className='font-bold'>
+												Notifications
+											</span>
+											<Button
+												variant='ghost'
+												size='sm'
+												onClick={handleMarkAllAsRead}
+												className='text-xs text-muted-foreground hover:text-foreground'
+											>
+												<Check className='h-3 w-3 mr-1' />
+												Mark all as read
+											</Button>
+										</div>
+									)}
+									<div className='flex flex-col divide-y divide-border'>
+										{notifications.length > 0 ? (
+											notifications.map(
+												(notification) => (
+													<NotificationItem
+														key={notification.id}
+														notification={
+															notification
+														}
+														onMarkAsRead={(id) => {
+															setNotifications(
+																notifications.map(
+																	(n) =>
+																		n.id ===
+																		id
+																			? {
+																					...n,
+																					is_read:
+																						true,
+																			  }
+																			: n
+																)
+															);
+															setUnreadCount(
+																Math.max(
+																	0,
+																	unreadCount -
+																		1
+																)
+															);
+														}}
+													/>
+												)
+											)
+										) : (
+											<div className='p-3 text-center text-muted-foreground'>
+												No notifications
+											</div>
+										)}
+									</div>
+								</PopoverContent>
+							</Popover>
 						</>
 					) : (
 						<Button
@@ -440,8 +548,14 @@ const ImageDrop = () => {
 						className='w-full h-full p-1 object-cover rounded-full'
 					/>
 					{/* Red Badge */}
-					{!userAuthenticated && (
+					{!userAuthenticated ? (
 						<span className='absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-600 ring-1 ring-white animate-[bounce_1s_infinite]'></span>
+					) : (
+						unreadCount > 0 && (
+							<span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center'>
+								{unreadCount}
+							</span>
+						)
 					)}
 				</div>
 			)}

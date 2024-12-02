@@ -68,3 +68,24 @@ chrome.commands.onCommand.addListener((command) => {
 		);
 	}
 });
+
+// Function to update badge
+function updateBadge(count: number) {
+	if (count > 0) {
+		chrome.action.setBadgeText({
+			text: count.toString(),
+		});
+		chrome.action.setBadgeBackgroundColor({
+			color: '#EF4444',
+		});
+	} else {
+		chrome.action.setBadgeText({ text: '' });
+	}
+}
+
+// Listen for badge update messages from content scripts
+chrome.runtime.onMessage.addListener((message) => {
+	if (message.type === 'UPDATE_BADGE') {
+		updateBadge(message.count);
+	}
+});
