@@ -145,7 +145,7 @@ export const VoiceComment: React.FC<{ highlightId: string }> = ({
 	);
 };
 
-function formatTimeAgo(date: Date): string {
+export function formatTimeAgo(date: Date): string {
 	const now = new Date();
 	const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 

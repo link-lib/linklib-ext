@@ -417,16 +417,22 @@ const ImageDrop = () => {
 										variant='outline'
 										className='relative'
 									>
-										<Bell className='w-4 h-4' />
-										{unreadCount > 0 && (
-											<span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center'>
-												{unreadCount}
-											</span>
-										)}
+										<div className='relative'>
+											<Bell className='w-4 h-4' />
+											{unreadCount > 0 && (
+												<span className='absolute -right-0 top-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center translate-x-1/2 -translate-y-1/2'>
+													{unreadCount}
+												</span>
+											)}
+										</div>
 									</Button>
 								</PopoverTrigger>
-								<PopoverContent className='w-80 p-0'>
-									<div className='max-h-[300px] overflow-y-auto'>
+								<PopoverContent
+									className='w-96 p-0'
+									align='end'
+									side='top'
+								>
+									<div className='flex flex-col divide-y divide-border'>
 										{notifications.length > 0 ? (
 											notifications.map(
 												(notification) => (
@@ -470,8 +476,14 @@ const ImageDrop = () => {
 						className='w-full h-full p-1 object-cover rounded-full'
 					/>
 					{/* Red Badge */}
-					{!userAuthenticated && (
+					{!userAuthenticated ? (
 						<span className='absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-600 ring-1 ring-white animate-[bounce_1s_infinite]'></span>
+					) : (
+						unreadCount > 0 && (
+							<span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center'>
+								{unreadCount}
+							</span>
+						)
 					)}
 				</div>
 			)}
