@@ -26,7 +26,15 @@ import {
 } from '@/scripts/ImageDrop/saveWebsite';
 import { removeLocalStorage } from '@/utils/supabase/client';
 import { Notification } from '@/utils/supabase/typeAliases';
-import { Bell, FileText, Heart, ImageUp, LogIn, LogOut } from 'lucide-react';
+import {
+	Bell,
+	FileText,
+	Heart,
+	ImageUp,
+	LogIn,
+	LogOut,
+	Check,
+} from 'lucide-react';
 import {
 	FormEventHandler,
 	useContext,
@@ -36,6 +44,7 @@ import {
 } from 'react';
 import { AuthContext } from '../auth/context/AuthModalContext';
 import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
+import { markNotificationsAsRead } from '@/backend/notifications/markNotificationsAsRead';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -316,6 +325,15 @@ const ImageDrop = () => {
 		}
 	};
 
+	const handleMarkAllAsRead = async () => {
+		const unreadNotifications = notifications.filter((n) => !n.read);
+		if (unreadNotifications.length > 0) {
+			await markNotificationsAsRead(unreadNotifications.map((n) => n.id));
+			setNotifications(notifications.map((n) => ({ ...n, read: true })));
+			setUnreadCount(0);
+		}
+	};
+
 	return (
 		<div
 			id='dropContainer'
@@ -432,6 +450,19 @@ const ImageDrop = () => {
 									align='end'
 									side='top'
 								>
+									{notifications.length > 0 && (
+										<div className='p-2 flex justify-end border-b'>
+											<Button
+												variant='ghost'
+												size='sm'
+												onClick={handleMarkAllAsRead}
+												className='text-xs text-muted-foreground hover:text-foreground'
+											>
+												<Check className='h-3 w-3 mr-1' />
+												Mark all as read
+											</Button>
+										</div>
+									)}
 									<div className='flex flex-col divide-y divide-border'>
 										{notifications.length > 0 ? (
 											notifications.map(
@@ -441,6 +472,27 @@ const ImageDrop = () => {
 														notification={
 															notification
 														}
+														onMarkAsRead={(id) => {
+															setNotifications(
+																notifications.map(
+																	(n) =>
+																		n.id ===
+																		id
+																			? {
+																					...n,
+																					read: true,
+																			  }
+																			: n
+																)
+															);
+															setUnreadCount(
+																Math.max(
+																	0,
+																	unreadCount -
+																		1
+																)
+															);
+														}}
 													/>
 												)
 											)
