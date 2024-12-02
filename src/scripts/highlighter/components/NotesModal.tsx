@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dialog';
 import posthog from 'posthog-js';
 import { EmojiPickerWrapper } from './Reactions/EmojiPickerWrapper';
+import { createClient } from '@/utils/supabase/client';
 
 type NotesModalProps = {
 	initialNotes: NoteWithUserMeta[];
@@ -41,6 +42,53 @@ type NotesModalProps = {
 	highlight: HighlightData;
 };
 
+type MentionConfirmDialogProps = {
+	isOpen: boolean;
+	onClose: () => void;
+	mentions: string[];
+	onConfirm: () => Promise<void>;
+};
+
+const MentionConfirmDialog = ({
+	isOpen,
+	onClose,
+	mentions,
+	onConfirm,
+}: MentionConfirmDialogProps) => {
+	return (
+		<Dialog open={isOpen} onOpenChange={onClose}>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Send Mention Notifications</DialogTitle>
+					<DialogDescription>
+						This note mentions the following email(s). Would you
+						like to notify them?
+						<ul className='mt-2 space-y-1'>
+							{mentions.map((email) => (
+								<li key={email} className='text-blue-500'>
+									{email}
+								</li>
+							))}
+						</ul>
+					</DialogDescription>
+				</DialogHeader>
+				<DialogFooter className='mt-4'>
+					<Button
+						variant='outline'
+						onClick={() => {
+							onClose();
+							onConfirm();
+						}}
+					>
+						Save without notifying
+					</Button>
+					<Button onClick={onConfirm}>Save and notify</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+};
+
 export const NotesModal = ({
 	initialNotes,
 	onClose,
@@ -54,6 +102,7 @@ export const NotesModal = ({
 	setIsPopoverOpen,
 	highlight,
 }: NotesModalProps) => {
+	const supabase = createClient();
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const modalRef = useRef<HTMLDivElement>(null);
 	const { user } = useContext(AuthContext);
@@ -62,6 +111,8 @@ export const NotesModal = ({
 	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const authContext = useContext(AuthContext);
+	const [showMentionConfirm, setShowMentionConfirm] = useState(false);
+	const [pendingNote, setPendingNote] = useState<string | null>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -208,8 +259,23 @@ export const NotesModal = ({
 		}
 	};
 
-	const handleAddNote = async () => {
+	const extractMentions = (text: string): string[] => {
+		const emailRegex =
+			/@([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g;
+		const matches = text.match(emailRegex);
+		return matches ? matches.map((match) => match.slice(1)) : [];
+	};
+
+	const handleAddNote = async (skipConfirmation = false) => {
 		if (!newNote.trim()) return;
+
+		const mentionedEmails = extractMentions(newNote);
+
+		if (mentionedEmails.length > 0 && !skipConfirmation) {
+			setPendingNote(newNote);
+			setShowMentionConfirm(true);
+			return;
+		}
 
 		try {
 			posthog.capture('add_note', {
@@ -217,15 +283,35 @@ export const NotesModal = ({
 				highlight_id: highlight.uuid,
 				url: window.location.href,
 			});
-
 			await createNote({
 				noteValue: newNote,
 				itemId: highlight.uuid,
 			});
 
+			// Send notifications for each mentioned email
+			for (const mentionedEmail of mentionedEmails) {
+				const { error } = await supabase.functions.invoke(
+					'sendMentionNotification',
+					{
+						body: {
+							note: newNote,
+							mentioned_email: mentionedEmail,
+							highlight: highlight.matching.body,
+							author_name:
+								user?.user_metadata?.name || user?.email,
+							link: window.location.href,
+						},
+					}
+				);
+
+				if (error) {
+					console.error('Error sending mention notification:', error);
+				}
+			}
+
 			// Optimistically update the local state
 			const optimisticNote: NoteWithUserMeta = {
-				id: Date.now(), // temporary ID
+				id: Date.now(),
 				value: newNote,
 				user_id: user?.id,
 				item_id: highlight.uuid,
@@ -238,15 +324,22 @@ export const NotesModal = ({
 			};
 
 			setNotes([...notes, optimisticNote]);
-			setNewNote(''); // Clear the input
-		} catch (error) {
-			posthog.capture('note_error', {
-				error_type: 'create_note_failed',
+			setNewNote('');
+			setPendingNote(null);
+			setShowMentionConfirm(false);
+
+			posthog.capture('add_note', {
+				note_length: newNote.length,
+				mention_count: mentionedEmails.length,
 				highlight_id: highlight.uuid,
 				url: window.location.href,
 			});
+		} catch (error) {
 			console.error('Failed to create note:', error);
-			// Optionally add error handling UI here
+			toast({
+				title: 'Error creating note',
+				description: 'Failed to create note or send mentions',
+			});
 		}
 	};
 
@@ -411,35 +504,36 @@ export const NotesModal = ({
 				{/* Comments */}
 				{isPopoverOpen && (
 					<>
-						<Textarea
-							ref={inputRef}
-							autoFocus={true}
-							onFocus={(e) => {
-								const length = e.currentTarget.value.length;
-								e.currentTarget.setSelectionRange(
-									length,
-									length
-								);
-							}}
-							className='text-primary min-h-[60px] max-h-[200px] resize-none'
-							placeholder='thoughts?'
-							value={newNote}
-							onChange={(e) => {
-								setNewNote(e.target.value);
-								// Auto-adjust height
-								e.target.style.height = 'auto';
-								e.target.style.height = `${e.target.scrollHeight}px`;
-							}}
-							onKeyDown={(e) => {
-								if (
-									e.key === 'Enter' &&
-									(e.metaKey || e.ctrlKey)
-								) {
-									e.preventDefault();
-									handleAddNote();
-								}
-							}}
-						/>
+						<div className='relative'>
+							<Textarea
+								ref={inputRef}
+								autoFocus={true}
+								onFocus={(e) => {
+									const length = e.currentTarget.value.length;
+									e.currentTarget.setSelectionRange(
+										length,
+										length
+									);
+								}}
+								className='text-primary min-h-[60px] max-h-[200px] resize-none'
+								placeholder='thoughts? Use @ to mention someone'
+								value={newNote}
+								onChange={(e) => {
+									setNewNote(e.target.value);
+									e.target.style.height = 'auto';
+									e.target.style.height = `${e.target.scrollHeight}px`;
+								}}
+								onKeyDown={(e) => {
+									if (
+										e.key === 'Enter' &&
+										(e.metaKey || e.ctrlKey)
+									) {
+										e.preventDefault();
+										handleAddNote();
+									}
+								}}
+							/>
+						</div>
 
 						<div className='flex pt-2 justify-end'>
 							<Button
@@ -453,6 +547,12 @@ export const NotesModal = ({
 					</>
 				)}
 			</div>
+			<MentionConfirmDialog
+				isOpen={showMentionConfirm}
+				onClose={() => setShowMentionConfirm(false)}
+				mentions={pendingNote ? extractMentions(pendingNote) : []}
+				onConfirm={() => handleAddNote(true)}
+			/>
 		</ThreadContainer>
 	);
 };
