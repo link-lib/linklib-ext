@@ -189,7 +189,19 @@ const ImageDrop = () => {
 			getUserNotifications(authModalContext.user.id)
 				.then((data) => {
 					setNotifications(data);
-					setUnreadCount(data.filter((n) => !n.read).length);
+					const unreads = data.filter((n) => !n.read).length;
+					setUnreadCount(unreads);
+					if (unreads > 0) {
+						chrome.runtime.sendMessage({
+							type: 'UPDATE_BADGE',
+							count: unreads,
+						});
+					} else {
+						chrome.runtime.sendMessage({
+							type: 'UPDATE_BADGE',
+							count: 0,
+						});
+					}
 				})
 				.catch(console.error);
 		}

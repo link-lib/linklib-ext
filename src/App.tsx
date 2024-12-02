@@ -13,15 +13,78 @@ import {
 	NotebookPen,
 	Settings,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import './App.css';
 import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
+import { getUserNotifications } from '@/backend/notifications/getUserNotifications';
+import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 
 function App() {
+	const auth = useContext(AuthContext);
 	const [showSettings, setShowSettings] = useState(false);
 	const [notifications, setNotifications] = useState([]); // Add state for notifications
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [showContact, setShowContact] = useState(false);
+
+	// Add this useEffect to handle notifications and badge
+	useEffect(() => {
+		const fetchNotifications = async () => {
+			try {
+				if (!auth?.user?.id) {
+					console.error('No user ID found');
+					return;
+				}
+
+				// Fetch notifications using the user ID from auth context
+				const notifications = await getUserNotifications(auth.user.id);
+
+				if (notifications) {
+					setNotifications(notifications);
+					// Count unread notifications
+					const unreadCount = notifications.filter(
+						(n) => !n.read
+					).length;
+					setUnreadCount(unreadCount);
+
+					// Update extension badge
+					if (unreadCount > 0) {
+						chrome.action.setBadgeText({
+							text: unreadCount.toString(),
+						});
+						chrome.action.setBadgeBackgroundColor({
+							color: '#EF4444', // Red color for the badge
+						});
+					} else {
+						chrome.action.setBadgeText({ text: '' });
+					}
+				}
+			} catch (error) {
+				console.error('Error fetching notifications:', error);
+			}
+		};
+
+		// Initial fetch
+		fetchNotifications();
+
+		// Set up polling for new notifications (every 5 minutes)
+		const pollInterval = setInterval(fetchNotifications, 5 * 60 * 1000);
+
+		// Cleanup
+		return () => {
+			clearInterval(pollInterval);
+		};
+	}, [auth?.user?.id]);
+
+	// Update badge when unreadCount changes
+	useEffect(() => {
+		if (unreadCount > 0) {
+			chrome.action.setBadgeText({
+				text: unreadCount.toString(),
+			});
+		} else {
+			chrome.action.setBadgeText({ text: '' });
+		}
+	}, [unreadCount]);
 
 	const NotificationsContent = () => (
 		<>
