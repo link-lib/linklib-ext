@@ -2,10 +2,17 @@ import iconImage from '@/assets/icon.png';
 import iconEating from '@/assets/iconEating.png';
 import { signOut } from '@/backend/auth/actions';
 import { withAuth } from '@/backend/auth/withAuth';
+import { getUserNotifications } from '@/backend/notifications/getUserNotifications';
 import { saveImage } from '@/backend/saveImage';
+import { saveLink } from '@/backend/saveLink';
 import { getWebsiteContent } from '@/backend/websiteContent/getWebsiteContent';
 import { saveWebsiteContent } from '@/backend/websiteContent/saveWebsiteContent';
 import { Button } from '@/components/ui/button';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
 import {
 	Tooltip,
 	TooltipContent,
@@ -18,14 +25,8 @@ import {
 	getLinkIcon,
 } from '@/scripts/ImageDrop/saveWebsite';
 import { removeLocalStorage } from '@/utils/supabase/client';
-import {
-	ArrowLeftFromLine,
-	FileText,
-	Heart,
-	ImageUp,
-	LogIn,
-	LogOut,
-} from 'lucide-react';
+import { Notification } from '@/utils/supabase/typeAliases';
+import { Bell, FileText, Heart, ImageUp, LogIn, LogOut } from 'lucide-react';
 import {
 	FormEventHandler,
 	useContext,
@@ -34,7 +35,7 @@ import {
 	useState,
 } from 'react';
 import { AuthContext } from '../auth/context/AuthModalContext';
-import { saveLink } from '@/backend/saveLink';
+import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
 
 const ImageDrop = () => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -44,6 +45,8 @@ const ImageDrop = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const authModalContext = useContext(AuthContext);
 	const { toast } = useToast();
+	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const [unreadCount, setUnreadCount] = useState(0);
 
 	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
@@ -172,6 +175,17 @@ const ImageDrop = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (userAuthenticated && authModalContext.user?.id) {
+			getUserNotifications(authModalContext.user.id)
+				.then((data) => {
+					setNotifications(data);
+					setUnreadCount(data.filter((n) => !n.read).length);
+				})
+				.catch(console.error);
+		}
+	}, [userAuthenticated, authModalContext.user?.id]);
+
 	const handleMouseEnter = () => {
 		setIsHovered(true);
 	};
@@ -247,8 +261,6 @@ const ImageDrop = () => {
 			});
 		}
 	};
-
-	const handleOpenDrawer = () => {};
 
 	const saveContent = async () => {
 		const currentUrl = window.location.href;
@@ -399,23 +411,41 @@ const ImageDrop = () => {
 									</TooltipContent>
 								</Tooltip>
 							</TooltipProvider>
-
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger>
-										<Button
-											onClick={handleOpenDrawer}
-											variant='outline'
-											disabled
-										>
-											<ArrowLeftFromLine className='w-4 h-4' />
-										</Button>
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>See all highlights on this page!</p>
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
+							<Popover>
+								<PopoverTrigger asChild>
+									<Button
+										variant='outline'
+										className='relative'
+									>
+										<Bell className='w-4 h-4' />
+										{unreadCount > 0 && (
+											<span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center'>
+												{unreadCount}
+											</span>
+										)}
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent className='w-80 p-0'>
+									<div className='max-h-[300px] overflow-y-auto'>
+										{notifications.length > 0 ? (
+											notifications.map(
+												(notification) => (
+													<NotificationItem
+														key={notification.id}
+														notification={
+															notification
+														}
+													/>
+												)
+											)
+										) : (
+											<div className='p-3 text-center text-muted-foreground'>
+												No notifications
+											</div>
+										)}
+									</div>
+								</PopoverContent>
+							</Popover>
 						</>
 					) : (
 						<Button

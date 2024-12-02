@@ -28,14 +28,14 @@ function App() {
 				/>
 				<span className='font-bold text-lg pl-2'>Bytebelli</span>
 			</div>
-			<Button
+			{/* <Button
 				variant='outline'
 				onClick={async () => {
 					chrome.runtime.sendMessage({ action: 'saveLinkPopup' });
 				}}
 			>
 				<Heart className='mr-2 h-4 w-4 ' /> Save page
-			</Button>
+			</Button> */}
 			<Button
 				variant='outline'
 				onClick={() => {
