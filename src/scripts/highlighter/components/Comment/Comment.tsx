@@ -45,7 +45,10 @@ const Comment: React.FC<CommentProps> = ({
 						<AvatarImage src={note.user_meta.picture} />
 						<AvatarFallback>
 							{(
-								note.user_meta.name ?? note.user_meta.firstName
+								note.user_meta.name ||
+								note.user_meta.firstName ||
+								note.user_meta.email ||
+								''
 							).substring(0, 2)}
 						</AvatarFallback>
 					</Avatar>
@@ -142,7 +145,7 @@ export const VoiceComment: React.FC<{ highlightId: string }> = ({
 	);
 };
 
-function formatTimeAgo(date: Date): string {
+export function formatTimeAgo(date: Date): string {
 	const now = new Date();
 	const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 

@@ -1,41 +1,148 @@
 import iconImage from '@/assets/icon.png';
+import { getUserNotifications } from '@/backend/notifications/getUserNotifications';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
+import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
 import {
 	ArrowLeft,
 	Bug,
 	CircleUserRound,
 	ExternalLink,
-	Heart,
 	Lightbulb,
 	Linkedin,
 	Mail,
 	NotebookPen,
+	Settings,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
+	const auth = useContext(AuthContext);
+	const [showSettings, setShowSettings] = useState(false);
+	const [notifications, setNotifications] = useState([]); // Add state for notifications
+	const [unreadCount, setUnreadCount] = useState(0);
 	const [showContact, setShowContact] = useState(false);
+
+	// Add this useEffect to handle notifications and badge
+	useEffect(() => {
+		const fetchNotifications = async () => {
+			try {
+				if (!auth?.user?.id) {
+					console.error('No user ID found');
+					return;
+				}
+
+				// Fetch notifications using the user ID from auth context
+				const notifications = await getUserNotifications(auth.user.id);
+
+				if (notifications) {
+					setNotifications(notifications);
+					// Count unread notifications
+					const unreadCount = notifications.filter(
+						(n) => !n.is_read
+					).length;
+					setUnreadCount(unreadCount);
+
+					// Update extension badge
+					if (unreadCount > 0) {
+						chrome.action.setBadgeText({
+							text: unreadCount.toString(),
+						});
+						chrome.action.setBadgeBackgroundColor({
+							color: '#EF4444', // Red color for the badge
+						});
+					} else {
+						chrome.action.setBadgeText({ text: '' });
+					}
+				}
+			} catch (error) {
+				console.error('Error fetching notifications:', error);
+			}
+		};
+
+		// Initial fetch
+		fetchNotifications();
+
+		// Set up polling for new notifications (every 5 minutes)
+		const pollInterval = setInterval(fetchNotifications, 5 * 60 * 1000);
+
+		// Cleanup
+		return () => {
+			clearInterval(pollInterval);
+		};
+	}, [auth?.user?.id]);
+
+	// Update badge when unreadCount changes
+	useEffect(() => {
+		if (unreadCount > 0) {
+			chrome.action.setBadgeText({
+				text: unreadCount.toString(),
+			});
+		} else {
+			chrome.action.setBadgeText({ text: '' });
+		}
+	}, [unreadCount]);
+
+	const NotificationsContent = () => (
+		<>
+			<div className='flex items-center justify-between'>
+				<div className='flex items-center p-4 pb-0'>
+					<img
+						src={chrome.runtime.getURL(iconImage)}
+						alt='Linklib Icon'
+						className='w-6 h-6 mr-2 object-cover rounded-full'
+					/>
+					<h1 className='font-bold text-lg font-mono'>
+						Notifications
+					</h1>
+				</div>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => setShowSettings(true)}
+				>
+					<Settings className='h-4 w-4' />
+				</Button>
+			</div>
+			<div className='flex flex-col divide-y divide-border'>
+				{notifications.length > 0 ? (
+					notifications.map((notification) => (
+						<NotificationItem
+							key={notification.id}
+							notification={notification}
+							onMarkAsRead={(id) => {
+								setNotifications(
+									notifications.map((n) =>
+										n.id === id
+											? { ...n, is_read: true }
+											: n
+									)
+								);
+								setUnreadCount(Math.max(0, unreadCount - 1));
+							}}
+						/>
+					))
+				) : (
+					<div className='p-3 text-center text-muted-foreground'>
+						No notifications
+					</div>
+				)}
+			</div>
+		</>
+	);
 
 	const MainContent = () => (
 		<>
-			<div className='flex items-center align-middle justify-center'>
-				<img
-					src={chrome.runtime.getURL(iconImage)}
-					alt='Linklib Icon'
-					className='w-8 h-8 p-1 object-cover rounded-full'
-				/>
-				<span className='font-bold text-lg pl-2'>Bytebelli</span>
-			</div>
-			<Button
+			{/* <Button
 				variant='outline'
 				onClick={async () => {
 					chrome.runtime.sendMessage({ action: 'saveLinkPopup' });
 				}}
 			>
 				<Heart className='mr-2 h-4 w-4 ' /> Save page
-			</Button>
+			</Button> */}
 			<Button
 				variant='outline'
 				onClick={() => {
@@ -137,11 +244,40 @@ function App() {
 		</>
 	);
 
+	const SettingsContent = () => (
+		<>
+			<div className='flex items-center justify-between p-4'>
+				<div className='flex items-center'>
+					<img
+						src={chrome.runtime.getURL(iconImage)}
+						alt='Linklib Icon'
+						className='w-6 h-6 mr-2 object-cover rounded-full'
+					/>
+					<h1 className='font-bold text-lg'>Settings</h1>
+				</div>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => setShowSettings(false)}
+				>
+					<ArrowLeft className='h-4 w-4' />
+				</Button>
+			</div>
+
+			{/* Your existing MainContent and ContactContent components */}
+			{showContact ? <ContactContent /> : <MainContent />}
+		</>
+	);
+
 	return (
-		<div className='linklib-ext w-60'>
-			<div className='bytebelli-internal text-primary'>
-				<div className='p-4 flex flex-col space-y-4 bg-popover'>
-					{showContact ? <ContactContent /> : <MainContent />}
+		<div className='linklib-ext w-[500px]'>
+			<div className=' text-primary'>
+				<div className='flex flex-col space-y-4 bg-popover'>
+					{showSettings ? (
+						<SettingsContent />
+					) : (
+						<NotificationsContent />
+					)}
 				</div>
 			</div>
 		</div>
