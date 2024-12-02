@@ -189,7 +189,7 @@ const ImageDrop = () => {
 			getUserNotifications(authModalContext.user.id)
 				.then((data) => {
 					setNotifications(data);
-					const unreads = data.filter((n) => !n.read).length;
+					const unreads = data.filter((n) => !n.is_read).length;
 					setUnreadCount(unreads);
 					if (unreads > 0) {
 						chrome.runtime.sendMessage({
@@ -338,10 +338,14 @@ const ImageDrop = () => {
 	};
 
 	const handleMarkAllAsRead = async () => {
-		const unreadNotifications = notifications.filter((n) => !n.read);
+		const unreadNotifications = notifications.filter((n) => !n.is_read);
 		if (unreadNotifications.length > 0) {
-			await markNotificationsAsRead(unreadNotifications.map((n) => n.id));
-			setNotifications(notifications.map((n) => ({ ...n, read: true })));
+			await markNotificationsAsRead(
+				unreadNotifications.map((n) => n.notification_id)
+			);
+			setNotifications(
+				notifications.map((n) => ({ ...n, is_read: true }))
+			);
 			setUnreadCount(0);
 		}
 	};
@@ -349,7 +353,7 @@ const ImageDrop = () => {
 	return (
 		<div
 			id='dropContainer'
-			className={`fixed right-1 z-50 image-drop w-fit transition-all duration-300 ${
+			className={`bytebelli-internal fixed right-1 z-50 image-drop w-fit transition-all duration-300 ${
 				isIconUp ? 'bottom-20' : 'bottom-1'
 			}`}
 			onMouseEnter={handleMouseEnter}
@@ -458,12 +462,15 @@ const ImageDrop = () => {
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent
-									className='w-96 p-0'
+									className='w-[500px] p-0 max-h-[80vh] overflow-y-scroll'
 									align='end'
 									side='top'
 								>
 									{notifications.length > 0 && (
-										<div className='p-2 flex justify-end border-b'>
+										<div className='p-2 flex justify-between items-center border-b font-mono'>
+											<span className='font-bold'>
+												Notifications
+											</span>
 											<Button
 												variant='ghost'
 												size='sm'
@@ -492,7 +499,8 @@ const ImageDrop = () => {
 																		id
 																			? {
 																					...n,
-																					read: true,
+																					is_read:
+																						true,
 																			  }
 																			: n
 																)

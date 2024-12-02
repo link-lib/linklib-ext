@@ -17,14 +17,14 @@ export const NotificationItem = ({
 	const contentData = relatedData.content_data;
 
 	const handleClick = async () => {
-		if (!notification.read) {
+		if (!notification.is_read) {
 			await markNotificationsAsRead([notification.notification_id]);
 			onMarkAsRead?.(notification.notification_id);
 		}
 	};
 
 	return (
-		<div className='flex items-start gap-2 p-5 bg-popover hover:bg-popover-hover transition-colors duration-200'>
+		<div className='flex items-start gap-2 p-5 bg-popover hover:bg-popover-hover transition-colors duration-200 font-serif'>
 			<a
 				href={contentData.link}
 				target='_blank'
@@ -33,12 +33,11 @@ export const NotificationItem = ({
 				className='flex-1'
 			>
 				<div className='flex flex-col gap-2'>
-					<div className='flex flex-row'>
-						{' '}
-						{!notification.read && (
-							<span className='w-2 h-2 rounded-full align-middle bg-red-500' />
+					<div className='flex flex-row items-center w-full font-mono text-sm'>
+						{!notification.is_read && (
+							<span className='w-2 h-2 mr-2 rounded-full align-middle bg-red-500' />
 						)}
-						<Avatar className='w-6 h-6'>
+						<Avatar className='w-6 h-6 mr-1'>
 							<AvatarImage
 								src={noteData.raw_user_meta_data.picture}
 								alt={
@@ -53,22 +52,17 @@ export const NotificationItem = ({
 								)?.toUpperCase()}
 							</AvatarFallback>
 						</Avatar>
-						<div className='flex items-center justify-between align-middle'>
+						<div className='flex items-center justify-between align-middle w-full text-xs'>
 							<div className='flex items-center gap-2 text-muted-foreground'>
-								<div className='flex gap-1 items-center'>
-									<span className='text-sm font-medium'>
-										{noteData.raw_user_meta_data.name ??
-											noteData.raw_user_meta_data.email}
-									</span>
-									<span className='text-sm'>
-										{notification.notification_type ===
-										'reply'
-											? 'replied to your note'
-											: 'interacted with your highlight'}
-									</span>
-								</div>
+								<span className=''>
+									{noteData.raw_user_meta_data.name ??
+										noteData.raw_user_meta_data.email}
+									{notification.notification_type === 'reply'
+										? ' replied to your note'
+										: ' interacted with your highlight'}
+								</span>
 							</div>
-							<span className='text-xs text-muted-foreground'>
+							<span className=''>
 								{formatTimeAgo(
 									new Date(notification.created_at)
 								)}
@@ -76,11 +70,11 @@ export const NotificationItem = ({
 						</div>
 					</div>
 
-					<div className='text-sm'>{noteData.value}</div>
+					<div className='text-sm py-2'>{noteData.value}</div>
 
 					<div className='line-clamp-3 text-sm leading-relaxed'>
-						<span className='bg-yellow-400 text-primary-foreground leading-relaxed whitespace-pre-wrap'>
-							{contentData.value.split(' ').join(' ')}
+						<span className='bg-yellow-200 text-primary-foreground leading-relaxed whitespace-pre-wrap'>
+							{contentData.value}
 						</span>
 					</div>
 				</div>

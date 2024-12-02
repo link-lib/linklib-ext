@@ -1,23 +1,22 @@
 import iconImage from '@/assets/icon.png';
+import { getUserNotifications } from '@/backend/notifications/getUserNotifications';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
+import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
 import {
 	ArrowLeft,
 	Bug,
 	CircleUserRound,
 	ExternalLink,
-	Heart,
 	Lightbulb,
 	Linkedin,
 	Mail,
 	NotebookPen,
 	Settings,
 } from 'lucide-react';
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './App.css';
-import { NotificationItem } from '@/scripts/notifications/NotificationsItem';
-import { getUserNotifications } from '@/backend/notifications/getUserNotifications';
-import { AuthContext } from '@/scripts/auth/context/AuthModalContext';
 
 function App() {
 	const auth = useContext(AuthContext);
@@ -42,7 +41,7 @@ function App() {
 					setNotifications(notifications);
 					// Count unread notifications
 					const unreadCount = notifications.filter(
-						(n) => !n.read
+						(n) => !n.is_read
 					).length;
 					setUnreadCount(unreadCount);
 
@@ -89,13 +88,15 @@ function App() {
 	const NotificationsContent = () => (
 		<>
 			<div className='flex items-center justify-between'>
-				<div className='flex items-center'>
+				<div className='flex items-center p-4 pb-0'>
 					<img
 						src={chrome.runtime.getURL(iconImage)}
 						alt='Linklib Icon'
 						className='w-6 h-6 mr-2 object-cover rounded-full'
 					/>
-					<h1 className='font-bold text-lg'>Notifications</h1>
+					<h1 className='font-bold text-lg font-mono'>
+						Notifications
+					</h1>
 				</div>
 				<Button
 					variant='outline'
@@ -114,7 +115,9 @@ function App() {
 							onMarkAsRead={(id) => {
 								setNotifications(
 									notifications.map((n) =>
-										n.id === id ? { ...n, read: true } : n
+										n.id === id
+											? { ...n, is_read: true }
+											: n
 									)
 								);
 								setUnreadCount(Math.max(0, unreadCount - 1));
@@ -243,7 +246,7 @@ function App() {
 
 	const SettingsContent = () => (
 		<>
-			<div className='flex items-center justify-between'>
+			<div className='flex items-center justify-between p-4'>
 				<div className='flex items-center'>
 					<img
 						src={chrome.runtime.getURL(iconImage)}
@@ -267,9 +270,9 @@ function App() {
 	);
 
 	return (
-		<div className='linklib-ext w-60'>
-			<div className='bytebelli-internal text-primary'>
-				<div className='p-4 flex flex-col space-y-4 bg-popover'>
+		<div className='linklib-ext w-[500px]'>
+			<div className=' text-primary'>
+				<div className='flex flex-col space-y-4 bg-popover'>
 					{showSettings ? (
 						<SettingsContent />
 					) : (
