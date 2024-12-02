@@ -125,18 +125,21 @@ export type Database = {
           created_at: string;
           id: number;
           link_onboarding_completed: boolean;
+          substack_link: string | null;
           user_id: string;
         };
         Insert: {
           created_at?: string;
           id?: number;
           link_onboarding_completed?: boolean;
+          substack_link?: string | null;
           user_id?: string;
         };
         Update: {
           created_at?: string;
           id?: number;
           link_onboarding_completed?: boolean;
+          substack_link?: string | null;
           user_id?: string;
         };
         Relationships: [];
@@ -337,6 +340,9 @@ export type Database = {
           created_at: string;
           id: number;
           is_read: boolean | null;
+          notification_type:
+            | Database['public']['Enums']['notification_type']
+            | null;
           related_id: string;
           related_table: Database['public']['Enums']['notifiable_item_table'];
           user_id: string;
@@ -345,6 +351,9 @@ export type Database = {
           created_at?: string;
           id?: number;
           is_read?: boolean | null;
+          notification_type?:
+            | Database['public']['Enums']['notification_type']
+            | null;
           related_id: string;
           related_table: Database['public']['Enums']['notifiable_item_table'];
           user_id?: string;
@@ -353,6 +362,9 @@ export type Database = {
           created_at?: string;
           id?: number;
           is_read?: boolean | null;
+          notification_type?:
+            | Database['public']['Enums']['notification_type']
+            | null;
           related_id?: string;
           related_table?: Database['public']['Enums']['notifiable_item_table'];
           user_id?: string;
@@ -604,6 +616,10 @@ export type Database = {
       };
     };
     Functions: {
+      clean_stale_notifications: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
       fetch_user_notifications: {
         Args: {
           p_user_id: string;
@@ -615,6 +631,7 @@ export type Database = {
           related_id: string;
           is_read: boolean;
           created_at: string;
+          notification_type: Database['public']['Enums']['notification_type'];
           related_data: Json;
         }[];
       };
@@ -699,6 +716,23 @@ export type Database = {
           errors: string[];
         }[];
       };
+      notify_other_note_users:
+        | {
+            Args: {
+              current_user_id: string;
+              content_item_id: string;
+              note_id: number;
+            };
+            Returns: undefined;
+          }
+        | {
+            Args: {
+              current_user_id: string;
+              p_item_id: number;
+              note_id: number;
+            };
+            Returns: undefined;
+          };
     };
     Enums: {
       content_type:
@@ -715,6 +749,7 @@ export type Database = {
         | 'PINTEREST'
         | 'LOOM';
       notifiable_item_table: 'notes' | 'reactions' | 'contentitem';
+      notification_type: 'reply' | 'user_post_engagement';
     };
     CompositeTypes: {
       [_ in never]: never;
