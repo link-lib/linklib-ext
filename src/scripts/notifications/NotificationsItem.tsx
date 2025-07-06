@@ -1,10 +1,10 @@
 import { markNotificationsAsRead } from '@/backend/notifications/markNotificationsAsRead';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatTimeAgo } from '@/scripts/highlighter/components/Comment/Comment';
-import { Notification } from '@/utils/supabase/typeAliases';
+// import { Notification } from '@/utils/supabase/typeAliases';
 
 interface NotificationItemProps {
-	notification: Notification;
+	notification: any;
 	onMarkAsRead: (id: number) => void;
 }
 

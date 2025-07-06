@@ -269,7 +269,8 @@ export const NotesModal = ({
 	const handleAddNote = async (skipConfirmation = false) => {
 		if (!newNote.trim()) return;
 
-		const mentionedEmails = extractMentions(newNote);
+		// const mentionedEmails = extractMentions(newNote);
+		const mentionedEmails: string[] = [];
 
 		if (mentionedEmails.length > 0 && !skipConfirmation) {
 			setPendingNote(newNote);

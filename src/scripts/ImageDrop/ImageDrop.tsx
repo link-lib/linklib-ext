@@ -25,7 +25,7 @@ import {
 	getLinkIcon,
 } from '@/scripts/ImageDrop/saveWebsite';
 import { removeLocalStorage } from '@/utils/supabase/client';
-import { Notification } from '@/utils/supabase/typeAliases';
+// import { Notification } from '@/utils/supabase/typeAliases';
 import {
 	Bell,
 	FileText,
@@ -54,7 +54,7 @@ const ImageDrop = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const authModalContext = useContext(AuthContext);
 	const { toast } = useToast();
-	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const [notifications, setNotifications] = useState<any[]>([]);
 	const [unreadCount, setUnreadCount] = useState(0);
 
 	const handleDragEnter = (e: DragEvent) => {
